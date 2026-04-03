@@ -44,6 +44,11 @@
                         <FormSelect v-model="technicienSelected" field-name="technicien_filter" :items="techniciensOptions"
                             item-title="nom" item-value="id" label="Filtrer par technicien" clearable />
                     </div>
+
+                    <div class="flex-grow-1" style="min-width: 260px;">
+                        <FormSelect v-model="equipmentSelected" field-name="equipment_filter" :items="equipmentsOptions"
+                            item-title="nom" item-value="id" label="Filtrer par équipement" clearable />
+                    </div>
                 </div>
 
                 <div v-if="mode === 'maintenance'" class="mb-3 px-2">
@@ -247,18 +252,23 @@ const loadedTechniciens = ref(false)
  */
 const loading = ref(false)
 
+/**
+ * Filtre générique : retourne les événements correspondant à un équipement donné.
+ * Réutilisable pour tous les types d'événements (BT, maintenance).
+ */
+const filterByEquipement = (events, equipementId) => {
+    if (!equipementId) return events
+    return events.filter(e => Number(e.equipement_id) === Number(equipementId))
+}
+
 const getFilteredMaintenanceEvents = (equipmentId) => {
-    if (!equipmentId) {
-        return eventsMaintenance.value
-    }
-    return eventsMaintenance.value.filter(e => Number(e.equipement_id) === Number(equipmentId))
+    return filterByEquipement(eventsMaintenance.value, equipmentId)
 }
 
 const getFilteredBTEvents = (technicienId) => {
     if (!technicienId) {
         return eventsBT.value
     }
-
     return eventsBT.value.filter((event) =>
         (event.techniciens || []).some((technicien) => Number(technicien.id) === Number(technicienId))
     )
@@ -328,6 +338,7 @@ const fetchBT = async () => {
                     id: e.equipement.id,
                     nom: e.equipement.nom
                 } : null,
+                equipement_id: e.equipement?.id ?? null,
                 techniciens: (e.techniciens || []).map(t => ({
                     id: t.id,
                     nom: t.nom
@@ -514,9 +525,13 @@ const loadDataIfNeeded = async () => {
         await fetchBT()
     }
 
-    // Précharge la liste des techniciens pour le filtre BT.
+    // Précharge techniciens et équipements pour les filtres BT.
     if (mode.value === 'bt' && !loadedTechniciens.value) {
         await fetchTechniciens()
+    }
+
+    if (mode.value === 'bt' && equipmentsOptions.value.length === 0) {
+        await fetchEquipments()
     }
 
     if (mode.value === 'maintenance' && !loadedMaintenance.value) {
@@ -554,7 +569,8 @@ const initializeCalendarFromRoute = async () => {
  */
 const currentEvents = computed(() => {
     if (mode.value === 'bt') {
-        return getFilteredBTEvents(technicienSelected.value)
+        const byTechnicien = getFilteredBTEvents(technicienSelected.value)
+        return filterByEquipement(byTechnicien, equipmentSelected.value)
     }
 
     const maintenanceEvents = getFilteredMaintenanceEvents(equipmentSelected.value)

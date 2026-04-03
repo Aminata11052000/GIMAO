@@ -64,7 +64,7 @@
                     </template>
                 </v-list-item>
 
-                <v-list-item class="logout-item" @click="logout">
+                <v-list-item class="logout-item" @click="showLogoutDialog">
                     <template #prepend>
                         <v-icon class="ml-3">mdi-logout</v-icon>
                     </template>
@@ -76,6 +76,17 @@
             </v-list>
         </template>
     </v-navigation-drawer>
+
+    <ConfirmationModal
+        v-model="showLogoutConfirm"
+        type="warning"
+        title="Déconnexion"
+        message="Êtes-vous sûr de vouloir vous déconnecter ?"
+        confirm-text="Se déconnecter"
+        cancel-text="Annuler"
+        confirm-icon="mdi-logout"
+        @confirm="confirmLogout"
+    />
 </template>
 
 <script>
@@ -83,9 +94,12 @@ import { MEDIA_BASE_URL, BASE_URL } from '@/utils/constants';
 import { useApi } from '@/composables/useApi';
 import { API_BASE_URL } from '@/utils/constants';
 import api from '../composables/http';
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
 
 export default {
     name: "Sidebar",
+
+    components: { ConfirmationModal },
 
     data() {
         return {
@@ -94,6 +108,7 @@ export default {
 
             isMini: false,    // choix utilisateur
             isHovered: false, // hover temporaire
+            showLogoutConfirm: false,
 
             api : useApi(API_BASE_URL),
 
@@ -181,12 +196,14 @@ export default {
             this.isMini = !this.isMini;
         },
 
-        logout() {
-            // Effectuer l'appel API de logout  (ex: pour invalider le token côté serveur)
+        showLogoutDialog() {
+            this.showLogoutConfirm = true;
+        },
+
+        confirmLogout() {
             api.post("utilisateurs/logout/").catch(err => {
                 console.error("Erreur lors du logout API :", err);
             }).finally(() => {
-                // Nettoyer le store et localStorage même si l'appel API échoue
                 this.$store.dispatch('logout');
                 window.location.href = '/login';
             });

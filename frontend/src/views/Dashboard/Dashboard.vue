@@ -165,18 +165,30 @@
       class="floating-logout-button"
       color="primary"
       dark
-      @click="logout"
+      @click="showLogoutConfirm = true"
       v-if="!store.getters.hasPermission('menu:view')"
     >
       <v-icon left>mdi-logout</v-icon>
       Se déconnecter
     </v-btn>
+
+    <ConfirmationModal
+      v-model="showLogoutConfirm"
+      type="warning"
+      title="Déconnexion"
+      message="Êtes-vous sûr de vouloir vous déconnecter ?"
+      confirm-text="Se déconnecter"
+      cancel-text="Annuler"
+      confirm-icon="mdi-logout"
+      @confirm="logout"
+    />
   </v-container>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import ConfirmationModal from "@/components/common/ConfirmationModal.vue";
 import { useRouter } from "vue-router";
 
 import FailureListComponent from "@/components/FailureListComponent.vue";
@@ -216,11 +228,10 @@ const hasDIandBtHorizontal = computed(() => {
   );
 });
 
-const logout = () => {
-  // Supprimer les données du store et du localStorage
-  store.dispatch("logout");
+const showLogoutConfirm = ref(false);
 
-  // Rediriger vers login avec un reload complet pour nettoyer tout le state
+const logout = () => {
+  store.dispatch("logout");
   window.location.href = "/login";
 };
 

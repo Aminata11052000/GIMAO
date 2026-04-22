@@ -46,6 +46,14 @@ const props = defineProps({
     required: true,
     // { derniereIntervention: number, ecartInterventions: number, prochaineMaintenance: number }
   },
+  estGlissant: {
+    type: Boolean,
+    default: false,
+  },
+  valeurCourante: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -78,20 +86,28 @@ watch(
 );
 
 const updateProchaineMaintenance = () => {
-  const derniere = toNumberOrNull(localSeuil.derniereIntervention);
   const ecart = toNumberOrNull(localSeuil.ecartInterventions);
 
-  if (derniere === null || ecart === null) {
+  // Glissant : on part de la valeur actuelle du compteur
+  // Non glissant : on part de la dernière intervention
+  const base = props.estGlissant
+    ? toNumberOrNull(props.valeurCourante)
+    : toNumberOrNull(localSeuil.derniereIntervention);
+
+  if (base === null || ecart === null) {
     localSeuil.prochaineMaintenance = "";
   } else {
-    localSeuil.prochaineMaintenance = derniere + ecart;
+    localSeuil.prochaineMaintenance = base + ecart;
   }
 
   emit("update:modelValue", {
     ...localSeuil,
     derniereIntervention: toNumberOrNull(localSeuil.derniereIntervention),
-    ecartInterventions: toNumberOrNull(localSeuil.ecartInterventions),
+    ecartInterventions:   toNumberOrNull(localSeuil.ecartInterventions),
     prochaineMaintenance: toNumberOrNull(localSeuil.prochaineMaintenance),
   });
 };
+
+// Recalcule quand estGlissant change sans que l'utilisateur retouche les champs
+watch(() => props.estGlissant, updateProchaineMaintenance);
 </script>

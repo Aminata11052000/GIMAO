@@ -53,13 +53,22 @@
       </v-row>
 
       <!-- Seuil numérique ou calendaire selon le type de compteur -->
+      <!-- On préserve estGlissant lors des mises à jour du seuil :
+           SeuilNumerique et SeuilCalendaire n'ont pas connaissance de ce champ,
+           donc un simple v-model l'écraserait à chaque frappe. -->
       <SeuilNumerique
         v-if="selectedCounterType !== 'Calendaire'"
-        v-model="plan.seuil"
+        :model-value="plan.seuil"
+        :est-glissant="!!plan.seuil.estGlissant"
+        :valeur-courante="selectedCounter?.valeurCourante ?? null"
+        @update:model-value="val => plan.seuil = { ...val, estGlissant: plan.seuil.estGlissant }"
       />
       <SeuilCalendaire
         v-else
-        v-model="plan.seuil"
+        :model-value="plan.seuil"
+        :est-glissant="!!plan.seuil.estGlissant"
+        :valeur-courante="selectedCounter?.valeurCourante ?? null"
+        @update:model-value="val => plan.seuil = { ...val, estGlissant: plan.seuil.estGlissant }"
       />
 
       <v-row dense class="mt-2">

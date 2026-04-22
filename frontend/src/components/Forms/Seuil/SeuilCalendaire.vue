@@ -66,6 +66,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  estGlissant: {
+    type: Boolean,
+    default: false,
+  },
+  valeurCourante: {
+    type: [Number, String],
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -125,9 +133,14 @@ const localSeuil = reactive({
 // --- Calcul ---
 
 const updateProchaineMaintenance = () => {
-  const derniere = localSeuil.derniereIntervention;
-  const ecart    = Number(ecartCalendaire.value || 0);
-  const unite    = uniteCalendaire.value;
+  const ecart = Number(ecartCalendaire.value || 0);
+  const unite = uniteCalendaire.value;
+
+  // Glissant : on part de la valeur actuelle du compteur (convertie en ISO si ordinal)
+  // Non glissant : on part de la dernière intervention saisie
+  const derniere = props.estGlissant
+    ? toISODate(props.valeurCourante)
+    : localSeuil.derniereIntervention;
 
   if (!derniere || !ecart || !unite) {
     localSeuil.prochaineMaintenance = "";
@@ -211,4 +224,7 @@ const initFromProp = (val) => {
 // Sync au montage et quand le parent remplace l'objet (édition/changement de plan).
 // Pas de deep watch: sinon chaque frappe réinitialise l'unité/valeur.
 watch(() => props.modelValue, (val) => initFromProp(val), { immediate: true });
+
+// Recalcule quand estGlissant change sans que l'utilisateur retouche les champs
+watch(() => props.estGlissant, updateProchaineMaintenance);
 </script>

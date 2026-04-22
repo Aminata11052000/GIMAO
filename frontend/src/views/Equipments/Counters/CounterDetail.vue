@@ -344,7 +344,7 @@ const countersForSelect = computed(() => {
   return [
     {
       id: counterId,
-      nom: counter.value.nomCompteur || "Compteur actuel",
+      nomCompteur: counter.value.nomCompteur || "Compteur actuel",
       unite: counter.value.unite || "heures",
       valeurCourante: counter.value.valeurCourante || 0,
       estPrincipal: counter.value.estPrincipal || false,

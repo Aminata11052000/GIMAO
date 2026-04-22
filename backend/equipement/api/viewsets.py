@@ -125,6 +125,22 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
                 
         return response
 
+    @action(detail=True, methods=['get'], url_path='historique_statuts')
+    def historique_statuts(self, request, pk=None):
+        """
+        Retourne l'historique chronologique des statuts d'un équipement.
+        Chaque entrée contient le statut et sa date de changement.
+        Le frontend calcule ensuite les plages (du statut N au statut N+1).
+        """
+        equipement = self.get_object()
+        statuts = (
+            StatutEquipement.objects
+            .filter(equipement=equipement)
+            .order_by('dateChangement')
+            .values('statut', 'dateChangement')
+        )
+        return Response(list(statuts))
+
     @action(detail=True, methods=['get'])
     def kpi(self, request, pk=None):
         """

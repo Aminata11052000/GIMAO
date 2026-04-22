@@ -1,9 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './store'; 
+import store from './store';
 import vuetify from './plugins/vuetify';
-import './assets/css/global.css';  
+import VueApexCharts from 'vue3-apexcharts';
+import './assets/css/global.css';
 import '@mdi/font/css/materialdesignicons.css'
 import { initializeTheme } from './utils/theme';
 
@@ -24,6 +25,9 @@ app.use(router);
 
 // Utilisez Vuetify
 app.use(vuetify);
+
+// ApexCharts (graphiques)
+app.use(VueApexCharts);
 
 // Applique le thème sauvegardé au démarrage
 initializeTheme();

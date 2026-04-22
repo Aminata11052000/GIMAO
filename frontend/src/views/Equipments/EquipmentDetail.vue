@@ -94,6 +94,13 @@
             </v-card-actions>
           </v-card>
 
+          <!-- Historique des états -->
+          <EquipmentStatusTimeline
+            v-if="store.getters.hasPermission('eq:historique.view')"
+            :equipement-id="route.params.id"
+            class="mb-4"
+          />
+
           <!-- KPI de maintenance corrective -->
           <KPIEquipementComponent
             v-if="store.getters.hasPermission('eq:kpi.view')"
@@ -272,7 +279,8 @@ import CounterInlineForm from '@/components/Forms/CounterInlineForm.vue';
 import DocumentForm from '@/components/Forms/DocumentForm.vue';
 import DocumentList from '@/components/DocumentList.vue';
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
-import KPIEquipementComponent from '@/components/KPIEquipementComponent.vue';
+import KPIEquipementComponent      from '@/components/KPIEquipementComponent.vue';
+import EquipmentStatusTimeline     from '@/components/EquipmentStatusTimeline.vue';
 import { useApi } from '@/composables/useApi';
 import { getStatusColor, getStatusLabel, formatCalendarDate } from '@/utils/helpers';
 import { API_BASE_URL, BASE_URL, INTERVENTION_STATUS, TABLE_HEADERS } from '@/utils/constants';

@@ -94,6 +94,13 @@
             </v-card-actions>
           </v-card>
 
+          <!-- KPI de maintenance corrective -->
+          <KPIEquipementComponent
+            v-if="store.getters.hasPermission('eq:kpi.view')"
+            :equipement-id="route.params.id"
+            class="mb-4"
+          />
+
           <!-- Section compteurs -->
           <div>
             <v-card elevation="2" class="mb-4" v-if="store.getters.hasPermission('cp:viewList')">
@@ -265,6 +272,7 @@ import CounterInlineForm from '@/components/Forms/CounterInlineForm.vue';
 import DocumentForm from '@/components/Forms/DocumentForm.vue';
 import DocumentList from '@/components/DocumentList.vue';
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
+import KPIEquipementComponent from '@/components/KPIEquipementComponent.vue';
 import { useApi } from '@/composables/useApi';
 import { getStatusColor, getStatusLabel, formatCalendarDate } from '@/utils/helpers';
 import { API_BASE_URL, BASE_URL, INTERVENTION_STATUS, TABLE_HEADERS } from '@/utils/constants';

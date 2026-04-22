@@ -125,6 +125,69 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
                 
         return response
 
+    @action(detail=True, methods=['get'])
+    def kpi(self, request, pk=None):
+        """
+        Calcule les indicateurs de maintenance corrective pour un équipement :
+        - Nombre de pannes (DI confirmées)
+        - MTBF en jours (temps moyen entre deux pannes)
+        - MTTR en jours (temps moyen de réparation)
+        """
+        equipement = self.get_object()
+        today = timezone.now()
+
+        # ── Nombre de pannes ────────────────────────────────────────────────
+        # On considère qu'une panne est confirmée dès que la DI est ACCEPTEE
+        # ou TRANSFORMEE (transformée en BT correctif).
+        pannes = DemandeIntervention.objects.filter(
+            equipement=equipement,
+            statut__in=['ACCEPTEE', 'TRANSFORMEE'],
+            archive=False
+        ).order_by('date_creation')
+
+        nombre_pannes = pannes.count()
+
+        # ── MTBF (Mean Time Between Failures) ───────────────────────────────
+        # Formule : durée totale observée ÷ nombre de pannes
+        # Point de départ : dateMiseEnService, ou à défaut la première DI
+        mtbf_jours = None
+        if nombre_pannes > 0:
+            date_debut_observation = (
+                equipement.dateMiseEnService
+                or pannes.first().date_creation
+            )
+            duree_totale_jours = (today - date_debut_observation).days
+            if duree_totale_jours > 0:
+                mtbf_jours = round(duree_totale_jours / nombre_pannes, 1)
+
+        # ── MTTR (Mean Time To Repair) ───────────────────────────────────────
+        # Formule : moyenne de (date_fin - date_debut) sur les BT correctifs terminés
+        # On ignore les BT sans date_debut ou date_fin (données incomplètes)
+        mttr_jours = None
+        bts_termines = BonTravail.objects.filter(
+            demande_intervention__equipement=equipement,
+            type='CORRECTIF',
+            statut__in=['TERMINE', 'CLOTURE'],
+            date_debut__isnull=False,
+            date_fin__isnull=False,
+            archive=False
+        )
+
+        if bts_termines.exists():
+            durees = [
+                (bt.date_fin - bt.date_debut).days
+                for bt in bts_termines
+                if bt.date_fin >= bt.date_debut
+            ]
+            if durees:
+                mttr_jours = round(sum(durees) / len(durees), 1)
+
+        return Response({
+            'nombre_pannes': nombre_pannes,
+            'mtbf_jours':    mtbf_jours,
+            'mttr_jours':    mttr_jours,
+        })
+
     @action(detail=True, methods=['post'])
     @transaction.atomic
     def add_document(self, request, pk=None):

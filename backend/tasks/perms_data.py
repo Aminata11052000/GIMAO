@@ -46,6 +46,7 @@ perms = {
     'eq:archive':       ("Archiver un équipement",                              'action',    'eq:viewDetail'),
     'eq:document.add':   ("Ajouter un document à un équipement",                'action',    'eq:viewDetail'),
     'eq:document.delete':("Supprimer un document d'un équipement",              'action',    'eq:viewDetail'),
+    'eq:kpi.view':       ("Voir les indicateurs KPI de maintenance d'un équipement", 'affichage', 'eq:viewDetail'),
 
     # ── Compteurs ────────────────────────────────────────────────────────────
     'cp:viewList':   ("Voir la liste des compteurs",    'affichage', None),

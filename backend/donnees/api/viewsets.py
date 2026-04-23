@@ -250,26 +250,24 @@ class FabricantViewSet(GimaoModelViewSet):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
-        Création d'un fabricant avec adresse imbriquée
+        Création d'un fabricant avec adresse optionnelle
         """
         data = request.data.copy()
         adresse_data = data.pop('adresse', None)
-        if not adresse_data:
-            return Response(
-                {'error': 'Données d\'adresse requises pour créer un fabricant.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        adresse_serializer = AdresseSerializer(data=adresse_data)
-        adresse_serializer.is_valid(raise_exception=True)
-        adresse = adresse_serializer.save()
+        # Créer l'adresse seulement si au moins un champ est rempli
+        adresse = None
+        if adresse_data and any(str(v).strip() for v in adresse_data.values() if v):
+            adresse_serializer = AdresseSerializer(data=adresse_data)
+            adresse_serializer.is_valid(raise_exception=True)
+            adresse = adresse_serializer.save()
 
         fabricant = Fabricant.objects.create(
             nom=data.get('nom'),
             email=data.get('email'),
             numTelephone=data.get('numTelephone'),
             serviceApresVente=data.get('serviceApresVente', False),
-            adresse_id=adresse.id
+            adresse=adresse
         )
 
         serializer = self.get_serializer(fabricant)
@@ -325,26 +323,24 @@ class FournisseurViewSet(GimaoModelViewSet):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
-        Création d'un fournisseur avec adresse imbriquée
+        Création d'un fournisseur avec adresse optionnelle
         """
         data = request.data.copy()
         adresse_data = data.pop('adresse', None)
-        if not adresse_data:
-            return Response(
-                {'error': 'Données d\'adresse requises pour créer un fournisseur.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-        adresse_serializer = AdresseSerializer(data=adresse_data)
-        adresse_serializer.is_valid(raise_exception=True)
-        adresse = adresse_serializer.save()
+        # Créer l'adresse seulement si au moins un champ est rempli
+        adresse = None
+        if adresse_data and any(str(v).strip() for v in adresse_data.values() if v):
+            adresse_serializer = AdresseSerializer(data=adresse_data)
+            adresse_serializer.is_valid(raise_exception=True)
+            adresse = adresse_serializer.save()
 
         fournisseur = Fournisseur.objects.create(
             nom=data.get('nom'),
             email=data.get('email'),
             numTelephone=data.get('numTelephone'),
             serviceApresVente=data.get('serviceApresVente', False),
-            adresse_id=adresse.id
+            adresse=adresse
         )
 
         serializer = self.get_serializer(fournisseur)

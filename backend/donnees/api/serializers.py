@@ -3,11 +3,23 @@ from donnees.models import Lieu, TypeDocument, Document, Fabricant, Fournisseur,
 
 
 class AdresseSerializer(serializers.ModelSerializer):
-    """Serializer pour le modèle Adresse"""
-    
+    """Serializer pour le modèle Adresse — tous les champs sont optionnels"""
+
     class Meta:
         model = Adresse
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # L'adresse est facultative : aucun champ n'est obligatoire
+        for field_name, field in self.fields.items():
+            if field_name == 'id':
+                continue
+            field.required = False
+            if hasattr(field, 'allow_blank'):
+                field.allow_blank = True
+            if hasattr(field, 'allow_null'):
+                field.allow_null = True
 
 
 class LieuSerializer(serializers.ModelSerializer):

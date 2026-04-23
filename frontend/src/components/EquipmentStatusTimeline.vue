@@ -18,18 +18,67 @@
       </v-alert>
 
       <!-- Aucun historique -->
-      <p v-else-if="!series.length" class="text-caption text-grey text-center py-4">
+      <p v-else-if="!plages.length" class="text-caption text-grey text-center py-4">
         Aucun historique d'état disponible pour cet équipement.
       </p>
 
-      <!-- Timeline -->
-      <apexchart
-        v-else
-        type="rangeBar"
-        height="180"
-        :options="chartOptions"
-        :series="series"
-      />
+      <template v-else>
+        <!-- Filtre par période (Option B) -->
+        <v-row dense class="mb-3" align="center">
+          <v-col cols="12" sm="5">
+            <v-text-field
+              v-model="filtreDebut"
+              type="date"
+              label="Du"
+              density="compact"
+              variant="outlined"
+              hide-details
+              clearable
+              :max="filtreFin || undefined"
+            />
+          </v-col>
+          <v-col cols="12" sm="5">
+            <v-text-field
+              v-model="filtreFin"
+              type="date"
+              label="Au"
+              density="compact"
+              variant="outlined"
+              hide-details
+              clearable
+              :min="filtreDebut || undefined"
+            />
+          </v-col>
+          <v-col cols="12" sm="2">
+            <v-btn
+              variant="text"
+              color="primary"
+              size="small"
+              block
+              @click="reinitialiserFiltres"
+            >
+              Tout voir
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <!-- Message si aucun résultat après filtre -->
+        <p
+          v-if="!series.length"
+          class="text-caption text-grey text-center py-4"
+        >
+          Aucun état sur cette période.
+        </p>
+
+        <!-- Timeline avec zoom (Option A + B) -->
+        <apexchart
+          v-else
+          type="rangeBar"
+          height="180"
+          :options="chartOptions"
+          :series="series"
+        />
+      </template>
     </v-card-text>
   </v-card>
 </template>
@@ -48,7 +97,6 @@ const props = defineProps({
 });
 
 // ── Constantes ───────────────────────────────────────────────────────────────
-
 const STATUTS_CONFIG = {
   EN_FONCTIONNEMENT: { label: 'En fonctionnement', couleur: '#4CAF50' },
   DEGRADE:           { label: 'Dégradé',            couleur: '#FF9800' },
@@ -61,6 +109,10 @@ const historiqueApi = useApi(API_BASE_URL);
 const loading       = ref(true);
 const erreur        = ref(false);
 const historique    = ref([]);
+
+// Filtres de période (Option B)
+const filtreDebut = ref(null);
+const filtreFin   = ref(null);
 
 // ── Chargement ───────────────────────────────────────────────────────────────
 const fetchHistorique = async () => {
@@ -78,8 +130,6 @@ const fetchHistorique = async () => {
 };
 
 // ── Calcul des plages de temps ────────────────────────────────────────────────
-// Chaque entrée de l'historique représente le début d'un état.
-// La fin d'un état = le début du suivant (ou maintenant pour le dernier).
 const plages = computed(() => {
   if (!historique.value.length) return [];
 
@@ -93,14 +143,41 @@ const plages = computed(() => {
   });
 });
 
+// ── Plages filtrées par la période choisie (Option B) ────────────────────────
+const plagesFiltrees = computed(() => {
+  if (!filtreDebut.value && !filtreFin.value) return plages.value;
+
+  const debut = filtreDebut.value ? new Date(filtreDebut.value).getTime() : null;
+  // Pour le filtre de fin, on prend la fin de la journée choisie
+  const fin   = filtreFin.value
+    ? new Date(filtreFin.value + 'T23:59:59').getTime()
+    : null;
+
+  return plages.value.filter(p => {
+    const apresDebut = !debut || p.fin   >= debut;
+    const avantFin   = !fin   || p.debut <= fin;
+    return apresDebut && avantFin;
+  });
+});
+
 // ── Transformation en séries ApexCharts ──────────────────────────────────────
-// Un état = une série avec toutes ses plages de temps.
 const series = computed(() => {
   const parStatut = {};
 
-  plages.value.forEach(({ statut, debut, fin }) => {
+  plagesFiltrees.value.forEach(({ statut, debut, fin }) => {
+    // Découper la plage aux bornes du filtre si nécessaire
+    const debutFiltre = filtreDebut.value
+      ? new Date(filtreDebut.value).getTime()
+      : null;
+    const finFiltre = filtreFin.value
+      ? new Date(filtreFin.value + 'T23:59:59').getTime()
+      : null;
+
+    const debutAffiche = debutFiltre ? Math.max(debut, debutFiltre) : debut;
+    const finAffiche   = finFiltre   ? Math.min(fin,   finFiltre)   : fin;
+
     if (!parStatut[statut]) parStatut[statut] = [];
-    parStatut[statut].push({ x: 'État', y: [debut, fin] });
+    parStatut[statut].push({ x: 'État', y: [debutAffiche, finAffiche] });
   });
 
   return Object.entries(parStatut).map(([statut, data]) => ({
@@ -110,22 +187,52 @@ const series = computed(() => {
   }));
 });
 
+// ── Réinitialiser les filtres ─────────────────────────────────────────────────
+const reinitialiserFiltres = () => {
+  filtreDebut.value = null;
+  filtreFin.value   = null;
+};
+
 // ── Options du graphique ──────────────────────────────────────────────────────
 const chartOptions = computed(() => ({
   chart: {
     type:    'rangeBar',
-    toolbar: { show: false },
-    zoom:    { enabled: false },
+    // Option A : zoom activé
+    toolbar: {
+      show: true,
+      tools: {
+        download:  false,
+        selection: true,
+        zoom:      true,
+        zoomin:    true,
+        zoomout:   true,
+        pan:       true,
+        reset:     true,
+      },
+    },
+    zoom: {
+      enabled: true,
+      type:    'x',        // zoom horizontal uniquement (axe du temps)
+    },
+    // Défilement horizontal quand zoomé
+    scrollbar: {
+      enabled: true,
+    },
   },
   plotOptions: {
     bar: {
-      horizontal:  true,
-      barHeight:   '50%',
+      horizontal:        true,
+      barHeight:         '50%',
       rangeBarGroupRows: false,
     },
   },
   xaxis: {
     type: 'datetime',
+    // Bornes dynamiques selon le filtre (Option B)
+    min: filtreDebut.value ? new Date(filtreDebut.value).getTime() : undefined,
+    max: filtreFin.value
+      ? new Date(filtreFin.value + 'T23:59:59').getTime()
+      : undefined,
     labels: {
       datetimeFormatter: {
         year:  'yyyy',

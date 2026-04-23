@@ -23,7 +23,7 @@
       </p>
 
       <template v-else>
-        <!-- Filtre par période (Option B) -->
+        <!-- Filtre par période -->
         <v-row dense class="mb-3" align="center">
           <v-col cols="12" sm="5">
             <v-text-field
@@ -50,34 +50,35 @@
             />
           </v-col>
           <v-col cols="12" sm="2">
-            <v-btn
-              variant="text"
-              color="primary"
-              size="small"
-              block
-              @click="reinitialiserFiltres"
-            >
+            <v-btn variant="text" color="primary" size="small" block @click="toutVoir">
               Tout voir
             </v-btn>
           </v-col>
         </v-row>
 
         <!-- Message si aucun résultat après filtre -->
-        <p
-          v-if="!series.length"
-          class="text-caption text-grey text-center py-4"
-        >
+        <p v-if="!series.length" class="text-caption text-grey text-center py-4">
           Aucun état sur cette période.
         </p>
 
-        <!-- Timeline avec zoom (Option A + B) -->
-        <apexchart
+        <!-- Conteneur scrollable horizontalement -->
+        <div
           v-else
-          type="rangeBar"
-          height="180"
-          :options="chartOptions"
-          :series="series"
-        />
+          style="overflow-x: auto; overflow-y: hidden; width: 100%;"
+        >
+          <apexchart
+            type="rangeBar"
+            height="180"
+            :width="chartWidth"
+            :options="chartOptions"
+            :series="series"
+          />
+        </div>
+
+        <p class="text-caption text-grey text-center mt-1">
+          <v-icon size="14">mdi-gesture-swipe-horizontal</v-icon>
+          Faire défiler horizontalement pour voir toute la période
+        </p>
       </template>
     </v-card-text>
   </v-card>
@@ -110,7 +111,6 @@ const loading       = ref(true);
 const erreur        = ref(false);
 const historique    = ref([]);
 
-// Filtres de période (Option B)
 const filtreDebut = ref(null);
 const filtreFin   = ref(null);
 
@@ -132,54 +132,44 @@ const fetchHistorique = async () => {
 // ── Calcul des plages de temps ────────────────────────────────────────────────
 const plages = computed(() => {
   if (!historique.value.length) return [];
-
   return historique.value.map((entry, i) => {
     const debut = new Date(entry.dateChangement).getTime();
     const fin   = i < historique.value.length - 1
       ? new Date(historique.value[i + 1].dateChangement).getTime()
       : Date.now();
-
     return { statut: entry.statut, debut, fin };
   });
 });
 
-// ── Plages filtrées par la période choisie (Option B) ────────────────────────
+// ── Bornes visibles selon le filtre ──────────────────────────────────────────
+const limiteMin = computed(() =>
+  filtreDebut.value
+    ? new Date(filtreDebut.value).getTime()
+    : plages.value.length ? Math.min(...plages.value.map(p => p.debut)) : null
+);
+const limiteMax = computed(() =>
+  filtreFin.value
+    ? new Date(filtreFin.value + 'T23:59:59').getTime()
+    : Date.now()
+);
+
+// ── Plages filtrées ───────────────────────────────────────────────────────────
 const plagesFiltrees = computed(() => {
   if (!filtreDebut.value && !filtreFin.value) return plages.value;
-
-  const debut = filtreDebut.value ? new Date(filtreDebut.value).getTime() : null;
-  // Pour le filtre de fin, on prend la fin de la journée choisie
-  const fin   = filtreFin.value
-    ? new Date(filtreFin.value + 'T23:59:59').getTime()
-    : null;
-
-  return plages.value.filter(p => {
-    const apresDebut = !debut || p.fin   >= debut;
-    const avantFin   = !fin   || p.debut <= fin;
-    return apresDebut && avantFin;
-  });
+  return plages.value.filter(p =>
+    p.fin >= limiteMin.value && p.debut <= limiteMax.value
+  );
 });
 
-// ── Transformation en séries ApexCharts ──────────────────────────────────────
+// ── Séries ApexCharts ─────────────────────────────────────────────────────────
 const series = computed(() => {
   const parStatut = {};
-
   plagesFiltrees.value.forEach(({ statut, debut, fin }) => {
-    // Découper la plage aux bornes du filtre si nécessaire
-    const debutFiltre = filtreDebut.value
-      ? new Date(filtreDebut.value).getTime()
-      : null;
-    const finFiltre = filtreFin.value
-      ? new Date(filtreFin.value + 'T23:59:59').getTime()
-      : null;
-
-    const debutAffiche = debutFiltre ? Math.max(debut, debutFiltre) : debut;
-    const finAffiche   = finFiltre   ? Math.min(fin,   finFiltre)   : fin;
-
+    const debutAffiche = Math.max(debut, limiteMin.value);
+    const finAffiche   = Math.min(fin,   limiteMax.value);
     if (!parStatut[statut]) parStatut[statut] = [];
     parStatut[statut].push({ x: 'État', y: [debutAffiche, finAffiche] });
   });
-
   return Object.entries(parStatut).map(([statut, data]) => ({
     name:  STATUTS_CONFIG[statut]?.label  ?? statut,
     color: STATUTS_CONFIG[statut]?.couleur ?? '#999999',
@@ -187,8 +177,16 @@ const series = computed(() => {
   }));
 });
 
-// ── Réinitialiser les filtres ─────────────────────────────────────────────────
-const reinitialiserFiltres = () => {
+// ── Largeur du graphique proportionnelle à la durée ──────────────────────────
+// 150px par mois — ainsi toutes les périodes ont la même échelle
+const chartWidth = computed(() => {
+  if (!limiteMin.value || !limiteMax.value) return 800;
+  const mois = (limiteMax.value - limiteMin.value) / (30 * 24 * 60 * 60 * 1000);
+  return Math.max(800, Math.round(mois * 150));
+});
+
+// ── Réinitialiser ─────────────────────────────────────────────────────────────
+const toutVoir = () => {
   filtreDebut.value = null;
   filtreFin.value   = null;
 };
@@ -197,27 +195,8 @@ const reinitialiserFiltres = () => {
 const chartOptions = computed(() => ({
   chart: {
     type:    'rangeBar',
-    // Option A : zoom activé
-    toolbar: {
-      show: true,
-      tools: {
-        download:  false,
-        selection: true,
-        zoom:      true,
-        zoomin:    true,
-        zoomout:   true,
-        pan:       true,
-        reset:     true,
-      },
-    },
-    zoom: {
-      enabled: true,
-      type:    'x',        // zoom horizontal uniquement (axe du temps)
-    },
-    // Défilement horizontal quand zoomé
-    scrollbar: {
-      enabled: true,
-    },
+    toolbar: { show: false },   // pas de barre d'outils
+    zoom:    { enabled: false }, // pas de zoom
   },
   plotOptions: {
     bar: {
@@ -228,11 +207,8 @@ const chartOptions = computed(() => ({
   },
   xaxis: {
     type: 'datetime',
-    // Bornes dynamiques selon le filtre (Option B)
-    min: filtreDebut.value ? new Date(filtreDebut.value).getTime() : undefined,
-    max: filtreFin.value
-      ? new Date(filtreFin.value + 'T23:59:59').getTime()
-      : undefined,
+    min:  limiteMin.value ?? undefined,
+    max:  limiteMax.value ?? undefined,
     labels: {
       datetimeFormatter: {
         year:  'yyyy',
@@ -242,10 +218,7 @@ const chartOptions = computed(() => ({
     },
   },
   yaxis: { show: false },
-  legend: {
-    show:     true,
-    position: 'bottom',
-  },
+  legend: { show: true, position: 'bottom' },
   tooltip: {
     x: { format: 'dd MMM yyyy HH:mm' },
     y: { title: { formatter: () => '' } },

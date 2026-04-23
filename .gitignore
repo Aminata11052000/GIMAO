@@ -25,7 +25,7 @@ backend/.venv/
 venv/
 .venv/
 
-# Fichiers d'IDE   
+# Fichiers d'IDE
 */.idea
 
 # distribution

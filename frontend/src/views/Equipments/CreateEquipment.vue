@@ -568,20 +568,25 @@ const openPeriodicMaintenanceDialog = async () => {
   maintenanceCounterFilter.value = 'calendar';
   await nextTick();
   handlePlanAdd();
+  // Pré-sélectionner le compteur calendaire (toujours à l'index 0)
+  const calendarIndex = (formData.value?.compteurs || []).findIndex(
+    c => c?.isDefaultCalendar || c?.type === 'Calendaire'
+  );
+  currentPlan.value.compteurIndex = calendarIndex >= 0 ? calendarIndex : null;
 };
 
 const openPreventiveMaintenanceDialog = async () => {
   maintenanceCounterFilter.value = 'numeric';
-  await nextTick();
-  handlePlanAdd();
+  // Trouver le premier compteur numérique AVANT d'ouvrir le dialog
   const firstNumericCounterIndex = (formData.value?.compteurs || []).findIndex(
     counter => !counter?.isDefaultCalendar && counter?.type !== 'Calendaire'
   );
-  if (firstNumericCounterIndex >= 0) {
-    currentPlan.value.compteurIndex = firstNumericCounterIndex;
-  } else {
-    currentPlan.value.compteurIndex = null;
-  }
+  await nextTick();
+  handlePlanAdd();
+  // Attendre que le dialog soit monté avant de forcer la sélection,
+  // pour éviter la course entre l'init du formulaire et notre assignation.
+  await nextTick();
+  currentPlan.value.compteurIndex = firstNumericCounterIndex >= 0 ? firstNumericCounterIndex : null;
 };
 
 const handlePeriodicPlanEdit = (plan) => {

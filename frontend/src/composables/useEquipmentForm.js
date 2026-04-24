@@ -532,10 +532,9 @@ export function useEquipmentForm(isEditMode = false) {
     editingPlanIndex.value = -1;
     isPlanEditMode.value = false;
     currentPlan.value = getEmptyPlan();
-    if (formData.value.compteurs.length > 0) {
-      const calendarCounterIndex = formData.value.compteurs.findIndex(c => c?.isDefaultCalendar || c?.type === 'Calendaire');
-      currentPlan.value.compteurIndex = calendarCounterIndex >= 0 ? calendarCounterIndex : 0;
-    }
+    // Ne pas pré-sélectionner de compteur ici : c'est l'appelant
+    // (openPeriodicMaintenanceDialog ou openPreventiveMaintenanceDialog)
+    // qui choisit le bon compteur selon le filtre actif.
     showPlanDialog.value = true;
   };
 

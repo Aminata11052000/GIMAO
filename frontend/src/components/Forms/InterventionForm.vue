@@ -736,7 +736,6 @@ const getDocumentLineError = (doc) => {
 };
 
 
-const ROLE_TECHNICIEN = 'Technicien';
 const ROLE_RESPONSABLE_GMAO = 'Responsable GMAO';
 
 const getRoleName = (user) => user?.role?.nomRole || user?.role || '';
@@ -744,7 +743,7 @@ const getRoleName = (user) => user?.role?.nomRole || user?.role || '';
 const assignableUserItems = computed(() =>
 	userItems.value.filter((user) => {
 		const roleName = getRoleName(user);
-		return roleName === ROLE_TECHNICIEN || roleName === ROLE_RESPONSABLE_GMAO;
+		return roleName.startsWith('Technicien') || roleName === ROLE_RESPONSABLE_GMAO;
 	})
 );
 

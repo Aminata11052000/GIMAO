@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FormAlert from './FormAlert.vue';
 
@@ -281,6 +281,12 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'delete', 'back', 'clear-error', 'clear-success']);
 
 const router = useRouter();
+
+let successTimer = null;
+watch(() => props.successMessage, (val) => {
+  if (successTimer) clearTimeout(successTimer);
+  if (val) successTimer = setTimeout(() => emit('clear-success'), 4000);
+});
 
 const displayData = computed(() => {
   if (!props.data) return {};

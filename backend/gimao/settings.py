@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY') or 'django-insecure-tp-gimao-2026-xK8mP3qL9nR7vW2jH5tY1uA4sD6fG0cE'
 
 DEBUG = True
 ENABLE_SQL_LOGGING = os.getenv('ENABLE_SQL_LOGGING', '').strip().lower() in {'1', 'true', 'yes', 'on'}
@@ -89,11 +89,11 @@ WSGI_APPLICATION = 'gimao.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': os.getenv('DB_NAME') or os.getenv('MYSQL_DATABASE', 'gimao'),
+        'USER': os.getenv('DB_USER') or os.getenv('MYSQL_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD') or os.getenv('MYSQL_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
             'init_command': (

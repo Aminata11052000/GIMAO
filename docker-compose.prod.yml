@@ -24,17 +24,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env.prod
     environment:
       - DJANGO_SETTINGS_MODULE=gimao.settings
-      - SECRET_KEY=${SECRET_KEY}
-      - DB_NAME=${MYSQL_DATABASE}
-      - DB_USER=${MYSQL_USER}
-      - DB_PASSWORD=${MYSQL_PASSWORD}
       - DB_HOST=db
       - DB_PORT=3306
-      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
-      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
-      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles

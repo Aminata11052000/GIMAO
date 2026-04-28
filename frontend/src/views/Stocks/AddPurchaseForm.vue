@@ -64,11 +64,10 @@
                                 :items="suppliers"
                                 item-title="nom"
                                 item-value="id"
-                                label="Fournisseur"
+                                label="Fournisseur *"
                       field-name="fournisseur"
                       :step="1"
                                 :loading="loadingSuppliers"
-                                clearable
                       />
                             </v-col>
 
@@ -79,11 +78,10 @@
                                 :items="manufacturers"
                                 item-title="nom"
                                 item-value="id"
-                                label="Fabricant"
+                                label="Fabricant *"
                       field-name="fabricant"
                       :step="1"
                                 :loading="loadingManufacturers"
-                                clearable
                       />
                             </v-col>
                             </v-row>
@@ -295,6 +293,11 @@ onMounted(() => {
 
 const nextStep = (validation) => {
   if (step.value !== 1) return;
+
+  if (!purchase.value.fournisseur || !purchase.value.fabricant) {
+    stepOneError.value = 'Le fournisseur et le fabricant sont obligatoires.';
+    return;
+  }
 
   if (validation?.validateStep(1, purchase.value)) {
     stepOneError.value = '';

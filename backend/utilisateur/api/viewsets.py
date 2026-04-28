@@ -382,14 +382,14 @@ class UtilisateurViewSet(GimaoModelViewSet):
     @action(detail=False, methods=['get'])
     def techniciens(self, request):
         """
-        Retourne la liste des utilisateurs ayant le rôle de technicien.
+        Retourne la liste des utilisateurs ayant un rôle dont le nom commence par 'Technicien'.
         GET /api/utilisateurs/techniciens/
         """
-        technicien_role = Role.objects.filter(nomRole__iexact='Technicien').first()
-        if not technicien_role:
-            return Response({"detail": "Rôle 'Technicien' introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        technicien_roles = Role.objects.filter(nomRole__istartswith='Technicien')
+        if not technicien_roles.exists():
+            return Response({"detail": "Aucun rôle 'Technicien' trouvé"}, status=status.HTTP_404_NOT_FOUND)
 
-        techniciens = Utilisateur.objects.filter(role=technicien_role, actif=True).order_by('nomUtilisateur')
+        techniciens = Utilisateur.objects.filter(role__in=technicien_roles, actif=True).order_by('nomUtilisateur')
         serializer = UtilisateurSimpleSerializer(techniciens, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

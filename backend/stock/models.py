@@ -76,7 +76,7 @@ class PorterSur(models.Model):
         verbose_name = 'Fourniture de consommable'
         verbose_name_plural = 'Fournitures de consommables'
         unique_together = ['consommable', 'fournisseur', 'fabricant', 'date_reference_prix']
-    
+
     def __str__(self):
         return f"{self.id} - {self.consommable.designation} - {self.fournisseur.nom} - {self.fabricant.nom} ({self.date_reference_prix})"
 

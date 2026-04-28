@@ -34,6 +34,11 @@ class Command(BaseCommand):
         self._flush_data()
         self.stdout.write("Création des données de référence (rôles, permissions)...")
         self._init_reference_data()
+        # create_initial_data() crée un "responsable" sans mot de passe — on le supprime
+        # pour que _create_users() puisse créer le compte complet
+        from utilisateur.models import Utilisateur
+        Utilisateur.objects.filter(nomUtilisateur='responsable').delete()
+
         self.stdout.write("Création des données TP...")
         with transaction.atomic():
             self._seed()

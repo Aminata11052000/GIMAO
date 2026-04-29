@@ -699,7 +699,7 @@ class Command(BaseCommand):
             ("t.martin",     "Technicien1!",  "Technicien"),
             ("a.bernard",    "Technicien1!",  "Technicien"),
             ("l.moreau",     "Technicien1!",  "Technicien maintenance"),
-            ("c.petit",      "Technicien1!",  "Technicien maintenance"),
+            ("c.camille",    "Technicien1!",  "Technicien maintenance"),
             ("o.durand",     "Operateur1!",   "Opérateur"),
             ("s.leroy",      "Operateur1!",   "Opérateur"),
             ("mag.simon",    "Magasinier1!",  "Magasinier"),

@@ -135,11 +135,11 @@ class Command(BaseCommand):
 
         users_data = [
             # (nomUtilisateur, prenom, nomFamille, email, role, password)
-            ("responsable", "Marie",    "Dupont",    "m.dupont@gimao.fr",    role_resp, "Responsable1!"),
+            ("responsable", "Marie",    "Diop",    "m.diop@gimao.fr",    role_resp, "Responsable1!"),
             ("t.martin",    "Thomas",   "Martin",    "t.martin@gimao.fr",    role_tech, "Technicien1!"),
             ("a.bernard",   "Alice",    "Bernard",   "a.bernard@gimao.fr",   role_tech, "Technicien1!"),
             ("l.moreau",    "Lucas",    "Moreau",    "l.moreau@gimao.fr",    role_tm,   "Technicien1!"),
-            ("c.petit",     "Camille",  "Petit",     "c.petit@gimao.fr",     role_tm,   "Technicien1!"),
+            ("c.camille",   "Camille", "camille",  "c.camille@gimao.fr",     role_tm,   "Technicien1!"),
             ("o.durand",    "Olivier",  "Durand",    "o.durand@gimao.fr",    role_op,   "Operateur1!"),
             ("s.leroy",     "Sophie",   "Leroy",     "s.leroy@gimao.fr",     role_op,   "Operateur1!"),
             ("mag.simon",   "Pierre",   "Simon",     "p.simon@gimao.fr",     role_mag,  "Magasinier1!"),

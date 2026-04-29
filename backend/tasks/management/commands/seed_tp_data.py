@@ -1,7 +1,7 @@
 """
 Commande de seed pour les séances TP.
 Vide toute la base (sauf migrations et données de référence) puis la remplit
-avec un jeu de données réalistes : utilisateurs, équipements, DI, BT, stocks…
+avec un jeu de données : utilisateurs, équipements, DI, BT, stocks…
 
 Usage :
     python manage.py seed_tp_data

@@ -608,24 +608,24 @@ const onEventClick = (event, e) => {
     }
 }
 
+const PARIS_TZ = 'Europe/Paris'
+
+const formatAsParisDate = (date) => {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null
+    const parts = new Intl.DateTimeFormat('fr-FR', {
+        timeZone: PARIS_TZ,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+    }).formatToParts(date)
+    const get = (type) => parts.find(p => p.type === type)?.value ?? '00'
+    return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`
+}
+
 const toVueCalDate = (value) => {
     if (!value) return null
 
-    const formatAsLocalVueCalDate = (date) => {
-        if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-            return null
-        }
-
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        const hours = String(date.getHours()).padStart(2, '0')
-        const minutes = String(date.getMinutes()).padStart(2, '0')
-        return `${year}-${month}-${day} ${hours}:${minutes}`
-    }
-
     if (value instanceof Date) {
-        return formatAsLocalVueCalDate(value)
+        return formatAsParisDate(value)
     }
 
     if (typeof value === 'string') {
@@ -634,11 +634,12 @@ const toVueCalDate = (value) => {
 
         if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return `${trimmed} 00:00`
 
-        // Si la date contient un fuseau (ex: Z, +01:00), on convertit en heure locale.
+        // Date avec fuseau horaire (Z, +01:00, etc.) → convertir en heure de Paris
         if (/([zZ]|[+-]\d{2}:\d{2})$/.test(trimmed)) {
-            return formatAsLocalVueCalDate(new Date(trimmed))
+            return formatAsParisDate(new Date(trimmed))
         }
 
+        // Date naïve avec T (ex: "2026-04-28T14:30:00") → supposée déjà en heure de Paris
         if (trimmed.includes('T')) return trimmed.replace('T', ' ').substring(0, 16)
         if (value.length === 10) return `${value} 00:00`
         return trimmed.substring(0, 16)

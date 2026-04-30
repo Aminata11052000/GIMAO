@@ -399,4 +399,6 @@ Le token est obtenu via `POST /api/auth/login/` avec les identifiants de l'utili
 
 ## Licence
 
-Ce projet est distribué sous licence libre. Voir le fichier `LICENSE` pour les détails.
+Ce projet est distribué sous licence **GNU Affero General Public License v3 (AGPL-3.0)**.
+
+Toute modification ou utilisation du code — y compris pour offrir le logiciel en tant que service en ligne — impose de publier le code source modifié sous la même licence. Voir le fichier [LICENSE](LICENSE) pour le texte complet.

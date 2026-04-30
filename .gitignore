@@ -34,5 +34,8 @@ frontend/dist/*
 # Fichiers de configuration de Visual Studio Code
 .vscode/
 
+# Configuration locale Claude Code (outils, permissions machine)
+.claude/
+
 # Coverage / Fichiers de log de test
 frontend/coverage/

@@ -48,6 +48,19 @@ class EquipementListPagination(LargePagination):
 
 
 class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
+    """
+    CRUD sur les équipements physiques avec filtrage avancé.
+
+    Filtres disponibles (query params) :
+        lieu_ids   — liste d'IDs séparés par des virgules (ex: lieu_ids=1,2,3).
+        search     — recherche sur reference, designation, numSerie, lieu, modele.
+
+    Actions custom :
+        PATCH /api/equipements/{id}/set-archive/      — archive l'équipement et clôture tous ses BT/DI associés.
+        GET   /api/equipements/{id}/historique_statuts/ — historique chronologique des changements de statut.
+        GET   /api/equipements/{id}/kpi/              — indicateurs MTBF, MTTR, nombre de pannes.
+        POST  /api/equipements/{id}/add_document/     — attache un fichier à l'équipement.
+    """
     queryset = Equipement.objects.select_related("lieu", "modele").prefetch_related(
         Prefetch(
             "documents",
@@ -865,16 +878,19 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
 
 
 class StatutEquipementViewSet(GimaoModelViewSet):
+    """Enregistrement des changements de statut d'un équipement. Utilisé en lecture pour construire la timeline."""
     queryset = StatutEquipement.objects.all()
     serializer_class = StatutEquipementSerializer
 
 
 class ConstituerViewSet(GimaoModelViewSet):
+    """Liaison équipement–consommable : déclare qu'un consommable est utilisé par un équipement."""
     queryset = Constituer.objects.all()
     serializer_class = ConstituerSerializer
 
 
 class ModeleEquipementViewSet(GimaoModelViewSet):
+    """CRUD sur les modèles d'équipements. La création gère l'association avec le fabricant."""
     queryset = ModeleEquipement.objects.all()
     serializer_class = ModeleEquipementSerializer
 
@@ -968,6 +984,14 @@ class ModeleEquipementViewSet(GimaoModelViewSet):
 
 
 class CompteurViewSet(GimaoModelViewSet):
+    """
+    CRUD sur les compteurs de maintenance d'un équipement.
+
+    La création accepte un payload JSON imbriqué (``compteur`` + ``plan_maintenance`` + ``seuil``
+    optionnel) pour créer en une seule requête le compteur, son plan de maintenance et son seuil
+    de déclenchement. Les compteurs de type ``Calendaire`` stockent leurs valeurs comme numéros
+    de jour ordinaux Python (``date.toordinal()``).
+    """
     queryset = Compteur.objects.all()
     serializer_class = CompteurSerializer
 
@@ -1094,6 +1118,7 @@ class CompteurViewSet(GimaoModelViewSet):
 
 
 class FamilleEquipementViewSet(GimaoModelViewSet):
+    """CRUD sur les familles d'équipements. Supporte une hiérarchie parent–enfant via ``familleParente``."""
     queryset = FamilleEquipement.objects.all()
     serializer_class = FamilleEquipementSerializer
 

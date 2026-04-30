@@ -76,6 +76,24 @@
 </template>
 
 <script setup>
+/**
+ * BaseListView — mise en page standard pour les pages de liste.
+ *
+ * Fournit un en-tête avec titre, barre de recherche et bouton de création,
+ * une zone d'alerte, un tableau de données Vuetify et les contrôles de pagination serveur.
+ *
+ * Slots :
+ *   filters       — filtres additionnels affichés à côté de la barre de recherche.
+ *   actions       — surcharge du bouton de création.
+ *   item.<clé>    — surcharge d'une cellule de la table (transmis à v-data-table).
+ *
+ * Évènements émis :
+ *   create             — clic sur le bouton de création.
+ *   row-click          — clic sur une ligne du tableau.
+ *   search             — saisie dans la barre de recherche.
+ *   clear-error        — fermeture de l'alerte d'erreur.
+ *   update:searchValue — mise à jour de la valeur de recherche (v-model support).
+ */
 import { computed, ref } from 'vue';
 import FormAlert from './FormAlert.vue';
 

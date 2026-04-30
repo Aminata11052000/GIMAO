@@ -9,7 +9,17 @@ from donnees.models import Fabricant, Fournisseur, Document
 from gimao.mixins import ArchivableMixin
 
 class DemandeIntervention(ArchivableMixin, models.Model):
-    """Demande d'intervention sur un équipement"""
+    """
+    Demande d'intervention signalant une anomalie sur un équipement.
+
+    Cycle de vie du statut :
+        EN_ATTENTE → ACCEPTEE → TRANSFORMEE (création d'un BT)
+        EN_ATTENTE → REFUSEE
+
+    ``statut_suppose`` reflète l'état de l'équipement tel que perçu par l'opérateur
+    au moment de la déclaration (peut différer du statut officiel de l'équipement).
+    ``date_changementStatut`` est mis à jour à chaque transition de statut.
+    """
     STATUT_CHOICES = [
         ('EN_ATTENTE', 'En attente'),
         ('ACCEPTEE', 'Acceptée'),
@@ -68,7 +78,19 @@ class DemandeIntervention(ArchivableMixin, models.Model):
 
 
 class BonTravail(ArchivableMixin, models.Model):
-    """Bon de travail généré suite à une demande d'intervention"""
+    """
+    Bon de travail généré suite à l'acceptation d'une demande d'intervention.
+
+    Cycle de vie du statut :
+        EN_ATTENTE → EN_COURS → TERMINE → CLOTURE
+        EN_ATTENTE ou EN_COURS → EN_RETARD (géré automatiquement par le cron ``update_bt_status``)
+
+    ``utilisateur_assigne`` est un M2M : plusieurs techniciens peuvent être affectés au même BT.
+    ``responsable`` est le gestionnaire GMAO qui a validé la clôture.
+    ``pieces_recuperees`` / ``date_recuperation`` tracent la restitution des consommables
+    lorsque l'intervention n'a finalement pas eu lieu.
+    ``commentaire_refus_cloture`` est renseigné si le responsable refuse la clôture demandée.
+    """
     STATUT_CHOICES = [
         ('EN_ATTENTE', 'En attente'),
         ('EN_COURS', 'En cours'),

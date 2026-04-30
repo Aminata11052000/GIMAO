@@ -103,6 +103,32 @@
 import { ref } from "vue";
 import api from "@/composables/http";
 
+/**
+ * Composable pour effectuer des appels à l'API REST du backend.
+ *
+ * Toutes les vues et composants doivent passer par ce composable pour les requêtes HTTP
+ * afin de bénéficier de la gestion centralisée du token, des états de chargement et des erreurs.
+ *
+ * Le paramètre `baseURL` est accepté pour rétrocompatibilité mais ignoré : l'URL de base
+ * est définie dans `http.js` via `axios.create({ baseURL: '/api/' })`.
+ *
+ * @param {string|null} baseURL - Ignoré (conservé pour compatibilité).
+ * @returns {{
+ *   data: import('vue').Ref<any>,
+ *   loading: import('vue').Ref<boolean>,
+ *   error: import('vue').Ref<string|null>,
+ *   get: (url: string, params?: object) => Promise<any>,
+ *   post: (url: string, data?: object) => Promise<any>,
+ *   put: (url: string, data?: object) => Promise<any>,
+ *   patch: (url: string, data?: object) => Promise<any>,
+ *   remove: (url: string) => Promise<any>
+ * }}
+ *
+ * @example
+ * const api = useApi()
+ * const equipements = await api.get('equipements/', { page: 1 })
+ * await api.post('demandes/', { nom: 'Panne moteur', equipement: 3 })
+ */
 export function useApi(baseURL = null) {
   const data = ref(null);
   const loading = ref(false);
@@ -123,18 +149,23 @@ export function useApi(baseURL = null) {
     }
   };
 
+  /** @param {string} url @param {object} [params] */
   const get = (url, params = {}) =>
     request({ url, method: "GET", params });
 
+  /** @param {string} url @param {object} [data] */
   const post = (url, data = {}) =>
     request({ url, method: "POST", data });
 
+  /** @param {string} url @param {object} [data] */
   const put = (url, data = {}) =>
     request({ url, method: "PUT", data });
 
+  /** @param {string} url @param {object} [data] */
   const patch = (url, data = {}) =>
     request({ url, method: "PATCH", data });
 
+  /** @param {string} url */
   const remove = (url) =>
     request({ url, method: "DELETE" });
 

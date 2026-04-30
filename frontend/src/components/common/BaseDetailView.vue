@@ -118,6 +118,24 @@
 </template>
 
 <script setup>
+/**
+ * BaseDetailView — mise en page standard pour les pages de détail d'une entité.
+ *
+ * Fournit un en-tête avec titre, breadcrumbs optionnels, boutons Retour/Modifier/Supprimer,
+ * une zone d'alerte, et un affichage automatique des champs de l'objet (`autoDisplay`).
+ *
+ * Slots :
+ *   actions        — surcharge des boutons d'en-tête.
+ *   default        — contenu principal (affiché sous l'en-tête).
+ *   extra-sections — sections supplémentaires sous le contenu principal.
+ *
+ * Évènements émis :
+ *   edit          — clic sur Modifier.
+ *   delete        — clic sur Supprimer.
+ *   back          — clic sur Retour (navigue aussi via router si `backRoute` est fourni).
+ *   clear-error   — fermeture de l'alerte d'erreur.
+ *   clear-success — fermeture de l'alerte de succès.
+ */
 import { computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FormAlert from './FormAlert.vue';

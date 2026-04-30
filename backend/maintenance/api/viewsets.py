@@ -197,6 +197,7 @@ class DemandeInterventionViewSet(PaginatedActionMixin, ArchivableViewSetMixin, G
 
     @action(detail=True, methods=['patch'])
     def updateStatus(self, request, pk=None):
+        """Met à jour le statut d'une DI et horodate le changement. Body : { "statut": "ACCEPTEE" }"""
         demande = self.get_object()
         demande.statut = request.data.get('statut', demande.statut)
         demande.date_changementStatut = timezone.now()

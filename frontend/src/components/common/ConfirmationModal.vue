@@ -46,6 +46,20 @@
 </template>
 
 <script setup>
+/**
+ * ConfirmationModal — dialogue de confirmation générique.
+ *
+ * Utilisé avant toute action destructive (suppression, archivage, réinitialisation).
+ * Supporte quatre tons visuels (`danger`, `warning`, `info`, `success`) qui adaptent
+ * l'icône et la couleur de l'en-tête.
+ *
+ * Slots :
+ *   content — contenu additionnel sous le message principal.
+ *
+ * Évènements émis :
+ *   confirm — clic sur le bouton de confirmation.
+ *   cancel  — clic sur Annuler ou fermeture du dialog.
+ */
 import { computed } from 'vue';
 
 const props = defineProps({

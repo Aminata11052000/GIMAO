@@ -1,3 +1,12 @@
+/**
+ * Instance Axios préconfigurée pour l'API GIMAO.
+ *
+ * Comportements automatiques :
+ *  - Ajoute l'en-tête `Authorization: Bearer <token>` si un token est présent dans localStorage.
+ *  - Redirige vers `/login` et purge le localStorage en cas de réponse 401.
+ *
+ * Ne pas utiliser cette instance directement dans les composants : passer par `useApi`.
+ */
 import axios from "axios";
 
 const api = axios.create({

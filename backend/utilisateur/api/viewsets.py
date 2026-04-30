@@ -30,11 +30,19 @@ from security.models import ApiToken, create_token
 # ==================== ROLE VIEWSET ====================
 
 class RoleViewSet(GimaoModelViewSet):
+    """
+    CRUD sur les rôles utilisateurs.
+
+    Filtres disponibles : aucun (liste complète).
+    Action custom :
+        POST /api/roles/{id}/dupliquer/ — crée une copie du rôle avec toutes ses permissions.
+    """
     queryset = Role.objects.all().order_by('nomRole')
     serializer_class = RoleSerializer
 
     @action(detail=True, methods=['post'])
     def dupliquer(self, request, pk=None):
+        """Crée une copie du rôle avec toutes ses permissions. Body optionnel : { "nomRole": "Nouveau nom" }"""
         role = self.get_object()
         nouveau_nom = request.data.get('nomRole', f'Copie de {role.nomRole}')
         
@@ -83,6 +91,24 @@ class PermissionViewSet(viewsets.ReadOnlyModelViewSet):
 # ==================== UTILISATEUR VIEWSET ====================
 
 class UtilisateurViewSet(GimaoModelViewSet):
+    """
+    CRUD sur les utilisateurs avec authentification et gestion des permissions.
+
+    Filtres disponibles :
+        role_id (query param) — filtre par rôle.
+        search — recherche sur nomUtilisateur, prenom, nomFamille, email, nomRole.
+
+    Actions custom :
+        POST /api/utilisateurs/exists/                  — vérifie l'existence d'un utilisateur.
+        POST /api/utilisateurs/login/                   — authentification, retourne un token.
+        POST /api/utilisateurs/definir_mot_de_passe/    — définit le mot de passe à la 1re connexion.
+        POST /api/utilisateurs/{id}/changer_mot_de_passe/ — change le mot de passe.
+        GET  /api/utilisateurs/{id}/permissions/        — retourne les permissions effectives.
+        POST /api/utilisateurs/{id}/definir_permissions/ — remplace les permissions personnalisées.
+        POST /api/utilisateurs/{id}/reinitialiser_permissions/ — supprime les permissions personnalisées.
+        POST /api/utilisateurs/logout/                  — révoque le token courant.
+        GET  /api/utilisateurs/techniciens/             — liste des utilisateurs avec le rôle Technicien.
+    """
     queryset = Utilisateur.objects.all()
     pagination_class = StandardPagination
     filter_backends = [SearchFilter, OrderingFilter]
@@ -240,6 +266,11 @@ class UtilisateurViewSet(GimaoModelViewSet):
     # ---------- CHANGEMENT DE MOT DE PASSE ----------
     @action(detail=True, methods=['post'])
     def changer_mot_de_passe(self, request, pk=None):
+        """
+        Change le mot de passe d'un utilisateur.
+        Un responsable avec la permission user:edit peut changer le mot de passe sans fournir l'ancien.
+        Un utilisateur ordinaire doit fournir son ancien mot de passe.
+        """
         user = self.get_object()
         serializer = ChangePasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

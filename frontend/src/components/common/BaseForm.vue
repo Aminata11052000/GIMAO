@@ -147,6 +147,24 @@
 </template>
 
 <script setup>
+/**
+ * BaseForm — conteneur générique pour tous les formulaires de l'application.
+ *
+ * Gère les alertes d'erreur/succès, l'état de chargement, la validation via `useFormValidation`,
+ * et les boutons Enregistrer/Annuler. Expose la validation via le slot default avec `v-slot="{ validation }"`
+ * pour que les formulaires multi-étapes puissent appeler `validation.validateStep(n, formData)`.
+ *
+ * Slots :
+ *   default  ({ validation })  — contenu du formulaire.
+ *   actions                    — surcharge totale des boutons d'action.
+ *
+ * Évènements émis :
+ *   submit         — clic sur Enregistrer (après validation réussie).
+ *   cancel         — clic sur Annuler.
+ *   reset          — clic sur Réinitialiser (si affiché).
+ *   clear-error    — fermeture de l'alerte d'erreur.
+ *   clear-success  — fermeture de l'alerte de succès.
+ */
 import { ref, computed, watch } from 'vue';
 import { FormAlert, FormActions, FormContainer } from '.';
 import { useFormValidation } from '@/composables/useFormValidation';

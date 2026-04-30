@@ -43,6 +43,51 @@ const normalizeResponse = (response) => {
   };
 };
 
+/**
+ * Composable générique pour gérer une liste paginée côté serveur.
+ *
+ * Gère automatiquement la pagination, la recherche avec debounce, et le rechargement
+ * quand une source réactive change. Compatible avec les endpoints DRF paginés
+ * (`{ count, next, previous, results }`) et les endpoints non paginés (tableau brut).
+ *
+ * @param {object}   options
+ * @param {ReturnType<import('./useApi').useApi>} options.api
+ *   Instance retournée par `useApi()`.
+ * @param {string | import('vue').Ref<string> | (() => string)} options.endpoint
+ *   URL de l'endpoint (ex : `'equipements/'`). Peut être une ref ou une fonction réactive.
+ * @param {number}   [options.initialPageSize=10]   Taille de page initiale.
+ * @param {number}   [options.debounceMs=300]        Délai de debounce sur la recherche.
+ * @param {(ctx: { currentPage: number, pageSize: number, searchQuery: string }) => object} [options.buildParams]
+ *   Fonction pour construire les query params additionnels à chaque requête.
+ * @param {import('vue').WatchSource | null} [options.watchSource]
+ *   Source réactive dont le changement déclenche un rechargement en page 1.
+ * @param {boolean | import('vue').Ref<boolean> | (() => boolean)} [options.enabled=true]
+ *   Si false, la liste est vidée et aucun appel réseau n't effectué.
+ * @param {((raw: any, normalized: { items: any[], totalItems: number, extra: object }) => void) | null} [options.onFetched]
+ *   Callback appelé après chaque chargement réussi.
+ *
+ * @returns {{
+ *   items: import('vue').Ref<any[]>,
+ *   currentPage: import('vue').Ref<number>,
+ *   pageSize: import('vue').Ref<number>,
+ *   searchQuery: import('vue').Ref<string>,
+ *   totalItems: import('vue').Ref<number>,
+ *   totalPages: import('vue').ComputedRef<number>,
+ *   loading: import('vue').ComputedRef<boolean>,
+ *   extra: import('vue').Ref<object>,
+ *   errorMessage: import('vue').Ref<string>,
+ *   fetchPage: () => Promise<any[]>,
+ *   handleSearch: (value: string | Event) => void,
+ *   resetToFirstPageAndFetch: () => Promise<void>
+ * }}
+ *
+ * @example
+ * const { items, currentPage, totalPages, handleSearch, fetchPage } = usePaginatedList({
+ *   api: useApi(),
+ *   endpoint: 'equipements/',
+ *   buildParams: ({ searchQuery }) => ({ search: searchQuery }),
+ * })
+ */
 export function usePaginatedList({
   api,
   endpoint,

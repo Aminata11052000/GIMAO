@@ -1,6 +1,13 @@
 from django.db import models
 
 class Lieu(models.Model):
+    """
+    Représente un emplacement physique dans la hiérarchie des lieux (site, bâtiment, salle…).
+
+    Les lieux sont organisés en arbre via la clé étrangère ``lieuParent``. Un lieu sans parent
+    est une racine (ex : site principal). Les coordonnées x/y permettent de positionner un lieu
+    sur le plan de son parent.
+    """
     nomLieu = models.CharField(max_length=50, help_text="Nom du lieu.")
     typeLieu = models.CharField(
         max_length=50,
@@ -31,6 +38,10 @@ class Lieu(models.Model):
 
 
 class TypeDocument(models.Model):
+    """
+    Catégorie de document (ex : notice technique, bon de commande, certificat).
+    Utilisée pour classer les documents attachés aux équipements, DI et BT.
+    """
     nomTypeDocument = models.CharField(max_length=50)
 
     def __str__(self):
@@ -45,6 +56,13 @@ class TypeDocument(models.Model):
         ]
 
 class Document(models.Model):
+    """
+    Fichier attaché à une entité du système (équipement, DI, BT, plan de maintenance).
+
+    Le fichier est stocké dans le dossier ``media/documents/``. Un même document peut être
+    associé à plusieurs entités via les tables d'association dédiées (``DocumentEquipement``,
+    ``BonTravailDocument``, etc.).
+    """
     nomDocument = models.CharField(max_length=100, help_text="Nom du document.")
     cheminAcces = models.FileField(upload_to='documents/', help_text="Chemin d'accès au fichier du document.")
     typeDocument = models.ForeignKey(

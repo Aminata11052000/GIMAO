@@ -196,6 +196,14 @@ class Log(models.Model):
         verbose_name = 'Log'
         verbose_name_plural = 'Logs'
         ordering = ['-date']
+        indexes = [
+            # Tri par date descendant (consultation par défaut)
+            models.Index(fields=['-date'], name='log_date_desc_idx'),
+            # Filtrage par utilisateur + date (logs d'un utilisateur)
+            models.Index(fields=['utilisateur', '-date'], name='log_user_date_idx'),
+            # Filtrage par table cible (ex : toutes les modifications sur BT)
+            models.Index(fields=['nomTable', '-date'], name='log_table_date_idx'),
+        ]
 
 
 

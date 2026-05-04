@@ -4,6 +4,7 @@ import hashlib
 from django.db.models import Prefetch
 from rest_framework import viewsets, status
 from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth.hashers import check_password, make_password
@@ -427,5 +428,15 @@ class UtilisateurViewSet(GimaoModelViewSet):
 # ==================== LOG VIEWSET ====================
 
 class LogViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Log.objects.all().order_by('-date')
+    """
+    Consultation du journal d'activité (lecture seule).
+
+    La table Log croît avec chaque action utilisateur ; la pagination est
+    obligatoire pour éviter des réponses de plusieurs mégaoctets.
+    Le filtre `utilisateur` permet de restreindre les logs à un utilisateur.
+    """
+    queryset = Log.objects.select_related('utilisateur').order_by('-date')
     serializer_class = LogSerializer
+    pagination_class = StandardPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['utilisateur', 'nomTable', 'type']

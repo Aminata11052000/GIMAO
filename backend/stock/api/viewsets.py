@@ -240,9 +240,18 @@ class ConsommableViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
 
 
 class PorterSurViewSet(GimaoModelViewSet):
-    """ViewSet pour la gestion des fournitures de consommables"""
-    queryset = PorterSur.objects.all()
+    """
+    Historique des achats de consommables (une ligne par achat enregistré).
+
+    Ce jeu de données croît avec chaque enregistrement d'achat ;
+    la pagination évite de retourner l'intégralité de l'historique.
+    Filtres disponibles : consommable, fournisseur, fabricant.
+    """
+    queryset = PorterSur.objects.select_related(
+        'consommable', 'fournisseur', 'fabricant'
+    ).order_by('-date_reference_prix')
     serializer_class = PorterSurSerializer
+    pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['consommable', 'fournisseur', 'fabricant']
     ordering_fields = ['date_reference_prix', 'prix_unitaire']

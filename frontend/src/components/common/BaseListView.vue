@@ -42,9 +42,48 @@
     <!-- Slot avant le tableau pour contenu personnalisé -->
     <slot name="before-table"></slot>
 
-    <!-- Tableau de données -->
-    <v-card :elevation="elevation" :class="cardClass">
-      <v-data-table :headers="headers" :items="computedItems" :loading="loading" :items-per-page="itemsPerPage"
+    <!-- Skeleton loader — premier chargement (aucune donnée encore reçue) -->
+    <!-- Utilise des div flex plutôt que tr/td pour éviter les erreurs de DOM Vue -->
+    <v-card v-if="isInitialLoading" :elevation="elevation" :class="cardClass">
+      <!-- En-tête skeleton -->
+      <div class="d-flex align-center px-4 py-3 skeleton-header">
+        <div
+          v-for="header in headers"
+          :key="header.key"
+          class="flex-1 px-2"
+        >
+          <v-skeleton-loader type="text" width="60%" />
+        </div>
+      </div>
+      <v-divider />
+      <!-- Lignes skeleton -->
+      <div
+        v-for="i in skeletonRowCount"
+        :key="i"
+        class="d-flex align-center px-4 py-3"
+        :class="i < skeletonRowCount ? 'border-b' : ''"
+      >
+        <div
+          v-for="header in headers"
+          :key="header.key"
+          class="flex-1 px-2"
+        >
+          <v-skeleton-loader type="text" />
+        </div>
+      </div>
+    </v-card>
+
+    <!-- Tableau de données — données disponibles ou rechargement -->
+    <v-card v-else :elevation="elevation" :class="cardClass">
+      <!-- Barre de progression fine lors d'un rechargement (données déjà visibles) -->
+      <v-progress-linear
+        v-if="loading"
+        indeterminate
+        color="primary"
+        height="2"
+      />
+
+      <v-data-table :headers="headers" :items="computedItems" :items-per-page="itemsPerPage"
         :items-per-page-options="itemsPerPageOptions" :search="internalSearch ? searchQuery : undefined"
         :sort-by="sortBy" :class="tableClass" :hide-default-footer="hideDefaultFooter" @click:row="handleRowClick">
         <!-- Pass through all item slots -->
@@ -57,14 +96,6 @@
           <div class="text-center pa-4">
             <v-icon size="64" color="grey">{{ noDataIcon }}</v-icon>
             <p class="text-h6 mt-2">{{ noDataText }}</p>
-          </div>
-        </template>
-
-        <!-- Default loading template -->
-        <template v-slot:loading>
-          <div class="text-center pa-4">
-            <v-progress-circular indeterminate color="primary"></v-progress-circular>
-            <p class="mt-2">{{ loadingMessage }}</p>
           </div>
         </template>
       </v-data-table>
@@ -82,9 +113,17 @@
  * Fournit un en-tête avec titre, barre de recherche et bouton de création,
  * une zone d'alerte, un tableau de données Vuetify et les contrôles de pagination serveur.
  *
+ * Comportement de chargement :
+ *   - Premier chargement (loading=true, aucune donnée) : affiche un skeleton table qui
+ *     reproduit la structure du tableau (colonnes × lignes) pour éviter le saut de mise en page.
+ *   - Rechargement (loading=true, données déjà présentes) : affiche une barre de progression
+ *     fine (2 px) en haut du tableau ; les données restent visibles.
+ *
  * Slots :
  *   filters       — filtres additionnels affichés à côté de la barre de recherche.
  *   actions       — surcharge du bouton de création.
+ *   before-table  — contenu inséré avant le tableau.
+ *   after-table   — contenu inséré après le tableau.
  *   item.<clé>    — surcharge d'une cellule de la table (transmis à v-data-table).
  *
  * Évènements émis :
@@ -240,6 +279,15 @@ const emit = defineEmits(['create', 'row-click', 'search', 'clear-error', 'updat
 const localSearchQuery = ref('');
 
 const computedItems = computed(() => props.items || []);
+
+// Skeleton loaders — affiché uniquement au premier chargement (aucune donnée encore reçue).
+// Lors d'un rechargement, les données restent visibles avec une barre de progression fine.
+const isInitialLoading = computed(() => props.loading && computedItems.value.length === 0);
+const skeletonRowCount = computed(() => {
+  const n = props.itemsPerPage;
+  // itemsPerPage peut valoir -1 (Vuetify = "tout afficher") — garantir un entier positif
+  return (n > 0) ? Math.min(n, 8) : 5;
+});
 
 const normalizeSearchValue = (value) => {
   if (typeof value === 'string') {

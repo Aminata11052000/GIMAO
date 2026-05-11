@@ -28,6 +28,8 @@ class UtilisateurAdmin(admin.ModelAdmin):
     search_fields = ('nomUtilisateur', 'prenom', 'nomFamille', 'email')
     readonly_fields = ('dateCreation', 'derniereConnexion', 'a_mot_de_passe')
     ordering = ('nomFamille', 'prenom')
+    list_select_related = ('role',)
+    list_per_page = 25
     
     fieldsets = (
         ('Informations de connexion', {
@@ -92,10 +94,15 @@ class UtilisateurAdmin(admin.ModelAdmin):
 
 class LogAdmin(admin.ModelAdmin):
     list_display = ('type', 'nomTable', 'date', 'utilisateur')
-    list_filter = ('type', 'nomTable', 'date')
-    search_fields = ('type', 'nomTable')
+    list_filter = ('type', 'nomTable')
+    search_fields = ('type', 'nomTable', 'utilisateur__nomUtilisateur')
     readonly_fields = ('type', 'nomTable', 'idCible', 'champsModifies', 'date', 'utilisateur')
     ordering = ('-date',)
+    date_hierarchy = 'date'
+    list_per_page = 25
+    list_select_related = ('utilisateur',)
+    # Le COUNT(*) sur une grande table de logs est coûteux : on le désactive
+    show_full_result_count = False
     
     def has_add_permission(self, request):
         """Les logs ne peuvent pas être créés manuellement"""
@@ -117,13 +124,10 @@ class PermissionAdmin(admin.ModelAdmin):
     list_filter = ('module',)
     ordering = ('module__nom', 'nomPermission')
 
+    list_select_related = ('module',)
+
     def get_queryset(self, request):
         return super().get_queryset(request).exclude(nomPermission__endswith=':export').exclude(nomPermission='export:view')
-
-    def get_label(self, obj):
-        return str(obj)
-    get_label.short_description = 'Label lisible'
-
 
     def get_label(self, obj):
         FULL_LABELS = {

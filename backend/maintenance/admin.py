@@ -65,12 +65,15 @@ class PlanMaintenanceDocumentInline(admin.TabularInline):
 
 @admin.register(DemandeIntervention)
 class DemandeInterventionAdmin(ArchivableAdminMixin, admin.ModelAdmin):
-    list_display  = ('nom', 'statut', 'statut_suppose', 'equipement', 'utilisateur', 'date_creation')
-    list_filter   = ('statut', 'statut_suppose')
-    search_fields = ('nom', 'equipement__designation', 'utilisateur__nomUtilisateur')
-    readonly_fields = ('date_creation', 'date_changementStatut')
-    ordering      = ('-date_creation',)
-    inlines       = [DemandeInterventionDocumentInline]
+    list_display        = ('nom', 'statut', 'statut_suppose', 'equipement', 'utilisateur', 'date_creation')
+    list_filter         = ('statut', 'statut_suppose')
+    search_fields       = ('nom', 'equipement__designation', 'utilisateur__nomUtilisateur')
+    readonly_fields     = ('date_creation', 'date_changementStatut')
+    ordering            = ('-date_creation',)
+    inlines             = [DemandeInterventionDocumentInline]
+    date_hierarchy      = 'date_creation'
+    list_per_page       = 20
+    list_select_related = ('equipement', 'utilisateur')
 
     fieldsets = (
         ('Identification', {
@@ -95,12 +98,15 @@ class DemandeInterventionAdmin(ArchivableAdminMixin, admin.ModelAdmin):
 
 @admin.register(BonTravail)
 class BonTravailAdmin(ArchivableAdminMixin, admin.ModelAdmin):
-    list_display  = ('nom', 'type', 'statut', 'demande_intervention', 'date_debut', 'date_fin')
-    list_filter   = ('type', 'statut')
-    search_fields = ('nom', 'demande_intervention__nom', 'demande_intervention__equipement__designation')
-    readonly_fields = ('date_assignation',)
-    ordering      = ('-date_assignation',)
-    inlines       = [BonTravailDocumentInline, BonTravailConsommableInline]
+    list_display        = ('nom', 'type', 'statut', 'demande_intervention', 'date_debut', 'date_fin')
+    list_filter         = ('type', 'statut')
+    search_fields       = ('nom', 'demande_intervention__nom', 'demande_intervention__equipement__designation')
+    readonly_fields     = ('date_assignation',)
+    ordering            = ('-date_assignation',)
+    inlines             = [BonTravailDocumentInline, BonTravailConsommableInline]
+    date_hierarchy      = 'date_assignation'
+    list_per_page       = 20
+    list_select_related = ('demande_intervention',)
 
     fieldsets = (
         ('Identification', {

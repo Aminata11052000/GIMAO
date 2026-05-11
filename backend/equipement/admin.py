@@ -37,12 +37,14 @@ class StatutEquipementInline(admin.TabularInline):
 
 @admin.register(Equipement)
 class EquipementAdmin(admin.ModelAdmin):
-    list_display  = ('designation', 'numSerie', 'lieu', 'famille', 'modele', 'archive')
-    list_filter   = ('archive', 'famille', 'lieu')
-    search_fields = ('designation', 'numSerie', 'reference')
-    readonly_fields = ('dateCreation',)
-    ordering      = ('designation',)
-    inlines       = [CompteurInline, StatutEquipementInline]
+    list_display        = ('designation', 'numSerie', 'lieu', 'famille', 'modele', 'archive')
+    list_filter         = ('archive', 'famille', 'lieu')
+    search_fields       = ('designation', 'numSerie', 'reference')
+    readonly_fields     = ('dateCreation',)
+    ordering            = ('designation',)
+    inlines             = [CompteurInline, StatutEquipementInline]
+    list_select_related = ('lieu', 'famille', 'modele')
+    list_per_page       = 25
 
     fieldsets = (
         ('Identification', {

@@ -9,13 +9,18 @@ from drf_yasg import openapi
 from gimao.views import home_view
 from maintenance.api.viewsets import BonTravailViewSet
 
+# ---- Personnalisation de l'interface d'administration ----
+admin.site.site_header = "GIMAO — Administration"
+admin.site.site_title  = "GIMAO Admin"
+admin.site.index_title = "Tableau de bord d'administration"
+
 schema_view = get_schema_view(
     openapi.Info(
         title="GIMAO API",
         default_version='v1',
         description="Documentation de l'API GIMAO - Gestion Informatisée de Maintenance Assistée par Ordinateur",
         contact=openapi.Contact(email="contact@gimao.local"),
-        license=openapi.License(name="MIT License"),
+        license=openapi.License(name="GNU Affero General Public License v3"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

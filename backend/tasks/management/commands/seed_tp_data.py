@@ -470,7 +470,7 @@ class Command(BaseCommand):
         tech1 = self.users["t.martin"]
         tech2 = self.users["a.bernard"]
         tech3 = self.users["l.moreau"]
-        tech4 = self.users["c.petit"]
+        tech4 = self.users["c.camille"]
 
         eq_list = list(self.equipements.values())
 

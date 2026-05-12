@@ -11,7 +11,7 @@ Le système permet :
 
 ---
 
-## :jigsaw: Fonctionnalités principales
+## Fonctionnalités principales
 
 ### Cycle de maintenance
 - Création de **Demandes d’Intervention (DI)** par les opérateurs.

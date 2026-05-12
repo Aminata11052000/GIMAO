@@ -33,10 +33,10 @@
           <v-card variant="tonal" color="warning" class="text-center pa-4">
             <v-icon size="32" class="mb-2">mdi-timer-sand</v-icon>
             <div class="text-h4 font-weight-bold">
-              {{ kpi.mtbf_jours !== null ? kpi.mtbf_jours : '—' }}
+              {{ kpi.mtbf_heures !== null ? kpi.mtbf_heures : '—' }}
             </div>
             <div class="text-caption mt-1">
-              MTBF (jours)
+              MTBF (heures)
               <v-tooltip activator="parent" location="bottom">
                 Temps moyen entre deux pannes
               </v-tooltip>
@@ -49,10 +49,10 @@
           <v-card variant="tonal" color="info" class="text-center pa-4">
             <v-icon size="32" class="mb-2">mdi-wrench-clock</v-icon>
             <div class="text-h4 font-weight-bold">
-              {{ kpi.mttr_jours !== null ? kpi.mttr_jours : '—' }}
+              {{ kpi.mttr_heures !== null ? kpi.mttr_heures : '—' }}
             </div>
             <div class="text-caption mt-1">
-              MTTR (jours)
+              MTTR (heures)
               <v-tooltip activator="parent" location="bottom">
                 Temps moyen de réparation
               </v-tooltip>
@@ -62,7 +62,7 @@
       </v-row>
 
       <!-- Note si données partielles -->
-      <p v-if="!loading && !erreur && kpi.mttr_jours === null && kpi.nombre_pannes > 0"
+      <p v-if="!loading && !erreur && kpi.mttr_heures === null && kpi.nombre_pannes > 0"
         class="text-caption text-grey mt-3">
         * Le MTTR ne peut pas être calculé : aucun bon de travail clôturé ne possède
         de date de début et de fin renseignées.
@@ -88,7 +88,7 @@ const props = defineProps({
 const kpiApi  = useApi(API_BASE_URL);
 const loading = ref(true);
 const erreur  = ref(false);
-const kpi     = ref({ nombre_pannes: 0, mtbf_jours: null, mttr_jours: null });
+const kpi     = ref({ nombre_pannes: 0, mtbf_heures: null, mttr_heures: null });
 
 // ── Chargement des KPI ───────────────────────────────────────────────────────
 const fetchKpi = async () => {

@@ -159,8 +159,8 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
         """
         Calcule les indicateurs de maintenance corrective pour un équipement :
         - Nombre de pannes (DI confirmées)
-        - MTBF en jours (temps moyen entre deux pannes)
-        - MTTR en jours (temps moyen de réparation)
+        - MTBF en heures (temps moyen entre deux pannes)
+        - MTTR en heures (temps moyen de réparation)
         """
         equipement = self.get_object()
         today = timezone.now()
@@ -177,22 +177,22 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
         nombre_pannes = pannes.count()
 
         # ── MTBF (Mean Time Between Failures) ───────────────────────────────
-        # Formule : durée totale observée ÷ nombre de pannes
+        # Formule : durée totale observée ÷ nombre de pannes, exprimée en heures
         # Point de départ : dateMiseEnService, ou à défaut la première DI
-        mtbf_jours = None
+        mtbf_heures = None
         if nombre_pannes > 0:
             date_debut_observation = (
                 equipement.dateMiseEnService
                 or pannes.first().date_creation
             )
-            duree_totale_jours = (today - date_debut_observation).days
-            if duree_totale_jours > 0:
-                mtbf_jours = round(duree_totale_jours / nombre_pannes, 1)
+            duree_totale_heures = (today - date_debut_observation).total_seconds() / 3600
+            if duree_totale_heures > 0:
+                mtbf_heures = round(duree_totale_heures / nombre_pannes, 1)
 
         # ── MTTR (Mean Time To Repair) ───────────────────────────────────────
-        # Formule : moyenne de (date_fin - date_debut) sur les BT correctifs terminés
-        # On ignore les BT sans date_debut ou date_fin (données incomplètes)
-        mttr_jours = None
+        # Formule : moyenne de (date_fin - date_debut) sur les BT correctifs terminés,
+        # exprimée en heures. On ignore les BT sans date_debut ou date_fin.
+        mttr_heures = None
         bts_termines = BonTravail.objects.filter(
             demande_intervention__equipement=equipement,
             type='CORRECTIF',
@@ -204,17 +204,17 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
 
         if bts_termines.exists():
             durees = [
-                (bt.date_fin - bt.date_debut).days
+                (bt.date_fin - bt.date_debut).total_seconds() / 3600
                 for bt in bts_termines
                 if bt.date_fin >= bt.date_debut
             ]
             if durees:
-                mttr_jours = round(sum(durees) / len(durees), 1)
+                mttr_heures = round(sum(durees) / len(durees), 1)
 
         return Response({
             'nombre_pannes': nombre_pannes,
-            'mtbf_jours':    mtbf_jours,
-            'mttr_jours':    mttr_jours,
+            'mtbf_heures':   mtbf_heures,
+            'mttr_heures':   mttr_heures,
         })
 
     @action(detail=True, methods=['post'])

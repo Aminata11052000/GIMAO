@@ -1,6 +1,6 @@
-# :toolbox: GIMAO – Gestion Informatisée de la Maintenance Assistée par Ordinateur
+# GIMAO : Gestion Informatisée de la Maintenance Assistée par Ordinateur
 
-## :book: Présentation
+## Présentation
 
 **GIMAO** est une application web de **GMAO (Gestion de la Maintenance Assistée par Ordinateur)** destinée à simplifier et centraliser la gestion des interventions techniques au sein d’une entreprise.
 
@@ -13,24 +13,24 @@ Le système permet :
 
 ## :jigsaw: Fonctionnalités principales
 
-### :wrench: Cycle de maintenance
+### Cycle de maintenance
 - Création de **Demandes d’Intervention (DI)** par les opérateurs.
 - Validation ou refus des DI par le Responsable GMAO.
 - Génération automatique d’un **Bon de Travail (BT)** pour chaque intervention validée.
 - Suivi en temps réel de l’état d’un BT (assigné, en cours, terminé, clos).
 
-### :busts_in_silhouette: Gestion des utilisateurs et des rôles
+### Gestion des utilisateurs et des rôles
 - Rôles disponibles : `Opérateur`, `Technicien`, `Responsable GMAO`.
 - Interface d’administration complète via **Django Admin**.
 - Journalisation des actions via une table de **Logs** (table, type, utilisateur, champs modifiés, date).
 
-### :brain: Gestion technique
+### Gestion technique
 - Gestion des **équipements**, **pannes**, **pièces détachées** et **historiques d’intervention**.
 - Architecture modulaire et extensible pour intégrer d’autres modules de maintenance ou d’analyse.
 
 ---
 
-## :construction_site: Architecture technique
+## Architecture technique
 
 | Couche | Technologie | Détails |
 |--------|--------------|---------|

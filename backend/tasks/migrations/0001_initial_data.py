@@ -167,7 +167,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         # On attend que tous les modèles utilisés soient bien créés en base
-        ('utilisateur', '0007_permission_parent'),
+        ('utilisateur', '0008_log_indexes'),
         ('maintenance', '0004_bontravail_duree_previsionnelle_and_more'),
         ('donnees',     '0001_initial'),
     ]

@@ -12,17 +12,30 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo  [1/4] Téléchargement des images
+echo  [1/4] Création du fichier de configuration...
+(
+echo MYSQL_ROOT_PASSWORD=rootpass123
+echo MYSQL_DATABASE=gimao
+echo MYSQL_USER=gimao_user
+echo MYSQL_PASSWORD=gimao_pass123
+echo SECRET_KEY=django-insecure-tp-gimao-2026-xK8mP3qL9nR7vW2jH5tY1uA4sD6fG0cE
+echo DJANGO_SUPERUSER_USERNAME=admin
+echo DJANGO_SUPERUSER_PASSWORD=Admin1234!
+echo DJANGO_SUPERUSER_EMAIL=admin@gimao.fr
+) > .env.prod
+copy .env.prod .env >nul
+
+echo  [2/4] Téléchargement des images
 docker compose -f docker-compose.prod.yml pull
 if errorlevel 1 goto erreur
 
 echo.
-echo  [2/4] Démarrage de l'application
+echo  [3/5] Démarrage de l'application
 docker compose -f docker-compose.prod.yml up -d
 if errorlevel 1 goto erreur
 
 echo.
-echo  [3/4] Initialisation de la base de données (merci de patienter)
+echo  [4/5] Initialisation de la base de données (merci de patienter)
 timeout /t 15 /nobreak >nul
 docker compose -f docker-compose.prod.yml exec backend python manage.py migrate tasks --fake
 docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
@@ -30,7 +43,7 @@ docker compose -f docker-compose.prod.yml exec backend python manage.py init_dat
 if errorlevel 1 goto erreur
 
 echo.
-echo  [4/4] Chargement des données de démonstration
+echo  [5/5] Chargement des données de démonstration
 docker compose -f docker-compose.prod.yml exec backend python manage.py seed_tp_data
 if errorlevel 1 goto erreur
 

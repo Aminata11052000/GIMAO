@@ -18,10 +18,11 @@ services:
       retries: 10
 
   backend:
-    image: gimao/backend:latest
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    image: aminata11/gimao-backend:latest
+    #  Pour rebuilder l'image localement, décommenter le bloc ci-dessous 
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile.prod
     depends_on:
       db:
         condition: service_healthy
@@ -54,10 +55,11 @@ services:
       - db
 
   nginx:
-    image: gimao/nginx:latest
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+    image: aminata11/gimao-nginx:latest
+    #  Pour rebuilder l'image localement, décommenter le bloc ci-dessous 
+    # build:
+    #   context: ./frontend
+    #   dockerfile: Dockerfile.prod
     ports:
       - "80:80"
     depends_on:

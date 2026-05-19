@@ -636,13 +636,13 @@ onMounted(() => {
   fetchEquipmentData();
 });
 
-const editCurrentEquip = () => [
+const editCurrentEquip = () => {
   router.push({
     name: 'EditEquipment',
     params: { id: equipmentDetails.value.id },
     query: { from: 'equipment', equipmentId: equipmentDetails.value.id }
   })
-]
+}
 </script>
 
 <style scoped>

@@ -2,7 +2,9 @@
   <div class="notices-layout">
     <!-- Sidebar notice -->
     <v-navigation-drawer
-      permanent
+      v-model="drawerOpen"
+      :permanent="!isMobile"
+      :temporary="isMobile"
       :width="drawerWidth"
       class="notices-sidebar"
       @mouseenter="isHovered = true"
@@ -27,7 +29,7 @@
           v-for="item in noticeItems"
           :key="item.value"
           :class="['my-1', { 'active-item': tab === item.value }]"
-          @click="tab = item.value"
+          @click="selectTab(item.value)"
         >
           <template #prepend>
             <v-icon class="ml-3">{{ item.icon }}</v-icon>
@@ -41,7 +43,7 @@
 
       <!-- Toggle + Retour -->
       <template #append>
-        <div class="menu-toggle-wrapper">
+        <div v-if="!isMobile" class="menu-toggle-wrapper">
           <v-btn variant="tonal" color="primary" class="menu-toggle-btn" @click="toggleMini">
             <v-icon>{{ isMini ? 'mdi-menu-open' : 'mdi-menu' }}</v-icon>
             <span v-if="!isMini" class="ml-2">Réduire le menu</span>
@@ -63,10 +65,16 @@
     <!-- Contenu -->
     <div class="notices-content">
       <div class="notices-topbar">
-        <span>{{ currentNotice.label }}</span>        <v-spacer></v-spacer>
+        <!-- Hamburger sur mobile -->
+        <v-btn v-if="isMobile" icon @click="drawerOpen = !drawerOpen" class="mr-2">
+          <v-icon>mdi-menu</v-icon>
+        </v-btn>
+        <span>{{ currentNotice.label }}</span>
+        <v-spacer></v-spacer>
         <v-btn icon @click="handleThemeToggle" :title="themeToggleLabel">
           <v-icon>{{ themeToggleIcon }}</v-icon>
-        </v-btn>      </div>
+        </v-btn>
+      </div>
       <v-container fluid>
         <v-window v-model="tab">
           <v-window-item value="global"><NoticeGlobale /></v-window-item>
@@ -81,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import NoticeGlobale from '@/views/Notices/NoticeGlobale.vue'
@@ -106,15 +114,31 @@ const noticeItems = [
 const tab = ref('global')
 const isMini = ref(false)
 const isHovered = ref(false)
+const isMobile = ref(window.innerWidth < 960)
+const drawerOpen = ref(!isMobile.value)
 
-const displayTitles = computed(() => !isMini.value || isHovered.value)
-const drawerWidth = computed(() => displayTitles.value ? 280 : 80)
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 960
+  if (!isMobile.value) drawerOpen.value = true
+  else drawerOpen.value = false
+}
+
+onMounted(() => window.addEventListener('resize', checkMobile))
+onUnmounted(() => window.removeEventListener('resize', checkMobile))
+
+const displayTitles = computed(() => !isMini.value || isHovered.value || isMobile.value)
+const drawerWidth = computed(() => (isMobile.value || displayTitles.value) ? 280 : 80)
 
 const currentNotice = computed(() =>
   noticeItems.find(n => n.value === tab.value) || noticeItems[0]
 )
 
 const toggleMini = () => { isMini.value = !isMini.value }
+
+const selectTab = (value) => {
+  tab.value = value
+  if (isMobile.value) drawerOpen.value = false
+}
 
 const isDarkTheme = computed(() => vuetify.theme.global.current.value.dark)
 const themeToggleIcon = computed(() => (isDarkTheme.value ? 'mdi-weather-sunny' : 'mdi-weather-night'))
@@ -140,6 +164,7 @@ const goBack = () => {
 .notices-layout {
   display: flex;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .notices-sidebar {

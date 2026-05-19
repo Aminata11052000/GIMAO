@@ -89,3 +89,12 @@ h1 {
   background-color: var(--button-bg-color);
   border-radius: 50%;
 }
+
+/* Responsive notices */
+@media (max-width: 959px) {
+  .doc-page {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+  }
+}

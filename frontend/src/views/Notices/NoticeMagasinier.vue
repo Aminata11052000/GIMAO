@@ -6,7 +6,7 @@
     </div>
 
     <!-- Onglets -->
-    <v-tabs v-model="tab" class="mb-4">
+    <v-tabs v-model="tab" class="mb-4" show-arrows>
       <v-tab value="connexion">Connexion</v-tab>
       <v-tab value="dashboard">Tableau de bord</v-tab>
       <v-tab value="stock">Stocks</v-tab>

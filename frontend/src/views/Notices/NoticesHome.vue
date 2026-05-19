@@ -164,7 +164,6 @@ const goBack = () => {
 .notices-layout {
   display: flex;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 .notices-sidebar {
@@ -182,6 +181,8 @@ const goBack = () => {
 
 .notices-content {
   flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }

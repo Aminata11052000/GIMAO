@@ -17,7 +17,7 @@
 
         <v-divider class="my-4"></v-divider>
 
-        <v-tabs v-model="tab" color="primary" :bg-color="isDarkTheme ? 'grey-darken-4' : 'grey-lighten-4'" show-arrows>
+        <v-tabs v-model="tab" color="primary" :bg-color="isDarkTheme ? 'grey-darken-4' : 'grey-lighten-4'" show-arrows="always">
           <v-tab value="roles">
             <v-icon start>mdi-account-group</v-icon> Les Rôles
           </v-tab>

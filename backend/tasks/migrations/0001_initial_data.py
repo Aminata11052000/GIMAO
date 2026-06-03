@@ -42,7 +42,7 @@ def create_initial_data(apps, schema_editor):
     from tasks import perms_data
 
     # ── 1. Rôles ─────────────────────────────────────────────────────────────
-    for role_name in ['Responsable GMAO', 'Technicien', 'Magasinier', 'Opérateur']:
+    for role_name in perms_data.perms_map.keys():
         Role.objects.get_or_create(nomRole=role_name)
 
     # ── 2. Types de plans de maintenance ─────────────────────────────────────
@@ -129,10 +129,13 @@ def create_initial_data(apps, schema_editor):
 
     # ── 7. Assignation des permissions aux rôles ──────────────────────────────
     for role_name, perm_list in perms_data.perms_map.items():
-        role = Role.objects.get(nomRole=role_name)
+        role, _ = Role.objects.get_or_create(nomRole=role_name)
         for perm_name in perm_list:
-            perm = Permission.objects.get(nomPermission=perm_name)
-            RolePermission.objects.get_or_create(role=role, permission=perm)
+            try:
+                perm = Permission.objects.get(nomPermission=perm_name)
+                RolePermission.objects.get_or_create(role=role, permission=perm)
+            except Permission.DoesNotExist:
+                pass
 
     # ── 8. Utilisateur responsable par défaut ─────────────────────────────────
     Utilisateur.objects.get_or_create(
@@ -167,7 +170,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         # On attend que tous les modèles utilisés soient bien créés en base
-        ('utilisateur', '0008_log_indexes'),
+        ('utilisateur', '0009_role_est_defaut'),
         ('maintenance', '0004_bontravail_duree_previsionnelle_and_more'),
         ('donnees',     '0001_initial'),
     ]

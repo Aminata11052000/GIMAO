@@ -19,16 +19,11 @@
 
     <v-window v-model="tab">
       <v-window-item value="connexion">
-        <ConnexionTab :hasMenu="true" />
+        <ConnexionTab :hasMenu="true" role="responsable" />
       </v-window-item>
 
       <v-window-item value="dashboard">
-        <v-container class="doc-page">
-          <h4>Tableau de bord</h4>
-          <div class="text-body-2 mt-2">
-            <em>En conception...</em>
-          </div>
-        </v-container>
+        <DashboardTab role="Responsable GMAO" />
       </v-window-item>
 
       <v-window-item value="di">
@@ -63,6 +58,7 @@
 import { ref } from "vue";
 
 import ConnexionTab from "./Auth/ConnexionTab.vue";
+import DashboardTab from "./Dashboard/DashboardTab.vue";
 import DIGeneralTab from "./DI/DIGeneralTab.vue";
 import EquipementsTab from "./Equipments/EquipementsTab.vue";
 import BTGeneralTab from "./BT/BTGeneralTab.vue";

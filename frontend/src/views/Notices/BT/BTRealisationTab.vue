@@ -21,8 +21,7 @@
         </li>
       </ul>
 
-      <ZoomImage :src="require('@/assets/images/notices/BT/detail-bt-technicien.png')" alt="Détail du Bon de Travail" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/detail-bt-responsable.png')" alt="Détail du Bon de Travail" v-else/> -->
+      <ZoomImage v-if="detailBtImg" :src="detailBtImg" alt="Détail du Bon de Travail" />
 
       <strong>Le cycle de vie d'une intervention :</strong>
       <ul class="ml-4 mt-2 mb-4">
@@ -30,10 +29,8 @@
         <li><strong>Terminer une intervention</strong> : une fois les réparations achevées et les équipements remis en fonction, cliquez sur <strong>Terminer</strong>. Le statut passe à <em>Terminé</em> et l'heure de fin est sauvegardée, ce qui permet notamment de calculer le temps passé sur l'intervention.</li>
       </ul>
 
-      <ZoomImage :src="require('@/assets/images/notices/BT/demarrer-bt-technicien.png')" alt="Demarrer l'intervention" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/demarrer-bt-responsable.png')" alt="Demarrer l'intervention" v-else/> -->
-      <ZoomImage :src="require('@/assets/images/notices/BT/terminer-bt-technicien.png')" alt="Terminer l'intervention" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/terminer-bt-responsable.png')" alt="Terminer l'intervention" v-else/> -->
+      <ZoomImage v-if="demarrerBtImg" :src="demarrerBtImg" alt="Démarrer l'intervention" />
+      <ZoomImage v-if="terminerBtImg" :src="terminerBtImg" alt="Terminer l'intervention" />
 
       <strong>Documenter l'intervention (Compte-rendu) :</strong>
       <ul class="ml-4 mt-2 mb-4">
@@ -46,15 +43,13 @@
         <li><strong>Demander des pièces :</strong> si vous avez besoin de matériel pour l'intervention, vous pouvez en faire la demande via la section "Consommables" de l'intervention. Indiquez la quantité requise et le produit désiré.</li>
         <li><strong>Déduction du stock :</strong> La demande sera évaluée et validée par le magasinier ou le responsable. Une fois validée par ces derniers (ou lors de la clôture), le stock sera automatiquement mis à jour.</li>
       </ul>
-    
-      <ZoomImage :src="require('@/assets/images/notices/BT/detail-bt-technicien-edit.png')" alt="Modifier le Bon de Travail" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/detail-bt-responsable-edit.png')" alt="Modifier le Bon de Travail" v-else/> -->
+
+      <ZoomImage v-if="detailBtEditImg" :src="detailBtEditImg" alt="Modifier le Bon de Travail" />
 
       <strong>N'oubliez pas de valider vos modifications avant de quitter la page.</strong>
 
-      <ZoomImage :src="require('@/assets/images/notices/BT/modif-bt-technicien.png')" alt="Valider les modifications du Bon de Travail" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/modif-bt-responsable.png')" alt="Valider les modifications du Bon de Travail" v-else/> -->
-      
+      <ZoomImage v-if="modifBtImg" :src="modifBtImg" alt="Valider les modifications du Bon de Travail" />
+
     </div>
   </v-container>
 </template>
@@ -69,11 +64,17 @@ const props = defineProps({
   }
 });
 
-const roles = ["Technicien", "Responsable GMAO"];
+const getBtImg = (name) => {
+  try { return require(`@/assets/images/notices/BT/${name}`) } catch { return null }
+}
 
-const roleIsAbove = (minRole) => {
-  return roles.indexOf(props.role) >= roles.indexOf(minRole);
-};
+const isResponsable = props.role === 'Responsable GMAO'
+
+const detailBtImg    = isResponsable ? getBtImg('detail-bt-responsable.png')      || getBtImg('detail-bt-technicien.png')      : getBtImg('detail-bt-technicien.png')
+const demarrerBtImg  = isResponsable ? getBtImg('demarrer-bt-responsable.png')     || getBtImg('demarrer-bt-technicien.png')     : getBtImg('demarrer-bt-technicien.png')
+const terminerBtImg  = isResponsable ? getBtImg('terminer-bt-responsable.png')     || getBtImg('terminer-bt-technicien.png')     : getBtImg('terminer-bt-technicien.png')
+const detailBtEditImg = isResponsable ? getBtImg('detail-bt-responsable-edit.png') || getBtImg('detail-bt-technicien-edit.png') : getBtImg('detail-bt-technicien-edit.png')
+const modifBtImg     = isResponsable ? getBtImg('modif-bt-responsable.png')        || getBtImg('modif-bt-technicien.png')        : getBtImg('modif-bt-technicien.png')
 </script>
 
 <style scoped>

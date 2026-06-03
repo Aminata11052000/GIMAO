@@ -2,52 +2,35 @@
   <div class="py-2">
     <!-- Intro -->
     <div class="text-body-2 mb-4">
-      En tant que magasinier, vous gérez les stocks de pièces détachées et consommables de l'entreprise. Vous validez également les demandes de pièces associées aux bons de travail.
+      En tant que magasinier, vous gérez les stocks de pièces détachées et consommables de l'entreprise.
     </div>
 
     <!-- Onglets -->
     <v-tabs v-model="tab" class="mb-4" show-arrows="always">
       <v-tab value="connexion">Connexion</v-tab>
       <v-tab value="dashboard">Tableau de bord</v-tab>
-      <v-tab value="stock">Stocks</v-tab>
-      <v-tab value="bt">Bons de travail</v-tab>
-      <v-tab value="magasins">Magasins</v-tab>
+      <v-tab value="stock">Consommables</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">
       <v-window-item value="connexion">
-        <ConnexionTab :hasMenu="false" />
+        <ConnexionTab :hasMenu="true" role="magasinier" />
       </v-window-item>
 
       <v-window-item value="dashboard">
         <v-container class="doc-page">
-          <h4>Tableau de bord</h4>
           <div class="text-body-2 mt-2">
-            <em>En conception...</em>
+            Après la connexion, votre tableau de bord s'affiche automatiquement.
+            Il centralise les informations liées à la gestion des stocks et des consommables.
+            <br /><br />
+
+            <ZoomImage v-if="dashboardMagasinierImg" :src="dashboardMagasinierImg" alt="Tableau de bord magasinier" />
           </div>
         </v-container>
       </v-window-item>
 
       <v-window-item value="stock">
         <StockGeneralTab role="Magasinier" />
-      </v-window-item>
-
-      <v-window-item value="bt">
-        <v-container class="doc-page">
-          <h4>Gestion des bons de travail (Magasinier)</h4>
-          <div class="text-body-2 mt-2">
-            <em>En conception...</em>
-          </div>
-        </v-container>
-      </v-window-item>
-
-      <v-window-item value="magasins">
-        <v-container class="doc-page">
-          <h4>Gestion des Magasins</h4>
-          <div class="text-body-2 mt-2">
-            <em>En conception...</em>
-          </div>
-        </v-container>
       </v-window-item>
 
     </v-window>
@@ -59,6 +42,13 @@ import { ref } from "vue";
 
 import ConnexionTab from "./Auth/ConnexionTab.vue";
 import StockGeneralTab from "./Stock/StockGeneralTab.vue";
+import ZoomImage from "./common/ZoomImage.vue";
 
 const tab = ref("dashboard");
+
+const getImg = (name) => {
+  try { return require(`@/assets/images/notices/magasinier/${name}`) } catch { return null }
+}
+
+const dashboardMagasinierImg = getImg('dashboard-magasinier.png')
 </script>

@@ -20,7 +20,7 @@
       </ul>
     </div>
 
-    <ZoomImage :src="require('@/assets/images/notices/stocks/liste-stock-technicien.png')" alt="Liste des stocks" v-if="role === 'Technicien'"/>
+    <ZoomImage v-if="listeStockImg" :src="listeStockImg" alt="Liste des stocks" />
   </v-container>
 </template>
 
@@ -39,6 +39,18 @@ const roles = ["Technicien", "Magasinier", "Responsable GMAO"];
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
 };
+
+const getStockImg = (name) => {
+  try { return require(`@/assets/images/notices/stocks/${name}`) } catch { return null }
+}
+
+const listeStockImg = (() => {
+  if (props.role === 'Responsable GMAO')
+    return getStockImg('liste-stock-responsable.png') || getStockImg('liste-stock-technicien.png')
+  if (props.role === 'Magasinier')
+    return getStockImg('liste-stock-magasinier.png') || getStockImg('liste-stock-technicien.png')
+  return getStockImg('liste-stock-technicien.png')
+})()
 </script>
 
 <style scoped>

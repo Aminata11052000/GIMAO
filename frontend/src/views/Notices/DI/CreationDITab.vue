@@ -13,16 +13,7 @@
       Pour cela, rendez-vous sur la page des demandes d'interventions et cliquez sur le bouton "+" en bas à droite.
     </div>
 
-    <ZoomImage
-      :src="require('@/assets/images/notices/DI/liste-creer-di.png')"
-      alt="Bouton créer DI"
-      v-if="role === 'Opérateur'"
-    />
-    <ZoomImage
-      :src="require('@/assets/images/notices/DI/liste-creer-di-technicien.png')"
-      alt="Bouton créer DI"
-      v-else
-    />
+    <ZoomImage v-if="listeCreerDiImg" :src="listeCreerDiImg" alt="Bouton créer DI" />
 
     <div class="text-body-2 mb-4">
       En cliquant dessus, vous serez redirigé vers un formulaire à remplir
@@ -30,17 +21,7 @@
       possession au Responsable de la maintenance.
     </div>
 
-    <ZoomImage
-      :src="require('@/assets/images/notices/DI/creer-di.png')"
-      alt="Formulaire DI"
-      v-if="role === 'Opérateur'"
-    />
-
-    <ZoomImage
-      :src="require('@/assets/images/notices/DI/creer-di-technicien.png')"
-      alt="Formulaire DI"
-      v-else
-    />
+    <ZoomImage v-if="creerDiImg" :src="creerDiImg" alt="Formulaire DI" />
 
     <div class="text-body-2 mb-4">
       Les différents champs du formulaire ont la signification suivante :<br />
@@ -68,6 +49,22 @@ const props = defineProps({
     default: "Opérateur"
   }
 });
+
+const getDIImg = (name) => {
+  try { return require(`@/assets/images/notices/DI/${name}`) } catch { return null }
+}
+
+const listeCreerDiImg = props.role === 'Opérateur'
+  ? getDIImg('liste-creer-di.png')
+  : props.role === 'Responsable GMAO'
+      ? getDIImg('liste-creer-di-responsable.png') || getDIImg('liste-creer-di-technicien.png')
+      : getDIImg('liste-creer-di-technicien.png')
+
+const creerDiImg = props.role === 'Opérateur'
+  ? getDIImg('creer-di.png')
+  : props.role === 'Responsable GMAO'
+      ? getDIImg('creer-di-responsable.png') || getDIImg('creer-di-technicien.png')
+      : getDIImg('creer-di-technicien.png')
 </script>
 
 <style scoped>
@@ -75,7 +72,6 @@ const props = defineProps({
   max-width: 900px;
   line-height: 1.6;
 }
-
 p {
   margin-bottom: 20px;
 }

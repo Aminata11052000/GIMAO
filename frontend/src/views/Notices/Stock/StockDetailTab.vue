@@ -12,10 +12,9 @@
         <li><strong>Section Stocks en magasin :</strong> présente sous forme de tableau la répartition du matériel, détaillant pour chaque magasin concerné la quantité présente physiquement.</li>
         <li><strong>Section Historique des achats :</strong> permet de retracer les approvisionnements via un tableau indiquant la date, le fournisseur, le nom du fabriquant, la quantité commandée, le prix unitaire et le prix total.</li>
       </ul>
-
     </div>
-    <ZoomImage :src="require('@/assets/images/notices/stocks/detail-stock-technicien.png')" alt="Détail des stocks" v-if="role === 'Technicien'"/>
 
+    <ZoomImage v-if="detailStockImg" :src="detailStockImg" alt="Détail des stocks" />
   </v-container>
 </template>
 
@@ -34,6 +33,18 @@ const roles = ["Technicien", "Magasinier", "Responsable GMAO"];
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
 };
+
+const getStockImg = (name) => {
+  try { return require(`@/assets/images/notices/stocks/${name}`) } catch { return null }
+}
+
+const detailStockImg = (() => {
+  if (props.role === 'Responsable GMAO')
+    return getStockImg('detail-stock-responsable.png') || getStockImg('detail-stock-technicien.png')
+  if (props.role === 'Magasinier')
+    return getStockImg('detail-stock-magasinier.png') || getStockImg('detail-stock-technicien.png')
+  return getStockImg('detail-stock-technicien.png')
+})()
 </script>
 
 <style scoped>

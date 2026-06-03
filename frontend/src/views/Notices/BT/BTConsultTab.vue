@@ -7,15 +7,12 @@
       <ul class="ml-4 mt-2 mb-4">
         <li><strong>Vos BT assignés :</strong> directement depuis la page d'accueil de votre tableau de bord, vous avez une vue synthétique des interventions qui vous sont confiées.</li>
 
-        <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien.png')" alt="Tableau de bord" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/Dashboard/responsable.png')" alt="Tableau de bord" v-else/> -->
+        <ZoomImage v-if="dashboardImg" :src="dashboardImg" alt="Tableau de bord" />
 
         <li><strong>Tous les BT :</strong> via le menu "Bons de travail" correspondant, où vous accédez à l'ensemble des interventions.</li>
       </ul>
 
-      <ZoomImage :src="require('@/assets/images/notices/BT/liste-bt-technicien.png')" alt="Liste des Bons de Travail" v-if="role === 'Technicien'"/>
-      <!-- <ZoomImage :src="require('@/assets/images/notices/BT/liste-bt-responsable.png')" alt="Liste des Bons de Travail" v-else/> -->
-
+      <ZoomImage v-if="listeBtImg" :src="listeBtImg" alt="Liste des Bons de Travail" />
 
       <strong>Informations visibles dans le tableau des Bons de Travail :</strong>
       <ul class="ml-4 mt-2 mb-4">
@@ -35,7 +32,7 @@
         <li>- <strong>Terminé</strong> : le technicien a fini son intervention et rempli son compte-rendu.</li>
         <li>- <strong>Clôturé</strong> : le responsable a vérifié les travaux, mis à jour les stocks si nécessaire et fermé définitivement le BT.</li>
       </ul>
-      
+
       <em>Note :</em> Un BT préventif est généré de manière automatique lorsqu'un compteur d'équipement (heures, kilomètres, cycles) atteint un seuil défini. Ces BT préventifs vous sont confiés de la même façon que les BT correctifs habituels.
     </div>
   </v-container>
@@ -51,11 +48,22 @@ const props = defineProps({
   }
 });
 
-const roles = ["Technicien", "Responsable GMAO"];
+const getBtImg = (name) => {
+  try { return require(`@/assets/images/notices/BT/${name}`) } catch { return null }
+}
+const getDashImg = (name) => {
+  try { return require(`@/assets/images/notices/Dashboard/${name}`) } catch { return null }
+}
 
-const roleIsAbove = (minRole) => {
-  return roles.indexOf(props.role) >= roles.indexOf(minRole);
-};
+const isResponsable = props.role === 'Responsable GMAO'
+
+const dashboardImg = isResponsable
+  ? getDashImg('responsable.png') || getDashImg('technicien.png')
+  : getDashImg('technicien.png')
+
+const listeBtImg = isResponsable
+  ? getBtImg('liste-bt-responsable.png') || getBtImg('liste-bt-technicien.png')
+  : getBtImg('liste-bt-technicien.png')
 </script>
 
 <style scoped>

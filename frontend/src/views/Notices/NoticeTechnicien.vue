@@ -17,7 +17,7 @@
 
     <v-window v-model="tab">
       <v-window-item value="connexion">
-        <ConnexionTab :hasMenu="true"/>
+        <ConnexionTab :hasMenu="true" role="technicien" />
       </v-window-item>
 
       <v-window-item value="dashboard">

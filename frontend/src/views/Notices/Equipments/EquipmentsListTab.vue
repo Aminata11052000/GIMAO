@@ -5,7 +5,7 @@
     </div>
 
     <div class="text-body-2 mb-4">
-      La liste des équipements est consultable dans le menu correspondant ainsi que dans votre tableau de bord. 
+      La liste des équipements est consultable dans le menu correspondant ainsi que dans votre tableau de bord.
       Elle vous permet de consulter l'ensemble des équipements de votre entreprise. Elle donne accès
       aux informations détaillées de chaque équipement et peut également servir à signaler une défaillance directement
       depuis celui-ci.
@@ -14,8 +14,7 @@
       d'Intervention (DI). Lors du signalement, vous pourrez sélectionner le nouvel état correspondant à la situation.
     </div>
 
-    <ZoomImage :src="require('@/assets/images/notices/equips/list-eq-operateur.png')" alt="Liste des équipements" v-if="props.role === 'Opérateur'" />
-    <ZoomImage :src="require('@/assets/images/notices/equips/list-eq-technicien.png')" alt="Liste des équipements" v-if="roleIsAbove('Technicien')" />
+    <ZoomImage v-if="listeEqImg" :src="listeEqImg" alt="Liste des équipements" />
   </div>
 </template>
 
@@ -34,4 +33,14 @@ const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
 };
+
+const getEquipImg = (name) => {
+  try { return require(`@/assets/images/notices/equips/${name}`) } catch { return null }
+}
+
+const listeEqImg = props.role === 'Opérateur'
+  ? getEquipImg('list-eq-operateur.png')
+  : props.role === 'Responsable GMAO'
+      ? getEquipImg('list-eq-responsable.png') || getEquipImg('list-eq-technicien.png')
+      : getEquipImg('list-eq-technicien.png')
 </script>

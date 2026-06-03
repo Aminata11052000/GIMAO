@@ -16,7 +16,7 @@
                     - Cliquez sur <strong>Se connecter</strong>
                 </div>
 
-                <ZoomImage :src="require('@/assets/images/notices/auth/login-1.png')" alt="Page de connexion" />
+                <ZoomImage v-if="loginImg1" :src="loginImg1" alt="Page de connexion" />
 
                 <div class="text-body-2 mb-4">
                     <strong>Première connexion :</strong><br /><br />
@@ -24,7 +24,7 @@
                     compte.
                 </div>
 
-                <ZoomImage :src="require('@/assets/images/notices/auth/login-3.png')" alt="Définition du mot de passe" />
+                <ZoomImage v-if="loginImg3" :src="loginImg3" alt="Définition du mot de passe" />
 
                 <v-divider class="my-4" />
 
@@ -37,7 +37,7 @@
                     - Cliquez à nouveau sur <strong>Se connecter</strong>
                 </div>
 
-                <ZoomImage :src="require('@/assets/images/notices/auth/login-2.png')" alt="Connexion classique" />
+                <ZoomImage v-if="loginImg2" :src="loginImg2" alt="Connexion classique" />
 
                 <div class="text-body-2">
                     Une fois connecté, vous accédez à votre <strong>tableau de bord</strong>, adapté à votre rôle.
@@ -62,8 +62,7 @@
                     Vous serez alors automatiquement déconnecté de l'application.
                 </div>
 
-                <ZoomImage :src="require('@/assets/images/notices/auth/logout-opérateur.png')" alt="Bouton déconnexion" v-if="!hasMenu"/>
-                <ZoomImage :src="require('@/assets/images/notices/auth/logout-technicien.png')" alt="Bouton déconnexion" v-else/>
+                <ZoomImage v-if="logoutImg" :src="logoutImg" alt="Bouton déconnexion" />
             </v-expansion-panel-text>
         </v-expansion-panel>
 
@@ -71,14 +70,42 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ZoomImage from "../common/ZoomImage.vue";
 
 const props = defineProps({
     hasMenu: {
         type: Boolean,
         default: false
+    },
+    role: {
+        type: String,
+        default: ''
     }
 });
+
+const getAuthImg = (name) => {
+    try { return require(`@/assets/images/notices/auth/${name}`) } catch { return null }
+}
+
+const loginImg1 = computed(() =>
+    (props.role ? getAuthImg(`login-1-${props.role}.png`) : null) || getAuthImg('login-1.png')
+)
+const loginImg2 = computed(() =>
+    (props.role ? getAuthImg(`login-2-${props.role}.png`) : null) || getAuthImg('login-2.png')
+)
+const loginImg3 = computed(() =>
+    (props.role ? getAuthImg(`login-3-${props.role}.png`) : null) || getAuthImg('login-3.png')
+)
+const logoutImg = computed(() => {
+    if (props.role) {
+        const specific = getAuthImg(`logout-${props.role}.png`)
+        if (specific) return specific
+    }
+    return props.hasMenu
+        ? getAuthImg('logout-technicien.png')
+        : getAuthImg('logout-opérateur.png')
+})
 </script>
 
 <style scoped>

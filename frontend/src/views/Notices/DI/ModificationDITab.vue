@@ -20,16 +20,14 @@
             situé en bas à droite de l'écran.
         </div>
 
-        <ZoomImage :src="require('@/assets/images/notices/DI/detail-di-edit.png')" alt="Modification DI" v-if="role === 'Opérateur'"/>
-        <ZoomImage :src="require('@/assets/images/notices/DI/detail-di-technicien-edit.png')" alt="Modification DI" v-else/> 
+        <ZoomImage v-if="detailDiEditImg" :src="detailDiEditImg" alt="Modification DI" />
 
         <div class="text-body-2 mb-4">
             Après avoir effectué vos modifications, cliquez sur « Enregistrer les modifications ». Vous serez alors
             redirigé vers la page de détails mise à jour de votre DI.
         </div>
-        
-        <ZoomImage :src="require('@/assets/images/notices/DI/modif-di.png')" alt="Modification DI" v-if="role === 'Opérateur'"/> 
-        <ZoomImage :src="require('@/assets/images/notices/DI/modif-di-technicien.png')" alt="Modification DI" v-else/> 
+
+        <ZoomImage v-if="modifDiImg" :src="modifDiImg" alt="Validation modification DI" />
 
     </v-container>
 </template>
@@ -49,4 +47,20 @@ const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
 };
+
+const getDIImg = (name) => {
+    try { return require(`@/assets/images/notices/DI/${name}`) } catch { return null }
+}
+
+const detailDiEditImg = props.role === 'Opérateur'
+    ? getDIImg('detail-di-edit.png')
+    : props.role === 'Responsable GMAO'
+        ? getDIImg('detail-di-responsable-edit.png') || getDIImg('detail-di-technicien-edit.png')
+        : getDIImg('detail-di-technicien-edit.png')
+
+const modifDiImg = props.role === 'Opérateur'
+    ? getDIImg('modif-di.png')
+    : props.role === 'Responsable GMAO'
+        ? getDIImg('modif-di-responsable.png') || getDIImg('modif-di-technicien.png')
+        : getDIImg('modif-di-technicien.png')
 </script>

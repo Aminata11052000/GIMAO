@@ -19,8 +19,7 @@
                 Elle regroupe toutes les défaillances signalées. Vous pouvez y consulter les détails de chaque demande et suivre leur état d'avancement afin de procéder aux réparations ou diagnostics nécessaires.
             </template>
 
-            <ZoomImage :src="require('@/assets/images/notices/DI/liste-di.png')" v-if="role === 'Opérateur'" />
-            <ZoomImage :src="require('@/assets/images/notices/DI/liste-di-technicien.png')" v-else/>
+            <ZoomImage v-if="listeDiImg" :src="listeDiImg" />
 
             <br /><br />
 
@@ -62,4 +61,14 @@ const roles = ["Opérateur", "Technicien", "Responsable GMAO"]
 const roleIsAbove = (role) => {
     return roles.indexOf(props.role) >= roles.indexOf(role);
 }
+
+const getDIImg = (name) => {
+    try { return require(`@/assets/images/notices/DI/${name}`) } catch { return null }
+}
+
+const listeDiImg = props.role === 'Opérateur'
+    ? getDIImg('liste-di.png')
+    : props.role === 'Responsable GMAO'
+        ? getDIImg('liste-di-responsable.png') || getDIImg('liste-di-technicien.png')
+        : getDIImg('liste-di-technicien.png')
 </script>

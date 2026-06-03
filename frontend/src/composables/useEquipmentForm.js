@@ -147,11 +147,11 @@ export function useEquipmentForm(isEditMode = false) {
 
   const getEmptyCounter = () => ({
     id: null,
-    nom: '',
+    nomCompteur: '',
     valeurCourante: null,
-    unite: 'heures',
+    unite: 'date',
     estPrincipal: false,
-    type: 'Numérique',
+    type: 'Calendaire',
     isDefaultCalendar: false
   });
   const currentCounter = ref(getEmptyCounter());

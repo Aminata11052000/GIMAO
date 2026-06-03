@@ -82,8 +82,10 @@ export const BREADCRUMBS = {
 
     // Notices
     Notice: "Notices d'utilisation",
-    // Calendrier 
-    Calendar: "Calendrier"
+    // Calendrier
+    Calendar: "Calendrier",
+    // Maintenance préventive
+    PreventiveMaintenance: "Maintenance préventive"
 };
 
 export const HEADERS = [
@@ -101,6 +103,7 @@ export const HEADERS = [
     "FailureList",
     "ModelEquipmentList",
     "Notice",
+    "PreventiveMaintenance",
     "Calendar"
 ]
 

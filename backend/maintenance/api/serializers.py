@@ -435,21 +435,27 @@ class PlanMaintenanceSerializer(serializers.ModelSerializer):
     """Serializer pour PlanMaintenance"""
     documents = DocumentSerializer(many=True, read_only=True)
     consommables = serializers.SerializerMethodField()
+    compteur_id = serializers.SerializerMethodField()
 
     type_id = serializers.IntegerField(
         source='type_plan_maintenance.id',
         read_only=True
     )
-    
+
     class Meta:
         model = PlanMaintenance
         fields = [
             'id',
             'nom',
             'type_id',
+            'compteur_id',
             'documents',
             'consommables'
         ]
+
+    def get_compteur_id(self, obj):
+        decl = obj.declenchements.first()
+        return decl.compteur_id if decl else None
 
     def get_consommables(self, obj):
         associations = PlanMaintenanceConsommable.objects.filter(

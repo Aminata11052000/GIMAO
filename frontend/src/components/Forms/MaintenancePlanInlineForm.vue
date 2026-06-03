@@ -61,6 +61,7 @@
         :model-value="plan.seuil"
         :est-glissant="!!plan.seuil.estGlissant"
         :valeur-courante="selectedCounter?.valeurCourante ?? null"
+        :unite="selectedCounterUnit"
         @update:model-value="val => plan.seuil = { ...val, estGlissant: plan.seuil.estGlissant }"
       />
       <SeuilCalendaire
@@ -365,9 +366,9 @@ const countersForSelect = computed(() =>
   props.counters
     .map((counter, index) => ({ counter, index }))
     .filter(({ counter }) => {
-      const isCalendarCounter = counter?.isDefaultCalendar === true || counter?.type === 'Calendaire';
-      if (props.counterFilter === 'calendar') return isCalendarCounter;
-      if (props.counterFilter === 'numeric') return !isCalendarCounter;
+      const cal = counter?.isDefaultCalendar === true || counter?.type?.toLowerCase() === 'calendaire' || counter?.unite === 'date';
+      if (props.counterFilter === 'calendar') return cal;
+      if (props.counterFilter === 'numeric') return !cal;
       return true;
     })
     .map(({ counter, index }) => ({
@@ -414,7 +415,12 @@ const selectedCounter = computed(() => {
   return props.counters[plan.value.compteurIndex] ?? null;
 });
 
-const selectedCounterType = computed(() => selectedCounter.value?.type ?? "");
+const isCalendarCounter = (c) =>
+  c?.type?.toLowerCase() === 'calendaire' || c?.unite === 'date' || c?.isDefaultCalendar === true
+
+const selectedCounterType = computed(() =>
+  isCalendarCounter(selectedCounter.value) ? 'Calendaire' : (selectedCounter.value?.type ?? '')
+);
 const selectedCounterUnit = computed(() => selectedCounter.value?.unite ?? "");
 
 const selectedCounterValue = computed(() => {
@@ -427,9 +433,10 @@ const selectedCounterValue = computed(() => {
 
 // Utilitaire (lecture seule ici, la conversion onMounted vit dans SeuilCalendaire)
 const ordinalToISO = (ordinal) => {
-  if (!ordinal && ordinal !== 0) return null;
+  if (ordinal == null || ordinal <= 0) return null;
   const ORDINAL_EPOCH = 719162;
   const date = new Date(Date.UTC(1970, 0, 1 + (ordinal - ORDINAL_EPOCH)));
+  if (isNaN(date.getTime())) return null;
   return date.toISOString().split("T")[0];
 };
 

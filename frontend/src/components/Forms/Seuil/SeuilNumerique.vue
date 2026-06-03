@@ -1,6 +1,6 @@
 <template>
-  <v-row dense>
-    <v-col cols="12" md="4">
+  <v-row dense align="end">
+    <v-col cols="3">
       <FormField
         v-model="localSeuil.derniereIntervention"
         field-name="derniereIntervention"
@@ -8,28 +8,44 @@
         label="Dernière intervention"
         placeholder="0"
         min="0"
+        :suffix="selectedUnite"
         @update:model-value="updateProchaineMaintenance"
       />
     </v-col>
 
-    <v-col cols="12" md="4">
+    <v-col cols="3">
       <FormField
         v-model="localSeuil.ecartInterventions"
         field-name="ecartInterventions"
         type="number"
-        label="Écart entre interventions"
+        label="Écart"
         placeholder="0"
         min="0"
         @update:model-value="updateProchaineMaintenance"
       />
     </v-col>
 
-    <v-col cols="12" md="4">
+    <v-col cols="3">
+      <v-select
+        v-model="selectedUnite"
+        :items="COUNTER_UNITS"
+        item-title="title"
+        item-value="value"
+        label="Unité"
+        variant="outlined"
+        density="comfortable"
+        hide-details
+        @update:model-value="updateProchaineMaintenance"
+      />
+    </v-col>
+
+    <v-col cols="3">
       <FormField
         :model-value="localSeuil.prochaineMaintenance"
         field-name="prochaineMaintenance"
         type="number"
         label="Prochaine maintenance"
+        :suffix="selectedUnite"
         :readonly="true"
       />
     </v-col>
@@ -37,14 +53,14 @@
 </template>
 
 <script setup>
-import { reactive, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { FormField } from "@/components/common";
+import { COUNTER_UNITS } from "@/utils/constants";
 
 const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
-    // { derniereIntervention: number, ecartInterventions: number, prochaineMaintenance: number }
   },
   estGlissant: {
     type: Boolean,
@@ -54,27 +70,34 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  unite: {
+    type: String,
+    default: '',
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
+
+const selectedUnite = ref(props.unite || 'heures')
+
+watch(() => props.unite, (val) => {
+  if (val && !selectedUnite.value) selectedUnite.value = val
+}, { immediate: true })
 
 const toNumberOrNull = (value) => {
   if (value === null || value === undefined || value === "") {
     return null;
   }
-
   const parsed = Number(value);
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-// Copie locale pour éviter la mutation directe de la prop
 const localSeuil = reactive({
   derniereIntervention: props.modelValue.derniereIntervention ?? 0,
   ecartInterventions:   props.modelValue.ecartInterventions   ?? 0,
   prochaineMaintenance: props.modelValue.prochaineMaintenance ?? 0,
 });
 
-// Sync depuis le parent (ex : mode édition)
 watch(
   () => props.modelValue,
   (val) => {
@@ -87,9 +110,6 @@ watch(
 
 const updateProchaineMaintenance = () => {
   const ecart = toNumberOrNull(localSeuil.ecartInterventions);
-
-  // Glissant : on part de la valeur actuelle du compteur
-  // Non glissant : on part de la dernière intervention
   const base = props.estGlissant
     ? toNumberOrNull(props.valeurCourante)
     : toNumberOrNull(localSeuil.derniereIntervention);
@@ -105,9 +125,9 @@ const updateProchaineMaintenance = () => {
     derniereIntervention: toNumberOrNull(localSeuil.derniereIntervention),
     ecartInterventions:   toNumberOrNull(localSeuil.ecartInterventions),
     prochaineMaintenance: toNumberOrNull(localSeuil.prochaineMaintenance),
+    unite: selectedUnite.value,
   });
 };
 
-// Recalcule quand estGlissant change sans que l'utilisateur retouche les champs
 watch(() => props.estGlissant, updateProchaineMaintenance);
 </script>

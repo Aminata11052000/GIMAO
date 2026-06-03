@@ -136,7 +136,8 @@ export const toTimeInputValue = (value) => {
 };
 
 export const formatCalendarDate = (value) => {
-  if (!value && value !== 0) return "—";
+  if (value == null || value === '') return "—";
+  if (typeof value === 'number' && value <= 0) return "—";
 
   let date;
 

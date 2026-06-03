@@ -234,10 +234,10 @@ export const TABLE_HEADERS = {
             value: "statut",
         },
         {
-            title: "Responsable",
+            title: "Acquis",
             align: "center",
-            sortable: true,
-            value: "responsable",
+            sortable: false,
+            value: "utilisateur_assigne",
         },
     ],
 

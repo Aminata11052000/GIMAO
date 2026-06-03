@@ -18,7 +18,7 @@
       </v-col>
 
       <v-col cols="12" md="6" v-if="!(isEditMode && counterLocal.type === 'Calendaire')">
-        <FormSelect v-model="counterLocal.type" field-name="type" label="Type de compteur" :disabled="true"
+        <FormSelect v-model="counterLocal.type" field-name="type" label="Type de compteur"
           :items="counterTypeOptions" />
       </v-col>
 
@@ -81,12 +81,7 @@ watch(
 
 // Affiche le select d'unité uniquement si ce n'est pas calendaire
 const showUniteSelect = computed(() => counterLocal.value.type !== 'Calendaire')
-const counterTypeOptions = computed(() => {
-  if (props.isEditMode && counterLocal.value.type === 'Calendaire') {
-    return ['Calendaire']
-  }
-  return ['Numérique']
-})
+const counterTypeOptions = ['Calendaire', 'Numérique']
 
 // Validation
 const isValid = computed(() => {
@@ -128,15 +123,6 @@ watch(() => counterLocal.value.type, (newType) => {
   }
 }, { immediate: true })
 
-watch(
-  () => props.isEditMode,
-  (isEdit) => {
-    if (!isEdit && counterLocal.value.type === 'Calendaire') {
-      counterLocal.value.type = 'Numérique'
-    }
-  },
-  { immediate: true }
-)
 
 const handleSave = () => {
   if (!isValid.value) {

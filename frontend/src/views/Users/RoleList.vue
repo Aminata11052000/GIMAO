@@ -63,7 +63,7 @@
                   @click="dupliquerRole(role)">
                   Dupliquer
                 </v-btn>
-                <v-btn v-if="!estRoleSysteme(role.nomRole)" size="small" variant="text" color="error"
+                <v-btn v-if="!role.estDefaut" size="small" variant="text" color="error"
                   prepend-icon="mdi-delete" @click="confirmDelete(role)">
                   Supprimer
                 </v-btn>
@@ -338,9 +338,6 @@ const confirmDelete = (role) => {
   deleteDialog.value = true
 }
 
-const ROLES_SYSTEME = ['Opérateur', 'Magasinier', 'Technicien', 'Responsable GMAO']
-
-const estRoleSysteme = (nomRole) => ROLES_SYSTEME.includes(nomRole)
 
 const deleteRole = async () => {
   if (!roleToDelete.value) return

@@ -5,11 +5,12 @@ from . import perms_data
 
 def create_initial_data():
     # Création des rôles par défaut
-    roles = ['Responsable GMAO', 'Technicien', 'Magasinier', 'Opérateur']
+    roles = ['Responsable GMAO', 'Technicien prod', 'Technicien maintenance', 'Magasinier', 'Opérateur prod']
     for role_name in roles:
-        Role.objects.get_or_create(
-            nomRole=role_name
-        )
+        role, _ = Role.objects.get_or_create(nomRole=role_name)
+        if not role.estDefaut:
+            role.estDefaut = True
+            role.save()
 
     # Création des types de plans de maintenance par défaut
     types_plan_maintenance = ['Préventive systématique', 'Préventive conditionnelle', 'Corrective']

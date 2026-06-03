@@ -521,7 +521,10 @@ const handleSubmit = async () => {
 
   } catch (e) {
     console.error('Erreur lors de la création:', e);
-    errorMessage.value = 'L\'équipement n\'a pas pu être créé. Veuillez vérifier les informations saisies.';
+    const detail = e?.response?.data
+      ? JSON.stringify(e.response.data)
+      : (e?.message || '');
+    errorMessage.value = `Erreur : ${detail || 'Veuillez vérifier les informations saisies.'}`;
   } finally {
     loading.value = false;
   }

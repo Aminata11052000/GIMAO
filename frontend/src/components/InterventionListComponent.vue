@@ -67,11 +67,11 @@
       {{ item.date_prevue ? formatDateTime(item.date_prevue) : '-' }}
     </template>
 
-    <template #item.responsable="{ item }">
-      <span v-if="item.responsable">
-        {{ formatUserDisplay(item.responsable) || '-' }}
+    <template #item.utilisateur_assigne="{ item }">
+      <span v-if="item.utilisateur_assigne && item.utilisateur_assigne.length > 0">
+        {{ item.utilisateur_assigne.map(u => formatUserDisplay(u)).filter(Boolean).join(', ') || '-' }}
       </span>
-      <span v-else>-</span>
+      <span v-else class="text-grey">Non assigné</span>
     </template>
 
     <template #item.statut="{ item }">

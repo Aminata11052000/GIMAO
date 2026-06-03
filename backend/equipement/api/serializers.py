@@ -110,6 +110,7 @@ class CompteurSerializer(serializers.ModelSerializer):
                 'prochaineMaintenance': declencher.prochaineMaintenance,
                 'ecartInterventions': declencher.ecartInterventions,
                 'estGlissant': declencher.estGlissant,
+                'anticipationJours': declencher.anticipationJours,
                 'planMaintenanceId': declencher.planMaintenance_id
             }
             
@@ -158,7 +159,7 @@ class FamilleEquipementSerializer(serializers.ModelSerializer):
 class EquipementCreateSerializer(serializers.ModelSerializer):
     createurEquipement = serializers.IntegerField()
     lieu = serializers.IntegerField()
-    modeleEquipement = serializers.IntegerField()
+    modeleEquipement = serializers.IntegerField(required=False, allow_null=True)
     fournisseur = serializers.IntegerField()
     fabricant = serializers.IntegerField()
 

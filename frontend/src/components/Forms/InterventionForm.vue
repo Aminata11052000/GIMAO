@@ -743,7 +743,7 @@ const getRoleName = (user) => user?.role?.nomRole || user?.role || '';
 const assignableUserItems = computed(() =>
 	userItems.value.filter((user) => {
 		const roleName = getRoleName(user);
-		return roleName.startsWith('Technicien') || roleName === ROLE_RESPONSABLE_GMAO;
+		return roleName.toLowerCase().includes('technicien maintenance') || roleName === ROLE_RESPONSABLE_GMAO;
 	})
 );
 

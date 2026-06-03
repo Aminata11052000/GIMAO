@@ -44,6 +44,7 @@ import NoticesHome from '@/views/Notices/NoticesHome.vue'
 
 // ------------------------------------------------------------------
 
+import PreventiveMaintenance from '@/views/PreventiveMaintenance/PreventiveMaintenance.vue'
 import DataManagement from '@/views/DataManagement/DataManagement.vue'
 import ExportData from '@/views/DataManagement/ExportData.vue'
 
@@ -492,6 +493,14 @@ const routes = [
     name: 'EditModelEquipment',
     component: EditModelEquipment,
     meta: { title: 'Modifier modele equipement', requiresPermissions: ['eqmod:edit'] }
+  },
+
+  // Maintenance préventive -----------------------------------------------------------
+  {
+    path: '/MaintenancePreventive',
+    name: 'PreventiveMaintenance',
+    component: PreventiveMaintenance,
+    meta: { title: 'Maintenance préventive', requiresPermissions: ['mp:viewList'] }
   },
 
   // Dashboard -------------------------------------------------------------------------

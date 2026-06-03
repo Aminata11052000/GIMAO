@@ -295,7 +295,8 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
             )
 
         # Récupération des dépendances
-        modele = ModeleEquipement.objects.get(id=data["modeleEquipement"])
+        modele_id = data.get("modeleEquipement")
+        modele = ModeleEquipement.objects.get(id=modele_id) if modele_id else None
         fabricant = Fabricant.objects.get(id=data["fabricant"])
         fournisseur = Fournisseur.objects.get(id=data["fournisseur"])
         famille = FamilleEquipement.objects.get(id=data["famille"])
@@ -1228,16 +1229,27 @@ class DeclenchementViewSet(GimaoModelViewSet):
         ecart = seuil.get('ecartInterventions') or seuil.get('intervalle') or 0
         est_glissant = seuil.get('estGlissant', False)
 
-        if compteur.type == 'Calendaire':
+        # Détection calendaire : par type OU par nature des données (ISO string)
+        is_calendaire = (
+            compteur.type == 'Calendaire' or
+            compteur.unite == 'date' or
+            isinstance(derniere, str) and '-' in str(derniere)
+        )
+
+        if is_calendaire:
             # Convertir en ordinal
-            derniere = self.date_to_days(derniere) if isinstance(derniere, str) else 0
-            prochaine = self.date_to_days(prochaine) if isinstance(prochaine, str) else 0
-            
+            derniere = self.date_to_days(derniere) if isinstance(derniere, str) else int(derniere or 0)
+            prochaine = self.date_to_days(prochaine) if isinstance(prochaine, str) else int(prochaine or 0)
             # Garder ecart tel quel (timestamp MS)
-            ecart = int(ecart) if isinstance(ecart, str) else ecart
-            
+            ecart = int(ecart) if isinstance(ecart, str) else int(ecart or 0)
         else:
-            prochaine = derniere + ecart
+            try:
+                prochaine = float(derniere or 0) + float(ecart or 0)
+            except (TypeError, ValueError):
+                prochaine = float(ecart or 0)
+
+        anticipation = data.get('anticipationJours')
+        anticipation_val = int(anticipation) if anticipation else None
 
         declencher = Declencher.objects.create(
             compteur=compteur,
@@ -1245,7 +1257,8 @@ class DeclenchementViewSet(GimaoModelViewSet):
             derniereIntervention=derniere,
             ecartInterventions=ecart,
             prochaineMaintenance=prochaine,
-            estGlissant=bool(est_glissant)
+            estGlissant=bool(est_glissant),
+            anticipationJours=anticipation_val
         )
 
         # Consommables pour le plan

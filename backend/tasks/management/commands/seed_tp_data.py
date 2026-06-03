@@ -101,7 +101,7 @@ class Command(BaseCommand):
 
         tech_maint, created = Role.objects.get_or_create(nomRole="Technicien maintenance")
         if created:
-            for perm_name in perms_data.perms_map.get("Technicien", []):
+            for perm_name in perms_data.perms_map.get("Technicien prod", []):
                 try:
                     perm = Permission.objects.get(nomPermission=perm_name)
                     RolePermission.objects.get_or_create(role=tech_maint, permission=perm)
@@ -128,9 +128,9 @@ class Command(BaseCommand):
         from utilisateur.models import Utilisateur, Role
 
         role_resp   = Role.objects.get(nomRole="Responsable GMAO")
-        role_tech   = Role.objects.get(nomRole="Technicien")
+        role_tech   = Role.objects.get(nomRole="Technicien prod")
         role_tm     = Role.objects.get(nomRole="Technicien maintenance")
-        role_op     = Role.objects.get(nomRole="Opérateur")
+        role_op     = Role.objects.get(nomRole="Opérateur prod")
         role_mag    = Role.objects.get(nomRole="Magasinier")
 
         users_data = [
@@ -696,12 +696,12 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("╠══════════════════════════════════════╣"))
         accounts = [
             ("jm.ferrer",    "Responsable1!", "Responsable GMAO"),
-            ("t.martin",     "Technicien1!",  "Technicien"),
-            ("a.bernard",    "Technicien1!",  "Technicien"),
-            ("l.moreau",     "Technicien1!",  "Technicien"),
-            ("c.camille",    "Technicien1!",  "Technicien"),
-            ("o.durand",     "Operateur1!",   "Opérateur"),
-            ("s.leroy",      "Operateur1!",   "Opérateur"),
+            ("t.martin",     "Technicien1!",  "Technicien prod"),
+            ("a.bernard",    "Technicien1!",  "Technicien prod"),
+            ("l.moreau",     "Technicien1!",  "Technicien prod"),
+            ("c.camille",    "Technicien1!",  "Technicien prod"),
+            ("o.durand",     "Operateur1!",   "Opérateur prod"),
+            ("s.leroy",      "Operateur1!",   "Opérateur prod"),
             ("mag.simon",    "Magasinier1!",  "Magasinier"),
         ]
         for login, pwd, role in accounts:

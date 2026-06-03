@@ -28,7 +28,7 @@
                    <v-list-item-subtitle>{{ consumable?.seuilStockFaible || '-' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
-                   <v-list-item-title class="font-weight-bold">Quantité Totale</v-list-item-title>
+                   <v-list-item-title class="font-weight-bold">Quantité en stock</v-list-item-title>
                    <v-list-item-subtitle>{{ consumable?.quantite_totale }}</v-list-item-subtitle>
                 </v-list-item>
               </v-list>

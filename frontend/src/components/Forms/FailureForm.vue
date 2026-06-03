@@ -4,8 +4,15 @@
         :custom-cancel-action="close" :submit-button-text="submitButtonText" elevation="0">
         <v-row dense>
             <v-col cols="12">
-                <FormField v-model="formData.nom" field-name="nom" label="Nom de la demande d'intervention"
-                    placeholder="Saisir le nom de la demande" />
+                <v-text-field
+                    :model-value="numeroDI"
+                    label="Numéro de Demande d'intervention"
+                    variant="outlined"
+                    density="comfortable"
+                    readonly
+                    :loading="loadingNumeroDI"
+                    prepend-inner-icon="mdi-identifier"
+                />
             </v-col>
 
             <v-col cols="12">
@@ -39,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { BaseForm, FormField, FormSelect, FormTextarea } from '@/components/common'
 import DocumentForm from '@/components/Forms/DocumentForm.vue'
 import { useApi } from '@/composables/useApi'
@@ -93,7 +100,6 @@ const formData = ref({
 
 const validationSchema = computed(() => {
     const schema = {
-        nom: ['required', { name: 'minLength', params: [2] }, { name: 'maxLength', params: [255] }],
         statut_suppose: ['required']
     }
 
@@ -108,6 +114,28 @@ const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 const originalFormData = ref(null)
+const numeroDI = ref('')
+const loadingNumeroDI = ref(false)
+
+const fetchNumeroDI = async () => {
+    if (props.isEdit) {
+        numeroDI.value = props.initialData?.nom || ''
+        return
+    }
+    loadingNumeroDI.value = true
+    try {
+        const apiInstance = useApi(API_BASE_URL)
+        const response = await apiInstance.get('demandes-intervention/')
+        const count = response?.count ?? (Array.isArray(response) ? response.length : 0)
+        numeroDI.value = `DI-${String(count + 1).padStart(4, '0')}`
+    } catch {
+        numeroDI.value = 'DI-????'
+    } finally {
+        loadingNumeroDI.value = false
+    }
+}
+
+onMounted(fetchNumeroDI)
 
 // Initialiser les données
 watch(() => props.initialData, (newData) => {
@@ -227,7 +255,6 @@ const save = async () => {
             // Mode édition
             const original = originalFormData.value
             const patch = {}
-            if (!original || (formData.value.nom ?? '') !== (original.nom ?? '')) patch.nom = formData.value.nom
             if (!original || (formData.value.commentaire ?? '') !== (original.commentaire ?? '')) patch.commentaire = formData.value.commentaire || ''
             if (!original || formData.value.statut_suppose !== original.statut_suppose) patch.statut_suppose = formData.value.statut_suppose
 
@@ -247,7 +274,6 @@ const save = async () => {
             }
 
             const form = new FormData()
-            if (patch.nom !== undefined) form.append('nom', (patch.nom || '').toString())
             if (patch.commentaire !== undefined) form.append('commentaire', (patch.commentaire || '').toString())
             if (patch.statut_suppose !== undefined) form.append('statut_suppose', patch.statut_suppose)
             if (documentsChanged) {
@@ -280,7 +306,7 @@ const save = async () => {
             const form = new FormData()
             form.append('utilisateur_id', String(props.connectedUserId))
             form.append('equipement_id', String(formData.value.equipement_id))
-            form.append('nom', (formData.value.nom || '').toString())
+            form.append('nom', numeroDI.value)
             form.append('commentaire', (formData.value.commentaire || '').toString())
             form.append('statut_suppose', formData.value.statut_suppose)
 

@@ -166,6 +166,12 @@ class Declencher(models.Model):
         default=False,
         help_text="Indique si le seuil est glissant"
     )
+    anticipationJours = models.IntegerField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Nombre de jours d'anticipation avant l'échéance (calendaire uniquement)"
+    )
 
     compteur = models.ForeignKey(
         Compteur,

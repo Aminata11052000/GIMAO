@@ -10,6 +10,10 @@ class Role(models.Model):
         max_length=50,
         help_text="Nom du rôle (ex: Administrateur, Technicien, etc.)"
     )
+    estDefaut = models.BooleanField(
+        default=False,
+        help_text="Rôle par défaut non supprimable"
+    )
     # rang = models.PositiveSmallIntegerField(
     #     help_text="Rang du rôle pour hiérarchiser les permissions (plus petit = plus élevé)"
     # )

@@ -191,7 +191,7 @@ perms_map = {
         ]
     ],
 
-    "Technicien": [
+    "Technicien prod": [
         'di:viewList', 'di:viewDetail', 'di:create', 'di:editCreated',
         'bt:viewList', 'bt:viewDetail', 'bt:start', 'bt:end', 'bt:editAssigned',
         'eq:viewList', 'eq:viewDetail', 'eq:edit', 'eq:document.add',
@@ -202,7 +202,19 @@ perms_map = {
         'dash:display.eq', 'dash:display.btAssigned', 'dash:stats.bt',
     ],
 
-    "Opérateur": [
+    "Technicien maintenance": [
+        'di:viewList', 'di:viewDetail', 'di:create', 'di:editCreated',
+        'bt:viewList', 'bt:viewDetail', 'bt:start', 'bt:end', 'bt:editAssigned',
+        'eq:viewList', 'eq:viewDetail', 'eq:edit', 'eq:document.add',
+        'eq:view.calendar',
+        'cp:viewList', 'cp:viewDetail', 'cp:edit',
+        'mp:viewList', 'mp:viewDetail', 'mp:create', 'mp:edit',
+        'stock:view',
+        'menu:view',
+        'dash:display.eq', 'dash:display.btAssigned', 'dash:stats.bt',
+    ],
+
+    "Opérateur prod": [
         'di:viewList', 'di:viewDetail', 'di:create', 'di:editCreated',
         'bt:viewList', 'bt:viewDetail',
         'eq:viewList', 'eq:viewDetail',

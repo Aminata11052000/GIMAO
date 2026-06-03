@@ -41,6 +41,15 @@ class RoleViewSet(GimaoModelViewSet):
     queryset = Role.objects.all().order_by('nomRole')
     serializer_class = RoleSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        role = self.get_object()
+        if role.estDefaut:
+            return Response(
+                {"detail": f"Le rôle « {role.nomRole} » est un rôle par défaut et ne peut pas être supprimé."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
+
     @action(detail=True, methods=['post'])
     def dupliquer(self, request, pk=None):
         """Crée une copie du rôle avec toutes ses permissions. Body optionnel : { "nomRole": "Nouveau nom" }"""

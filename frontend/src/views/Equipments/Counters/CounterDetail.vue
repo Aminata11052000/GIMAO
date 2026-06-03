@@ -101,6 +101,11 @@
                       {{ seuil.estGlissant ? "Glissant" : "Fixe" }}
                     </v-chip>
                   </v-col>
+                  <v-col cols="12" md="3" v-if="seuil.anticipationJours">
+                    <strong>Déclenchement effectif :</strong>
+                    <div>{{ formatNextMaintenance(seuil.prochaineMaintenance - seuil.anticipationJours) }}</div>
+                    <div class="text-caption text-grey">{{ seuil.anticipationJours }} jours avant l'échéance</div>
+                  </v-col>
                 </v-row>
               </v-sheet>
 
@@ -130,28 +135,18 @@
                     </v-col>
                   </v-row>
 
-                  <v-row dense class="mb-3">
+                  <v-row dense class="mb-3" v-if="seuil.planMaintenance.necessiteHabilitationElectrique || seuil.planMaintenance.necessitePermisFeu">
                     <v-col cols="12">
                       <strong>Requis :</strong>
-                      <div class="d-flex gap-3">
-                        <v-chip :color="seuil.planMaintenance.necessiteHabilitationElectrique
-                          ? 'orange'
-                          : 'grey'
-                          " size="small" label>
-                          <v-icon left small>{{
-                            seuil.planMaintenance.necessiteHabilitationElectrique
-                              ? "mdi-check"
-                              : "mdi-close"
-                          }}</v-icon>
+                      <div class="d-flex gap-3 mt-1">
+                        <v-chip v-if="seuil.planMaintenance.necessiteHabilitationElectrique"
+                          color="orange" size="small" label>
+                          <v-icon left small>mdi-flash</v-icon>
                           Habilitation électrique
                         </v-chip>
-                        <v-chip :color="seuil.planMaintenance.necessitePermisFeu ? 'red' : 'grey'
-                          " size="small" label>
-                          <v-icon left small>{{
-                            seuil.planMaintenance.necessitePermisFeu
-                              ? "mdi-check"
-                              : "mdi-close"
-                          }}</v-icon>
+                        <v-chip v-if="seuil.planMaintenance.necessitePermisFeu"
+                          color="red" size="small" label>
+                          <v-icon left small>mdi-fire</v-icon>
                           Permis feu
                         </v-chip>
                       </div>
@@ -348,38 +343,47 @@ const countersForSelect = computed(() => {
       unite: counter.value.unite || "heures",
       valeurCourante: counter.value.valeurCourante || 0,
       estPrincipal: counter.value.estPrincipal || false,
-      type: counter.value.type || "Numérique",
+      type: counter.value.type || (counter.value.unite === 'date' ? 'Calendaire' : 'Numérique'),
     },
   ];
 });
 
-const pmTypes = computed(() => {
-  typesPM.value = typesPM.value.filter(item => item.libelle === 'Préventive conditionnelle' || item.libelle === 'Préventive systématique').map(item => ({
-        id: item.id,
-        libelle: item.libelle
-      }));
-  return typesPM.value;
-});
+const pmTypes = computed(() =>
+  typesPM.value
+    .filter(item => item.libelle === 'Préventive conditionnelle' || item.libelle === 'Préventive systématique')
+    .map(item => ({ id: item.id, libelle: item.libelle }))
+);
 
 const progressionData = computed(() => {
   if (!counter.value || !counter.value.seuils) return {};
 
   const data = {};
+  const actuelle = Number(counter.value.valeurCourante);
+
   counter.value.seuils.forEach((seuil) => {
-    if (seuil.prochaineMaintenance && counter.value.valeurCourante) {
-      const progression =
-        ((counter.value.valeurCourante - seuil.derniereIntervention) /
-          (seuil.prochaineMaintenance - seuil.derniereIntervention)) *
-        100;
-      data[seuil.id] = Math.min(Math.max(progression, 0), 100);
+    const prochaine = Number(seuil.prochaineMaintenance);
+    const derniere = Number(seuil.derniereIntervention);
+    const anticipation = seuil.anticipationJours ? Number(seuil.anticipationJours) : 0;
+
+    if (isNaN(prochaine) || isNaN(actuelle) || isNaN(derniere)) return;
+
+    // Avec anticipation : le déclenchement effectif est (prochaine - anticipation) jours
+    // Le 100% est atteint à cette date effective, pas à prochaineMaintenance
+    const declenchementEffectif = prochaine - anticipation;
+
+    if (declenchementEffectif === derniere) {
+      data[seuil.id] = actuelle >= declenchementEffectif ? 100 : 0;
+      return;
     }
+    const progression = ((actuelle - derniere) / (declenchementEffectif - derniere)) * 100;
+    data[seuil.id] = Math.min(Math.max(progression, 0), 100);
   });
   return data;
 });
 
 const getProgressionColor = (seuil) => {
   const progression = progressionData.value[seuil.id];
-  if (!progression) return "grey";
+  if (progression == null || isNaN(progression)) return "grey";
 
   if (progression >= 100) return "red";
   if (progression >= 80) return "orange";
@@ -391,7 +395,7 @@ const getProgressionColor = (seuil) => {
 
 const getProgressionText = (seuil) => {
   const progression = progressionData.value[seuil.id];
-  if (!progression) return "N/A";
+  if (progression == null || isNaN(progression)) return "N/A";
 
   if (progression >= 100) return "Dépassé";
   return `${Math.round(progression)}%`;
@@ -501,8 +505,8 @@ const closeCounterDialog = () => {
 const addNewSeuil = () => {
   currentSeuil.value = {
     id: null,
-    derniereIntervention: 0,
-    prochaineMaintenance: 0,
+    derniereIntervention: null,
+    prochaineMaintenance: null,
     ecartInterventions: 0,
     estGlissant: false,
     planMaintenance: null,
@@ -517,9 +521,9 @@ const addNewSeuil = () => {
     consommables: [],
     documents: [],
     seuil: {
-      derniereIntervention: 0,
+      derniereIntervention: null,
       ecartInterventions: 0,
-      prochaineMaintenance: 0,
+      prochaineMaintenance: null,
       estGlissant: false,
     },
     necessiteHabilitationElectrique: false,
@@ -601,7 +605,9 @@ const saveCounter = async (updatedCounter) => {
     changes.user = store.getters.currentUser?.id;
 
     await api.put(`compteurs/${counterId}/`, changes);
-    counter.value = { ...counter.value, ...updatedCounter };
+    await fetchCounter();
+    // Mettre à jour l'original pour que les prochains diffs soient corrects
+    originalCounter.value = JSON.parse(JSON.stringify(counter.value));
     successMessage.value = "Compteur mis à jour avec succès.";
   } else {
     successMessage.value = "Aucune modification détectée.";
@@ -619,14 +625,14 @@ const detectCounterChanges = (updatedCounter) => {
   }
   if (originalCounter.value.valeurCourante !== updatedCounter.valeurCourante) {
     changes.valeurCourante = {
-      'ancienne': originalCounter.value.valeurCourante,
-      'nouvelle': updatedCounter.valeurCourante,
+      'ancien': originalCounter.value.valeurCourante,
+      'nouveau': updatedCounter.valeurCourante,
     };
   }
   if (originalCounter.value.unite !== updatedCounter.unite && updatedCounter.type !== 'Calendaire') {
     changes.unite = {
-      'ancienne': originalCounter.value.unite,
-      'nouvelle': updatedCounter.unite,
+      'ancien': originalCounter.value.unite,
+      'nouveau': updatedCounter.unite,
     };
   }
   if (originalCounter.value.estPrincipal !== updatedCounter.estPrincipal) {

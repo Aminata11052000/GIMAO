@@ -11,11 +11,28 @@
         elevation="0"
     >
         <v-row dense>
+
+            <!-- Nom : sélection depuis les lieux ou saisie libre -->
             <v-col cols="12">
+                <v-select
+                    v-model="nomSelection"
+                    :items="lieuOptions"
+                    item-title="label"
+                    item-value="value"
+                    label="Nom du magasin"
+                    placeholder="Choisir un lieu ou saisir un nom"
+                    variant="outlined"
+                    density="comfortable"
+                    :loading="lieuxLoading"
+                />
+            </v-col>
+
+            <!-- Champ libre si "Autre" est sélectionné -->
+            <v-col cols="12" v-if="nomSelection === '__autre__'">
                 <FormField
                     v-model="formData.nom"
                     field-name="nom"
-                    label="Nom du magasin"
+                    label="Nom personnalisé"
                     placeholder="Saisir le nom du magasin"
                 />
             </v-col>
@@ -92,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { BaseForm, FormField, FormCheckbox } from '@/components/common'
 import { useApi } from '@/composables/useApi'
 import { API_BASE_URL } from '@/utils/constants'
@@ -106,8 +123,39 @@ const props = defineProps({
     }
 })
 
+const api = useApi(API_BASE_URL)
 const isEditMode = computed(() => !!props.magasin)
 
+// ── Lieux ──────────────────────────────────────────────────────────────────
+const lieux = ref([])
+const lieuxLoading = ref(false)
+
+const lieuOptions = computed(() => [
+    ...lieux.value.map(l => ({ label: l.nomLieu, value: l.nomLieu })),
+    { label: 'Autre (saisir un nom)', value: '__autre__' }
+])
+
+onMounted(async () => {
+    lieuxLoading.value = true
+    try {
+        const res = await api.get('lieux/')
+        lieux.value = Array.isArray(res) ? res : (res.results || [])
+    } catch { /* silencieux */ }
+    finally { lieuxLoading.value = false }
+})
+
+// ── Sélection nom ──────────────────────────────────────────────────────────
+const nomSelection = ref('')
+
+watch(nomSelection, (val) => {
+    if (val && val !== '__autre__') {
+        formData.value.nom = val
+    } else if (val !== '__autre__') {
+        formData.value.nom = ''
+    }
+})
+
+// ── Formulaire ─────────────────────────────────────────────────────────────
 const formData = ref({
     nom: '',
     estMobile: false,
@@ -135,11 +183,9 @@ const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
-const close = () => {
-    emit('close')
-}
+const close = () => emit('close')
 
-// Initialiser le formulaire avec les données du magasin en mode édition
+// Initialiser en mode édition
 watch(() => props.magasin, (newMagasin) => {
     if (newMagasin) {
         formData.value = {
@@ -154,6 +200,8 @@ watch(() => props.magasin, (newMagasin) => {
                 complement: newMagasin.adresse?.complement || null
             }
         }
+        // Pré-sélectionner si le nom correspond à un lieu existant
+        nomSelection.value = newMagasin.nom || '__autre__'
     }
 }, { immediate: true, deep: true })
 
@@ -162,36 +210,19 @@ const save = async () => {
     errorMessage.value = ''
     successMessage.value = ''
 
-    const api = useApi(API_BASE_URL)
-
     try {
         let response
         if (isEditMode.value) {
-            // Mode édition : PATCH
             response = await api.patch(`magasins/${props.magasin.id}/`, formData.value)
-            console.log('Magasin modifié avec succès:', response)
             successMessage.value = 'Magasin modifié avec succès'
             emit('updated', response)
         } else {
-            // Mode création : POST
             response = await api.post('magasins/', formData.value)
-            console.log('Magasin créé avec succès:', response)
-            
-            const newMagasin = {
-                id: response.id,
-                nom: response.nom,
-                estMobile: response.estMobile
-            }
-            
             successMessage.value = 'Magasin créé avec succès'
-            emit('created', newMagasin)
+            emit('created', { id: response.id, nom: response.nom, estMobile: response.estMobile })
         }
-        
-        setTimeout(() => {
-            emit('close')
-        }, 500)
+        setTimeout(() => emit('close'), 500)
     } catch (error) {
-        console.error('Erreur lors de l\'opération:', error)
         errorMessage.value = error.message || 'Une erreur est survenue'
     } finally {
         loading.value = false

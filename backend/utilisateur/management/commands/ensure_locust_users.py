@@ -14,7 +14,7 @@ ROLE_CONFIGS = [
         "last_name": "Responsable",
     },
     {
-        "role_name": "Technicien",
+        "role_name": "Technicien prod",
         "username_env": "LOCUST_TECHNICIEN_USERNAME",
         "default_username": "locust_technicien",
         "first_name": "Locust",

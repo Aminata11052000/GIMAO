@@ -579,7 +579,7 @@ const handleSave = async () => {
     }
 
     await Promise.all(requests)
-    emit('saved')
+    emit('saved', formData.value.equipement_id)
   } catch (e) {
     console.error(e)
     localError.value = e.message || 'Une erreur est survenue lors de l\'enregistrement.'

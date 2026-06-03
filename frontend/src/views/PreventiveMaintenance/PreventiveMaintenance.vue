@@ -199,12 +199,12 @@ const goToCounterDetail = () => {
   }
 }
 
-const onSaved = async () => {
+const onSaved = async (equipementId) => {
   showDialog.value = false
   snackbar.value = true
-  // Rafraîchir les plans du dernier équipement modifié
-  if (dialogEquipment.value) {
-    await loadPlansForEquipment(dialogEquipment.value.id)
+  const id = equipementId || dialogEquipment.value?.id
+  if (id) {
+    await loadPlansForEquipment(id)
   }
 }
 

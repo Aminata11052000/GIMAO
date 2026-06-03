@@ -44,7 +44,7 @@
                     :step="2"
                     :show-location="false"
                     :show-status="false"
-                    :show-consommables="true"
+                    :show-consommables="false"
                     :show-counters="false"
                     :show-general="false"
                     :show-model-info="true"
@@ -67,250 +67,6 @@
                   />
                 </v-stepper-window-item>
 
-                <!-- Étape 4: Compteurs -->
-                <v-stepper-window-item :value="4">
-                  <v-card variant="outlined" class="pa-4">
-                    <v-card-title class="text-h6 font-weight-bold px-0 pb-4 d-flex align-center justify-space-between">
-                      <span>Compteurs de l'équipement</span>
-                      <v-btn color="primary" size="small" @click="handleCounterAdd" prepend-icon="mdi-plus">
-                        Ajouter un compteur
-                      </v-btn>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <!-- Liste des compteurs -->
-                      <div v-if="visibleCounters.length > 0">
-                        <v-row>
-                          <v-col v-for="(compteur, index) in visibleCounters" :key="index" cols="12">
-                            <v-card variant="outlined" class="pa-4">
-                              <div class="d-flex align-center justify-space-between mb-2">
-                                <div class="d-flex align-center gap-2">
-                                  <v-icon color="primary">mdi-counter</v-icon>
-                                  <h3 class="text-h6 mr-2">{{ compteur.nomCompteur || 'Compteur sans nom' }}</h3>
-                                  <v-chip v-if="compteur.estPrincipal" color="primary" size="small" label>
-                                    Principal
-                                  </v-chip>
-                                </div>
-                                <div class="d-flex gap-2">
-                                  <v-btn icon="mdi-pencil" size="small" color="primary" variant="text"
-                                    @click="handleCounterEdit(compteur)" />
-                                  <v-btn icon="mdi-delete" size="small" color="error" variant="text"
-                                    @click="handleCounterDelete(compteur)" />
-                                </div>
-                              </div>
-                              
-                              <v-divider class="my-3" />
-                              
-                              <v-row dense>
-                                <v-col cols="6" md="3">
-                                  <div class="text-caption text-grey">Valeur courante</div>
-                                  <div class="text-body-1">{{ compteur.type === 'Calendaire' ? ordinalToDate(compteur.valeurCourante) : compteur.valeurCourante }} {{ compteur.type !== 'Calendaire' ? compteur.unite : '' }}</div>
-                                </v-col>
-                                <v-col cols="6" md="3">
-                                  <div class="text-caption text-grey">Unité</div>
-                                  <div class="text-body-1">{{ compteur.unite }}</div>
-                                </v-col>
-                              </v-row>
-                            </v-card>
-                          </v-col>
-                        </v-row>
-
-                        <v-alert type="info" variant="tonal" class="mt-4">
-                          <v-icon>mdi-information</v-icon>
-                          Les compteurs permettent de suivre l'utilisation de l'équipement. Au moins un compteur doit être marqué comme "Principal".
-                        </v-alert>
-                      </div>
-
-                      <div v-else class="text-center py-8 text-grey">
-                        <v-icon size="large" class="mb-2">mdi-counter</v-icon>
-                        <div class="text-h6 mb-2">Aucun compteur défini</div>
-                        <div class="text-body-1 mb-4">Ajoutez au moins un compteur pour suivre l'utilisation de l'équipement</div>
-                        <v-btn color="primary" @click="handleCounterAdd" prepend-icon="mdi-plus">
-                          Ajouter un compteur
-                        </v-btn>
-                      </div>
-                    </v-card-text>
-                  </v-card>
-                </v-stepper-window-item>
-
-                <!-- Etape 5: Définition des périodicités -->
-                <v-stepper-window-item :value="5">
-                  <v-card variant="outlined" class="pa-4">
-                    <v-card-title class="text-h6 font-weight-bold px-0 pb-4 d-flex align-center justify-space-between">
-                      <span>Définition des périodicités</span>
-                      <v-btn color="primary" size="small" @click="openPeriodicMaintenanceDialog" prepend-icon="mdi-plus"
-                        :disabled="!hasCalendarCounter">
-                        Ajouter une périodicité
-                      </v-btn>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <!-- Message si pas de compteurs -->
-                      <v-alert v-if="!hasCalendarCounter" type="warning"
-                        variant="tonal" class="mb-4">
-                        <v-alert-title class="text-body-1">Compteur calendaire requis</v-alert-title>
-                        Un compteur calendaire est requis pour pouvoir définir des
-                        périodicités.
-                      </v-alert>
-
-                      <!-- Liste des périodicités -->
-                      <div v-if="periodicMaintenancePlans.length > 0">
-                        <v-row>
-                          <v-col v-for="(plan, index) in periodicMaintenancePlans" :key="index" cols="12">
-                            <v-card variant="outlined" class="pa-4">
-                              <div class="d-flex align-center justify-space-between mb-2">
-                                <div class="d-flex align-center gap-2">
-                                  <v-icon color="primary">mdi-clipboard-check</v-icon>
-                                  <h3 class="text-h6">{{ plan.nom || 'Opération sans nom' }}</h3>
-                                  <v-chip v-if="plan.type_id" :color="getPlanTypeColor(plan)" size="small" label>
-                                    {{ getPlanTypeName(plan) }}
-                                  </v-chip>
-                                </div>
-                                <div class="d-flex gap-2">
-                                  <v-btn icon="mdi-pencil" size="small" color="primary" variant="text"
-                                    @click="handlePeriodicPlanEdit(plan)" />
-                                  <v-btn icon="mdi-delete" size="small" color="error" variant="text"
-                                    @click="handlePlanDelete(plan)" />
-                                </div>
-                              </div>
-                              
-                              <v-divider class="my-3" />
-                              
-                              <v-row dense>
-                                <v-col cols="12" md="6">
-                                  <div class="text-caption text-grey">Compteur associé</div>
-                                  <div class="text-body-1">{{ getCounterName(plan.compteurIndex) }}</div>
-                                </v-col>
-                                <v-col cols="12" md="3">
-                                  <div class="text-caption text-grey">Intervalle</div>
-                                  <div class="text-body-1">{{ 
-                                    getCounterType(plan.compteurIndex) === 'Calendaire' 
-                                      ? getSeuilInterval(plan.seuil.ecartInterventions) 
-                                      : `${plan.seuil.ecartInterventions} ${getCounterUnit(plan.compteurIndex)}`
-                                   }}</div>
-                                </v-col>
-                                <v-col cols="12" md="3">
-                                  <div class="text-caption text-grey">Prochaine maintenance</div>
-                                  <div class="text-body-1">{{ 
-                                    getCounterType(plan.compteurIndex) === 'Calendaire' 
-                                      ? getSeuilNextMaintenance(plan.seuil.prochaineMaintenance) 
-                                      : `${plan.seuil.prochaineMaintenance} ${getCounterUnit(plan.compteurIndex)}`
-                                  }}</div>
-                                </v-col>
-                              </v-row>
-
-                              <v-row dense class="mt-2" v-if="plan.necessiteHabilitationElectrique || plan.necessitePermisFeu">
-                                <v-col cols="12">
-                                  <div class="text-caption text-grey mb-1">Habilitations requises</div>
-                                  <v-chip v-if="plan.necessiteHabilitationElectrique" size="x-small" color="orange" class="mr-1">
-                                    <v-icon start size="x-small">mdi-flash</v-icon>
-                                    Hab. élec.
-                                  </v-chip>
-                                  <v-chip v-if="plan.necessitePermisFeu" size="x-small" color="error">
-                                    <v-icon start size="x-small">mdi-fire</v-icon>
-                                    Permis feu
-                                  </v-chip>
-                                </v-col>
-                              </v-row>
-                            </v-card>
-                          </v-col>
-                        </v-row>
-
-                        <v-alert type="info" variant="tonal" class="mt-4">
-                          <v-icon>mdi-information</v-icon>
-                          Les périodicités permettent de définir le rythme des interventions préventives.
-                        </v-alert>
-                      </div>
-
-                      <div v-else-if="hasCalendarCounter"
-                        class="text-center py-8 text-grey">
-                        <v-icon size="large" class="mb-2">mdi-calendar-clock</v-icon>
-                        <div class="text-h6 mb-2">Aucune périodicité définie</div>
-                        <div class="text-body-1 mb-4">Ajoutez des périodicités pour programmer les interventions
-                          préventives
-                        </div>
-                        <v-btn color="primary" @click="openPeriodicMaintenanceDialog" prepend-icon="mdi-plus">
-                          Ajouter une périodicité
-                        </v-btn>
-                      </div>
-                    </v-card-text>
-                  </v-card>
-                </v-stepper-window-item>
-
-                <!-- Etape 6: Définition des seuils -->
-                <v-stepper-window-item :value="6">
-                  <v-card variant="outlined" class="pa-4">
-                    <v-card-title class="text-h6 font-weight-bold px-0 pb-4 d-flex align-center justify-space-between">
-                      <span>Définition des seuils</span>
-                      <v-btn color="primary" size="small" @click="openPreventiveMaintenanceDialog" prepend-icon="mdi-plus"
-                        :disabled="!hasUserCounters">
-                        Ajouter un seuil
-                      </v-btn>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <v-alert type="info" variant="tonal" class="mb-4">
-                        <v-icon>mdi-information</v-icon>
-                        Créez ici les maintenances préventives non périodiques basées sur des seuils numériques.
-                      </v-alert>
-
-                      <div v-if="preventiveMaintenancePlans.length > 0">
-                        <v-row>
-                          <v-col v-for="(plan, index) in preventiveMaintenancePlans" :key="`review-${index}`" cols="12">
-                            <v-card variant="outlined" class="pa-4">
-                              <div class="d-flex align-center justify-space-between mb-2">
-                                <div class="d-flex align-center gap-2">
-                                  <v-icon color="primary">mdi-clipboard-check</v-icon>
-                                  <h3 class="text-h6">{{ plan.nom || 'Plan sans nom' }}</h3>
-                                  <v-chip v-if="plan.type_id" :color="getPlanTypeColor(plan)" size="small" label>
-                                    {{ getPlanTypeName(plan) }}
-                                  </v-chip>
-                                </div>
-                              </div>
-
-                              <v-divider class="my-3" />
-
-                              <v-row dense>
-                                <v-col cols="12" md="6">
-                                  <div class="text-caption text-grey">Compteur associé</div>
-                                  <div class="text-body-1">{{ getCounterName(plan.compteurIndex) }}</div>
-                                </v-col>
-                                <v-col cols="12" md="3">
-                                  <div class="text-caption text-grey">Intervalle</div>
-                                  <div class="text-body-1">{{ 
-                                    getCounterType(plan.compteurIndex) === 'Calendaire' 
-                                      ? getSeuilInterval(plan.seuil.ecartInterventions) 
-                                      : `${plan.seuil.ecartInterventions} ${getCounterUnit(plan.compteurIndex)}`
-                                   }}</div>
-                                </v-col>
-                                <v-col cols="12" md="3">
-                                  <div class="text-caption text-grey">Prochaine maintenance</div>
-                                  <div class="text-body-1">{{ 
-                                    getCounterType(plan.compteurIndex) === 'Calendaire' 
-                                      ? getSeuilNextMaintenance(plan.seuil.prochaineMaintenance) 
-                                      : `${plan.seuil.prochaineMaintenance} ${getCounterUnit(plan.compteurIndex)}`
-                                  }}</div>
-                                </v-col>
-                              </v-row>
-                            </v-card>
-                          </v-col>
-                        </v-row>
-                      </div>
-
-                      <div v-else class="text-center py-8 text-grey">
-                        <v-icon size="large" class="mb-2">mdi-clipboard-check-outline</v-icon>
-                        <div class="text-h6 mb-2">Aucun seuil à afficher</div>
-                        <div class="text-body-1 mb-4">Les opérations liées au calendrier ne sont pas affichées ici.</div>
-                        <v-btn color="primary" @click="openPreventiveMaintenanceDialog" prepend-icon="mdi-plus"
-                          :disabled="!hasUserCounters">
-                          Ajouter un seuil
-                        </v-btn>
-                      </div>
-
-                    </v-card-text>
-                  </v-card>
-                </v-stepper-window-item>
-
                 <!-- Navigation -->
                 <v-row justify="space-between" class="mt-6 mb-2 px-4">
                   <v-btn type="button" variant="text" @click="prevStep" :disabled="step === 1">
@@ -321,7 +77,7 @@
                     type="button"
                     variant="text"
                     color="primary"
-                    v-if="step < EQUIPMENT_CREATE_STEPS.length && !(step === 4 && !hasUserCounters)"
+                    v-if="step < EQUIPMENT_CREATE_STEPS.length"
                     @click="nextStep" :disabled="!canGoToNextStep(validation)">
                     Suivant
                   </v-btn>
@@ -594,9 +350,8 @@ const handlePeriodicPlanEdit = (plan) => {
   handlePlanEdit(plan);
 };
 
-// Affiche les actions (dont "Créer") à l'étape 4 si aucun compteur utilisateur, sinon seulement à la dernière étape.
 const showFormActions = computed(() =>
-  step.value === EQUIPMENT_CREATE_STEPS.length || step.value >= 4
+  step.value === EQUIPMENT_CREATE_STEPS.length
 );
 
 // Helpers de navigation entre étapes
@@ -652,8 +407,6 @@ const validationSchema = {
     statut: ['required'],
   },
   step2: {
-
-    modeleEquipement: ['required'],
     fournisseur: ['required'],
     fabricant: ['required'],
     famille: ['required'],
@@ -890,14 +643,6 @@ const isStepEditable = (stepNumber) => {
 
 const canGoToNextStep = (validation) => {
   if (!validation) return true;
-  // Si aucun compteur, on ne va pas au step 5 (on crée directement au step 4).
-  if (step.value === 4 && !hasUserCounters.value) return false;
-
-  // Si on a des compteurs, on empêche la navigation si un compteur est incomplet.
-  if (step.value === 4 && hasUserCounters.value) {
-    const hasInvalidCounter = (formData.value.compteurs || []).some(c => !c?.isDefaultCalendar && (!c.nomCompteur || !c.unite));
-    if (hasInvalidCounter) return false;
-  }
   return validation.isStepValid(step.value, formData.value);
 };
 

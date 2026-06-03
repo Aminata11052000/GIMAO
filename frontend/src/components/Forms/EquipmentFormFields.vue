@@ -14,8 +14,8 @@
             </v-col>
 
             <v-col cols="12" md="6">
-                <FormField v-model="modelValue.reference" field-name="reference" :step="step" label="Référence"
-                    placeholder="Saisir la référence" counter="100" />
+                <FormField v-model="modelValue.reference" field-name="reference" :step="step" label="Code GMAO"
+                    placeholder="Saisir le code GMAO" counter="100" />
             </v-col>
 
             <v-col cols="12" md="6">

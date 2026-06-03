@@ -22,11 +22,21 @@
             </v-col>
 
             <v-col cols="12">
-                <FormField
-                    v-model="formData.typeLieu"
+                <FormSelect
+                    v-model="typeLieuSelection"
                     field-name="typeLieu"
                     label="Type de lieu"
-                    placeholder="Ex: Bâtiment, Salle, Atelier..."
+                    :items="TYPE_LIEU_OPTIONS"
+                    @update:model-value="onTypeLieuChange"
+                />
+            </v-col>
+
+            <v-col cols="12" v-if="typeLieuSelection === 'Autre'">
+                <FormField
+                    v-model="formData.typeLieu"
+                    field-name="typeLieuAutre"
+                    label="Préciser le type de lieu"
+                    placeholder="Saisir le type de lieu"
                 />
             </v-col>
 
@@ -115,6 +125,8 @@ import { BaseForm, FormField, FormSelect } from '@/components/common'
 import { useApi } from '@/composables/useApi'
 import { API_BASE_URL } from '@/utils/constants'
 
+const TYPE_LIEU_OPTIONS = ['Bâtiment', 'Étage', 'RDC', 'Salle', 'Atelier', 'Couloir', 'Extérieur', 'Autre']
+
 const props = defineProps({
     title: {
         type: String,
@@ -163,6 +175,16 @@ const formData = ref({
     lieuParent: props.parentId
 })
 
+const typeLieuSelection = ref('')
+
+const onTypeLieuChange = (val) => {
+    if (val !== 'Autre') {
+        formData.value.typeLieu = val
+    } else {
+        formData.value.typeLieu = ''
+    }
+}
+
 const validationSchema = {
     nomLieu: ['required', { name: 'minLength', params: [2] }, { name: 'maxLength', params: [50] }],
     typeLieu: ['required', { name: 'minLength', params: [2] }, { name: 'maxLength', params: [50] }],
@@ -200,6 +222,8 @@ watch(() => props.initialData, (newData) => {
             lienPlan: newData.lienPlan || '',
             lieuParent: newData.lieuParent || props.parentId
         }
+        const type = newData.typeLieu || ''
+        typeLieuSelection.value = TYPE_LIEU_OPTIONS.includes(type) ? type : (type ? 'Autre' : '')
     }
 }, { immediate: true, deep: true })
 

@@ -2,10 +2,11 @@
   <v-app>
     <v-main>
       <v-container fluid>
-        <div class="d-flex align-center justify-space-between mb-6">
+        <div class="d-flex align-center justify-space-between mb-4 flex-wrap" style="gap: 12px">
           <h1 class="text-h5 font-weight-bold">Maintenance préventive</h1>
-          <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog(null)">
-            Ajouter une maintenance préventive
+          <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog(null)" size="small">
+            <span class="d-none d-sm-inline">Ajouter une maintenance préventive</span>
+            <span class="d-inline d-sm-none">Ajouter une MP</span>
           </v-btn>
         </div>
 
@@ -18,7 +19,6 @@
           density="comfortable"
           clearable
           class="mb-4"
-          style="max-width: 400px"
         />
 
         <v-progress-linear v-if="loadingData" indeterminate color="primary" class="mb-4" />

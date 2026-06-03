@@ -2,11 +2,11 @@
   <v-row dense>
     <v-col cols="12" md="4">
       <FormField
-        v-model="localSeuil.derniereIntervention"
+        v-model="derniereIntervention"
         field-name="derniereIntervention"
         type="date"
         label="Dernière intervention"
-        @update:model-value="updateProchaineMaintenance"
+        @update:model-value="onInputChange"
       />
     </v-col>
 
@@ -14,43 +14,48 @@
       <v-row dense>
         <v-col cols="4">
           <FormField
-            v-model="ecartCalendaire"
+            v-model="ecart"
             field-name="ecartInterventions"
             type="number"
             label="Écart"
             placeholder="0"
             min="0"
-            @update:model-value="updateProchaineMaintenance"
+            @update:model-value="onInputChange"
           />
         </v-col>
         <v-col cols="8">
           <FormSelect
-            v-model="uniteCalendaire"
+            v-model="unite"
             field-name="uniteIntervalle"
             label="Unité"
             :items="UNITES"
             item-title="label"
             item-value="value"
-            @update:model-value="updateProchaineMaintenance"
+            @update:model-value="onInputChange"
           />
         </v-col>
       </v-row>
     </v-col>
 
     <v-col cols="12" md="4">
-      <FormField
-        :model-value="localSeuil.prochaineMaintenance"
-        field-name="prochaineMaintenance"
-        type="date"
-        label="Prochaine maintenance"
-        :readonly="true"
-      />
+      <div>
+        <label class="field-label">Prochaine maintenance</label>
+        <v-text-field
+          :key="prochaine"
+          :model-value="prochaine"
+          type="date"
+          variant="outlined"
+          density="comfortable"
+          hide-details="auto"
+          readonly
+        />
+      </div>
     </v-col>
   </v-row>
 </template>
 
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { FormField, FormSelect } from "@/components/common";
 
 const UNITES = [
@@ -62,169 +67,107 @@ const UNITES = [
 ];
 
 const props = defineProps({
-  modelValue: {
-    type: Object,
-    required: true,
-  },
-  estGlissant: {
-    type: Boolean,
-    default: false,
-  },
-  valeurCourante: {
-    type: [Number, String],
-    default: null,
-  },
+  modelValue:    { type: Object,           required: true },
+  estGlissant:   { type: Boolean,          default: false },
+  valeurCourante:{ type: [Number, String], default: null  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
-// --- Utilitaires date ---
-
-const ordinalToISO = (ordinal) => {
-  if (ordinal === null || ordinal === undefined) return null;
-  const ORDINAL_EPOCH = 719162; // 1970-01-01
-  const date = new Date(Date.UTC(1970, 0, 1 + (ordinal - ORDINAL_EPOCH)));
-  return date.toISOString().split("T")[0];
+// --- Utilitaires ---
+const toISO = (val) => {
+  if (!val && val !== 0) return "";
+  if (typeof val === "number") {
+    const EPOCH = 719162;
+    return new Date(Date.UTC(1970, 0, 1 + (val - EPOCH))).toISOString().split("T")[0];
+  }
+  return String(val);
 };
 
-const toISODate = (val) => {
-  if (!val && val !== 0) return null;
-  if (typeof val === "number") return ordinalToISO(val);
-  return val; // déjà ISO string
+const normalizeUnit = (u) => {
+  const m = { hours:"hours",days:"days",weeks:"weeks",months:"months",years:"years",
+    heure:"hours",heures:"hours",jour:"days",jours:"days",semaine:"weeks",semaines:"weeks",
+    mois:"months",an:"years",ans:"years",annee:"years",annees:"years" };
+  return m[String(u || "").toLowerCase()] || "days";
 };
 
-const normalizeCalendarUnit = (unit) => {
-  const mapping = {
-    hours: "hours",
-    days: "days",
-    weeks: "weeks",
-    months: "months",
-    years: "years",
-    heure: "hours",
-    heures: "hours",
-    jour: "days",
-    jours: "days",
-    semaine: "weeks",
-    semaines: "weeks",
-    mois: "months",
-    an: "years",
-    ans: "years",
-    annee: "years",
-    annees: "years",
-  };
-
-  if (!unit) return null;
-  return mapping[String(unit).toLowerCase()] || null;
+const addToDate = (isoDate, n, unit) => {
+  if (!isoDate || !n || !unit) return "";
+  const base     = new Date(isoDate);
+  if (isNaN(base.getTime())) return "";
+  const prochaine = new Date(base);
+  switch (unit) {
+    case "hours":  prochaine.setHours    (prochaine.getHours()    + n);     break;
+    case "days":   prochaine.setDate     (prochaine.getDate()     + n);     break;
+    case "weeks":  prochaine.setDate     (prochaine.getDate()     + n * 7); break;
+    case "months": prochaine.setMonth    (prochaine.getMonth()    + n);     break;
+    case "years":  prochaine.setFullYear (prochaine.getFullYear() + n);     break;
+    default: return "";
+  }
+  return prochaine.toISOString().split("T")[0];
 };
 
-// --- État local ---
+// --- État ---
+const derniereIntervention = ref("");
+const ecart = ref(0);
+const unite = ref("days");
 
-const ecartCalendaire = ref(0);
-const uniteCalendaire = ref("days");
-
-const localSeuil = reactive({
-  derniereIntervention: null,
-  ecartInterventions:   0,
-  prochaineMaintenance: null,
-  uniteCalendaire: "days",
-  ecartCalendaire: 0,
+// --- Prochaine maintenance (computed) ---
+const prochaine = computed(() => {
+  const n    = Number(ecart.value) || 0;
+  const u    = unite.value;
+  const base = props.estGlissant
+    ? (toISO(props.valeurCourante) || new Date().toISOString().split("T")[0])
+    : derniereIntervention.value;
+  return addToDate(base, n, u);
 });
 
-// --- Calcul ---
-
-const updateProchaineMaintenance = () => {
-  const ecart = Number(ecartCalendaire.value || 0);
-  const unite = uniteCalendaire.value;
-
-  // Glissant : on part de la valeur actuelle du compteur (convertie en ISO si ordinal)
-  // Non glissant : on part de la dernière intervention saisie
-  const derniere = props.estGlissant
-    ? toISODate(props.valeurCourante)
-    : localSeuil.derniereIntervention;
-
-  if (!derniere || !ecart || !unite) {
-    localSeuil.prochaineMaintenance = "";
-    localSeuil.ecartInterventions   = 0;
-    localSeuil.uniteCalendaire      = uniteCalendaire.value;
-    localSeuil.ecartCalendaire      = ecartCalendaire.value;
-    emit("update:modelValue", { ...localSeuil });
-    return;
-  }
-
-  const dateDerniere  = new Date(derniere);
-  const prochaineDate = new Date(dateDerniere);
-
-  switch (unite) {
-    case "hours":   prochaineDate.setHours  (prochaineDate.getHours()   + ecart);       break;
-    case "days":    prochaineDate.setDate   (prochaineDate.getDate()    + ecart);       break;
-    case "weeks":   prochaineDate.setDate   (prochaineDate.getDate()    + ecart * 7);   break;
-    case "months":  prochaineDate.setMonth  (prochaineDate.getMonth()   + ecart);       break;
-    case "years":   prochaineDate.setFullYear(prochaineDate.getFullYear() + ecart);     break;
-    default:
-      localSeuil.prochaineMaintenance = "";
-      emit("update:modelValue", { ...localSeuil });
-      return;
-  }
-
-  localSeuil.prochaineMaintenance = prochaineDate.toISOString().split("T")[0];
-  // Delta en ms pour le backend
-  localSeuil.ecartInterventions   = prochaineDate.getTime() - dateDerniere.getTime();
-  // Mémorise la saisie utilisateur pour éviter les reconversions pendant la frappe.
-  localSeuil.uniteCalendaire      = unite;
-  localSeuil.ecartCalendaire      = ecart;
-
-  emit("update:modelValue", { ...localSeuil });
+// --- Emit vers le parent ---
+const emitValue = () => {
+  const base = props.estGlissant
+    ? (toISO(props.valeurCourante) || new Date().toISOString().split("T")[0])
+    : derniereIntervention.value;
+  const p = prochaine.value;
+  emit("update:modelValue", {
+    derniereIntervention: derniereIntervention.value,
+    prochaineMaintenance: p,
+    ecartInterventions: p && base ? new Date(p).getTime() - new Date(base).getTime() : 0, // delta ms
+    ecartCalendaire:    Number(ecart.value) || 0,
+    uniteCalendaire:    unite.value,
+  });
 };
 
-// --- Init depuis prop (conversion ordinal si besoin) ---
+const onInputChange = () => emitValue();
 
-const initFromProp = (val) => {
-  localSeuil.derniereIntervention = toISODate(val.derniereIntervention);
-  localSeuil.prochaineMaintenance = toISODate(val.prochaineMaintenance);
-  localSeuil.ecartInterventions   = val.ecartInterventions ?? 0;
-
-  // Priorité à la saisie explicitement mémorisée.
-  const savedUnit = normalizeCalendarUnit(val.uniteCalendaire);
-  const savedGap = Number(val.ecartCalendaire);
-  const isSavedUnitValid = !!savedUnit;
-
-  if (isSavedUnitValid && !isNaN(savedGap) && savedGap > 0) {
-    uniteCalendaire.value = savedUnit;
-    ecartCalendaire.value = savedGap;
-    localSeuil.uniteCalendaire = savedUnit;
-    localSeuil.ecartCalendaire = savedGap;
-    return;
+// --- Init depuis props.modelValue ---
+watch(() => props.modelValue, (val) => {
+  if (!val) return;
+  derniereIntervention.value = toISO(val.derniereIntervention) || "";
+  // Priorité : ecartCalendaire + uniteCalendaire explicites
+  if (val.ecartCalendaire > 0) {
+    ecart.value = Number(val.ecartCalendaire);
+    unite.value = normalizeUnit(val.uniteCalendaire);
+  } else if (val.ecartInterventions > 0) {
+    const ms   = Number(val.ecartInterventions);
+    const days = Math.round(ms / 86400000);
+    if      (days < 1)   { ecart.value = Math.round(ms / 3600000); unite.value = "hours"; }
+    else if (days < 7)   { ecart.value = days;                      unite.value = "days";  }
+    else if (days < 60)  { ecart.value = Math.round(days / 7);      unite.value = "weeks"; }
+    else if (days < 365) { ecart.value = Math.round(days / 30);     unite.value = "months";}
+    else                 { ecart.value = Math.round(days / 365);    unite.value = "years"; }
   }
+}, { immediate: true });
 
-  // Fallback: reconstituer ecartCalendaire + uniteCalendaire depuis le delta ms.
-  const intervalle = Number(val.ecartInterventions);
-  if (!isNaN(intervalle) && intervalle > 0) {
-    const days = Math.round(intervalle / (1000 * 60 * 60 * 24));
-    if (days < 1) {
-      ecartCalendaire.value = Math.round(intervalle / (1000 * 60 * 60));
-      uniteCalendaire.value = "hours";
-    } else if (days < 7) {
-      ecartCalendaire.value = days;
-      uniteCalendaire.value = "days";
-    } else if (days < 60) {
-      ecartCalendaire.value = Math.round(days / 7);
-      uniteCalendaire.value = "weeks";
-    } else if (days < 365) {
-      ecartCalendaire.value = Math.round(days / 30);
-      uniteCalendaire.value = "months";
-    } else {
-      ecartCalendaire.value = Math.round(days / 365);
-      uniteCalendaire.value = "years";
-    }
-    localSeuil.uniteCalendaire = uniteCalendaire.value;
-    localSeuil.ecartCalendaire = ecartCalendaire.value;
-  }
-};
-
-// Sync au montage et quand le parent remplace l'objet (édition/changement de plan).
-// Pas de deep watch: sinon chaque frappe réinitialise l'unité/valeur.
-watch(() => props.modelValue, (val) => initFromProp(val), { immediate: true });
-
-// Recalcule quand estGlissant change sans que l'utilisateur retouche les champs
-watch(() => props.estGlissant, updateProchaineMaintenance);
+// --- Émet quand estGlissant change ---
+watch(() => props.estGlissant, () => emitValue());
 </script>
+
+<style scoped>
+.field-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+</style>

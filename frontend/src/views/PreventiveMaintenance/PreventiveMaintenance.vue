@@ -116,7 +116,7 @@
       <v-card>
         <v-card-title class="text-h6 pa-4 pb-2">
           Ajouter une maintenance préventive
-          <span v-if="dialogEquipment"> — {{ dialogEquipment.designation }}</span>
+          <span v-if="dialogEquipment"> : {{ dialogEquipment.designation }}</span>
         </v-card-title>
         <v-divider />
         <v-card-text class="pa-4">

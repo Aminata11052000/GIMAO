@@ -81,7 +81,10 @@ watch(
 
 // Affiche le select d'unité uniquement si ce n'est pas calendaire
 const showUniteSelect = computed(() => counterLocal.value.type !== 'Calendaire')
-const counterTypeOptions = ['Calendaire', 'Numérique']
+const counterTypeOptions = [
+  { title: 'Calendrier', value: 'Calendaire' },
+  { title: 'Numérique',  value: 'Numérique'  }
+]
 
 // Validation
 const isValid = computed(() => {

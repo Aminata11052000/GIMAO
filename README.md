@@ -1,4 +1,4 @@
-# GIMAO – Gestion Informatisée de la Maintenance Assistée par Ordinateur
+# GIMAO - Gestion Informatisée de la Maintenance Assistée par Ordinateur
 
 GIMAO est une application web de GMAO (Gestion de la Maintenance Assistée par Ordinateur) conçue pour centraliser et simplifier la gestion des interventions techniques au sein d'une organisation.
 
@@ -392,7 +392,7 @@ Le token est obtenu via `POST /api/auth/login/` avec les identifiants de l'utili
 
 - Python : PEP 8, noms de champs Django en `camelCase` par cohérence avec l'existant
 - Vue.js : Options API ou Composition API selon le contexte du composant existant
-- Pas de logique métier dans les vues Vue — utiliser les composables (`src/composables/`)
+- Pas de logique métier dans les vues Vue, utiliser les composables (`src/composables/`)
 - Les appels API passent tous par le composable `useApi` (`src/composables/useApi.js`)
 
 ---
@@ -401,4 +401,4 @@ Le token est obtenu via `POST /api/auth/login/` avec les identifiants de l'utili
 
 Ce projet est distribué sous licence **GNU Affero General Public License v3 (AGPL-3.0)**.
 
-Toute modification ou utilisation du code — y compris pour offrir le logiciel en tant que service en ligne — impose de publier le code source modifié sous la même licence. Voir le fichier [LICENSE](LICENSE) pour le texte complet.
+Toute modification ou utilisation du code (y compris pour offrir le logiciel en tant que service en ligne) impose de publier le code source modifié sous la même licence. Voir le fichier [LICENSE](LICENSE) pour le texte complet.

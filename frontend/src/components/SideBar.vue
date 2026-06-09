@@ -2,7 +2,7 @@
     <v-navigation-drawer app permanent :width="drawerWidth" class="sidebar" @mouseenter="isHovered = true"
         @mouseleave="isHovered = false">
         <!-- Logo -->
-        <v-list-item @click="$router.push({ name: 'Dashboard' })" class="text-center py-4 logo-item">
+        <v-list-item @click="showAuthorsDialog = true" class="text-center py-4 logo-item">
             <v-img :src="logo" contain max-width="80" class="mx-auto mb-2" />
 
             <v-list-item-title v-if="displayTitles" class="font-weight-bold text-h6">
@@ -87,6 +87,83 @@
         confirm-icon="mdi-logout"
         @confirm="confirmLogout"
     />
+
+    <!-- Dialog des auteurs / participants -->
+    <v-dialog v-model="showAuthorsDialog" max-width="640" scrollable>
+        <v-card class="authors-card">
+            <!-- En-tête -->
+            <div class="authors-header">
+                <v-img :src="logo" contain max-width="64" class="mx-auto mb-3 authors-logo" />
+                <div class="text-h5 font-weight-bold text-white">GIMAO</div>
+                <div class="text-subtitle-2 text-white-70 mt-1">
+                    Gestion Informatisée de la Maintenance Assistée par Ordinateur
+                </div>
+            </div>
+
+            <v-card-text class="pa-6">
+                <div class="text-center mb-5">
+                    <div class="text-overline text-medium-emphasis">Réalisé par</div>
+                    <div class="authors-divider mx-auto my-2"></div>
+                </div>
+
+                <v-row dense>
+                    <v-col
+                        v-for="(author, index) in authors"
+                        :key="index"
+                        cols="12"
+                        sm="6"
+                    >
+                        <div class="author-item">
+                            <v-avatar :color="authorColor(index)" size="40" class="author-avatar">
+                                <span class="text-white font-weight-bold">{{ authorInitials(author.nom) }}</span>
+                            </v-avatar>
+                            <div class="author-text">
+                                <div class="author-name">{{ author.nom }}</div>
+                                <div class="author-affiliation">{{ author.affiliation }}</div>
+                            </div>
+                        </div>
+                    </v-col>
+                </v-row>
+
+                <!-- Pied institution -->
+                <div class="authors-footer text-center mt-6">
+                    <v-icon size="18" color="primary" class="mb-1">mdi-school</v-icon>
+                    <div class="text-body-2 font-weight-medium">
+                        Université de Pau et des Pays de l'Adour (UPPA)
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                        IUT de Bayonne et du Pays Basque &amp; SIGLIS
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                        2026
+                    </div>
+                </div>
+
+                <!-- Licence + code source (clause réseau AGPL) -->
+                <div class="text-center mt-4">
+                    <v-chip
+                        :href="sourceCodeUrl"
+                        target="_blank"
+                        rel="noopener"
+                        color="primary"
+                        variant="tonal"
+                        size="small"
+                        prepend-icon="mdi-source-branch"
+                    >
+                        Code source
+                    </v-chip>
+                    <div class="text-caption text-medium-emphasis mt-2">
+                        Logiciel libre sous licence GNU AGPL v3
+                    </div>
+                </div>
+            </v-card-text>
+
+            <v-divider />
+            <v-card-actions class="justify-end pa-3">
+                <v-btn variant="text" color="primary" @click="showAuthorsDialog = false">Fermer</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -109,6 +186,22 @@ export default {
             isMini: false,    // choix utilisateur
             isHovered: false, // hover temporaire
             showLogoutConfirm: false,
+            showAuthorsDialog: false,
+            sourceCodeUrl: "https://github.com/Aminata11052000/GIMAO",
+
+            authors: [
+                { nom: "Iban ARANDIA", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Eneko ARBELBIDE", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Aminata BA", affiliation: "SIGLIS-UPPA" },
+                { nom: "François BARLIC", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Gabriel BELTZER", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Andoni BERHO", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Maxime BOURCIEZ", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Rafael DUCASSE", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Rafael MASSON", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Alexandre PICOULET-SONDER", affiliation: "IUT de Bayonne-UPPA" },
+                { nom: "Juan David RODRIGUEZ SINCLAIR", affiliation: "IUT de Bayonne-UPPA" },
+            ],
 
             api : useApi(API_BASE_URL),
 
@@ -193,6 +286,24 @@ export default {
             return this.$route.name === routeName;
         },
 
+        authorInitials(name) {
+            return name
+                .split(" ")
+                .filter(Boolean)
+                .map(w => w[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+        },
+
+        authorColor(index) {
+            const palette = [
+                "#5d5fef", "#7c4dff", "#2196f3", "#00bcd4", "#009688",
+                "#4caf50", "#ff9800", "#ff5722", "#e91e63", "#9c27b0", "#3f51b5",
+            ];
+            return palette[index % palette.length];
+        },
+
         toggleMini() {
             this.isMini = !this.isMini;
         },
@@ -231,6 +342,96 @@ export default {
     align-items: center;
     justify-content: center;
     text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.logo-item:hover {
+    transform: scale(1.04);
+}
+
+/* =========================
+   DIALOG AUTEURS
+========================= */
+.authors-card {
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.authors-header {
+    background: linear-gradient(135deg, #5d5fef 0%, #7c4dff 50%, #9c27b0 100%);
+    padding: 32px 24px 28px;
+    text-align: center;
+    position: relative;
+}
+
+.authors-header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: inherit;
+    clip-path: ellipse(70% 100% at 50% 0%);
+    opacity: 0.35;
+}
+
+.authors-logo {
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+.text-white-70 {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.authors-divider {
+    width: 60px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #5d5fef, #9c27b0);
+}
+
+.author-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.author-item:hover {
+    background: rgba(93, 95, 239, 0.08);
+    transform: translateX(4px);
+}
+
+.author-avatar {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.author-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.author-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.author-affiliation {
+    font-size: 0.72rem;
+    color: rgb(var(--v-theme-primary));
+    opacity: 0.8;
+}
+
+.authors-footer {
+    padding-top: 16px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.12);
 }
 
 /* =========================

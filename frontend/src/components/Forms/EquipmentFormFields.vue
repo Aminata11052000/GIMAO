@@ -24,6 +24,12 @@
             </v-col>
 
             <v-col cols="12" md="6">
+                <FormSelect v-model="modelValue.type" field-name="type" :step="step" label="Type d'équipement"
+                    placeholder="Sélectionner un type" :items="EQUIPMENT_TYPES" item-title="title" item-value="value"
+                    clearable />
+            </v-col>
+
+            <v-col cols="12" md="6">
                 <FormField v-model="modelValue.dateMiseEnService" field-name="dateMiseEnService" :step="step"
                     label="Date de mise en service" type="date" />
             </v-col>
@@ -210,7 +216,7 @@
 <script setup>
 import { FormField, FormSelect, FormFileInput } from '@/components/common';
 import LocationTreeView from '@/components/LocationTreeView.vue';
-import { TABLE_HEADERS } from '@/utils/constants';
+import { TABLE_HEADERS, EQUIPMENT_TYPES } from '@/utils/constants';
 
 const props = defineProps({
     modelValue: {

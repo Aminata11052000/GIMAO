@@ -164,9 +164,18 @@ const createPreview = (file) => {
   }
 };
 
-const handleFileChange = (file) => {
+const normalizeFile = (value) => {
+  // Vuetify 3 peut renvoyer un tableau [File] même sans multiple.
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value[0] : null;
+  }
+  return value || null;
+};
+
+const handleFileChange = (value) => {
+  const file = props.multiple ? value : normalizeFile(value);
   emit('update:modelValue', file);
-  createPreview(file);
+  createPreview(props.multiple ? null : file);
 };
 
 // Watcher pour gérer les changements de fichier externes

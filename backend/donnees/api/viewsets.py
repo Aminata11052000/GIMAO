@@ -53,6 +53,9 @@ class LieuViewSet(GimaoModelViewSet):
             return {
                 "id": lieu.id,
                 "nomLieu": lieu.nomLieu,
+                "typeLieu": lieu.typeLieu,
+                "lienPlan": lieu.lienPlan,
+                "lieuParent": lieu.lieuParent_id,
                 "children": [build_tree(child) for child in children]
             }
 

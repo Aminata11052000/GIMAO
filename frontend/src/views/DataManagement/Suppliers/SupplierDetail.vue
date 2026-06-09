@@ -40,33 +40,39 @@
           <h3 class="text-h6 mb-3">Adresse</h3>
         </v-col>
 
-        <v-col cols="12" md="6">
-          <strong>Rue</strong>
-          <div>
-            {{ data.adresse.numero }} {{ data.adresse.rue }}
-          </div>
-        </v-col>
+        <template v-if="data.adresse">
+          <v-col cols="12" md="6">
+            <strong>Rue</strong>
+            <div>
+              {{ data.adresse.numero }} {{ data.adresse.rue }}
+            </div>
+          </v-col>
 
-        <v-col cols="12" md="6">
-          <strong>Complément</strong>
-          <div>
-            {{ data.adresse.complement || '-' }}
-          </div>
-        </v-col>
+          <v-col cols="12" md="6">
+            <strong>Complément</strong>
+            <div>
+              {{ data.adresse.complement || '-' }}
+            </div>
+          </v-col>
 
-        <v-col cols="12" md="6">
-          <strong>Ville</strong>
-          <div>{{ data.adresse.ville }}</div>
-        </v-col>
+          <v-col cols="12" md="6">
+            <strong>Ville</strong>
+            <div>{{ data.adresse.ville }}</div>
+          </v-col>
 
-        <v-col cols="12" md="6">
-          <strong>Code postal</strong>
-          <div>{{ data.adresse.code_postal }}</div>
-        </v-col>
+          <v-col cols="12" md="6">
+            <strong>Code postal</strong>
+            <div>{{ data.adresse.code_postal }}</div>
+          </v-col>
 
-        <v-col cols="12" md="6">
-          <strong>Pays</strong>
-          <div>{{ data.adresse.pays }}</div>
+          <v-col cols="12" md="6">
+            <strong>Pays</strong>
+            <div>{{ data.adresse.pays }}</div>
+          </v-col>
+        </template>
+
+        <v-col v-else cols="12">
+          <span class="text-grey">Aucune adresse renseignée</span>
         </v-col>
 
       </v-row>

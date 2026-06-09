@@ -315,6 +315,7 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
             fournisseur=fournisseur,
             fabricant=fabricant,
             numSerie=data.get("numSerie", ""),
+            type=data.get("type") or None,
             lienImage=data.get("lienImageEquipement")
         )
 
@@ -525,9 +526,9 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
         # -------------------------
 
         # 1. Mise à jour des champs simples de l'équipement
-        simple_fields = ['numSerie', 'reference', 'designation', 'dateMiseEnService', 
-                        'prixAchat', 'modeleEquipement', 'fournisseur', 'fabricant', 
-                        'famille', 'lieu', 'statut']
+        simple_fields = ['numSerie', 'reference', 'designation', 'dateMiseEnService',
+                        'prixAchat', 'modeleEquipement', 'fournisseur', 'fabricant',
+                        'famille', 'lieu', 'statut', 'type']
         
         has_updates = False
 
@@ -586,7 +587,7 @@ class EquipementViewSet(ArchivableViewSetMixin, GimaoModelViewSet):
                     except FamilleEquipement.DoesNotExist:
                         pass
                 
-                elif field in ['numSerie', 'reference', 'designation', 'dateMiseEnService', 'prixAchat']:
+                elif field in ['numSerie', 'reference', 'designation', 'dateMiseEnService', 'prixAchat', 'type']:
                     ancien_val = getattr(equipement, field, None)
                     if str(ancien_val) != str(nouveau):
                         setattr(equipement, field, nouveau)

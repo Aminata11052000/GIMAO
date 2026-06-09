@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.db.models import Prefetch
 from equipement.models import Equipement, StatutEquipement, Constituer, ModeleEquipement, Compteur, FamilleEquipement, Declencher
 from donnees.api.serializers import LieuSerializer, FabricantSimpleSerializer, FournisseurSimpleSerializer
+from donnees.models import Fabricant
 from maintenance.models import DemandeIntervention, BonTravail, PlanMaintenance
 from stock.models import PorterSur
 
@@ -56,10 +57,20 @@ class ConstituerSerializer(serializers.ModelSerializer):
 
 
 class ModeleEquipementSerializer(serializers.ModelSerializer):
-    fabricant = FabricantSimpleSerializer(read_only=True)
+    fabricant = serializers.PrimaryKeyRelatedField(
+        queryset=Fabricant.objects.all()
+    )
+
     class Meta:
         model = ModeleEquipement
         fields = '__all__'
+
+    def to_representation(self, instance):
+        """Renvoie le fabricant sous forme imbriquée en lecture."""
+        data = super().to_representation(instance)
+        if instance.fabricant:
+            data['fabricant'] = FabricantSimpleSerializer(instance.fabricant).data
+        return data
 
 
 class CompteurSerializer(serializers.ModelSerializer):
@@ -174,7 +185,7 @@ class EquipementCreateSerializer(serializers.ModelSerializer):
             'reference', 'designation', 'dateCreation', 'dateMiseEnService',
             'prixAchat', 'createurEquipement', 'lieu', 'modeleEquipement',
             'fournisseur', 'fabricant', 'consommables', 'numSerie',
-            'compteurs', 'lienImageEquipement'
+            'compteurs', 'lienImageEquipement', 'type'
         ]
 
 
@@ -195,11 +206,12 @@ class EquipementAffichageSerializer(serializers.ModelSerializer):
     fournisseur = FournisseurSimpleSerializer(read_only=True)
     createurEquipement = serializers.CharField(source='createurEquipement.nom', read_only=True)
     lienImage = serializers.SerializerMethodField()
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
 
     class Meta:
         model = Equipement
         fields = [
-            'id', 'numSerie', 'reference', 'dateCreation', 'designation',
+            'id', 'numSerie', 'reference', 'dateCreation', 'designation', 'type', 'type_display',
             'dateMiseEnService', 'prixAchat', 'lienImage',
             'createurEquipement', 'x', 'y', 'fabricant', 'fournisseur',
             'lieu', 'modele', 'famille', 'dernier_statut',

@@ -82,8 +82,8 @@
     </v-main>
 
     <!-- ===================== DIALOG CRÉATION / ÉDITION ===================== -->
-    <v-dialog v-model="dialog" max-width="800" persistent>
-      <v-card>
+    <v-dialog v-model="dialog" max-width="800" persistent scrollable>
+      <v-card class="d-flex flex-column" style="max-height: 90vh;">
         <v-card-title class="pa-4 pb-2">
           {{ isEdit ? 'Modifier le rôle' : 'Créer un rôle' }}
         </v-card-title>
@@ -128,8 +128,7 @@
 
         <v-divider />
 
-        <v-card-actions class="pa-4">
-          <v-spacer />
+        <v-card-actions class="pa-4 flex-wrap justify-end" style="gap: 8px;">
           <v-btn variant="text" @click="closeDialog">Annuler</v-btn>
           <v-btn v-if="isEdit" color="secondary" variant="outlined" :loading="saving"
             prepend-icon="mdi-content-save-plus" @click="saveAsNewRole">

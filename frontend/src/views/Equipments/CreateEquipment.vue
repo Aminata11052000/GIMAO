@@ -89,6 +89,9 @@
       </v-container>
     </v-main>
 
+    <!-- [CODE MORT — OBSOLÈTE] Dialog de l'ancienne étape "Compteurs" du wizard.
+         Plus aucun bouton ne l'ouvre depuis le passage à 3 étapes.
+         Conservée pour référence. -->
     <v-dialog v-model="showCounterDialog" max-width="1000px" @click:outside="closeCounterDialog" persistent>
       <v-card>
         <v-card-title>
@@ -530,6 +533,12 @@ const handleSubmit = async () => {
   }
 };
 
+// [CODE MORT — OBSOLÈTE]
+// L'étape "Compteurs" a été retirée du wizard de création d'équipement
+// (désormais à 3 étapes). Cette fonction et la dialog associée
+// (showCounterDialog) ne sont plus accessibles depuis l'interface.
+// Conservées pour référence — les compteurs se gèrent via la fiche
+// équipement et la page Maintenance préventive.
 const handleCounterAdd = () => {
   editingCounterIndex.value = -1;
   isCounterEditMode.value = false;

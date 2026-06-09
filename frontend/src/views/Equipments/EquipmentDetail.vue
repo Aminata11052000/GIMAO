@@ -390,7 +390,7 @@ const filteredCounters = computed(() => {
 });
 
 const getEmptyCounter = () => ({
-  nom: '',
+  nomCompteur: '',
   unite: 'heures',
   valeurCourante: 0,
   estPrincipal: false,
@@ -425,6 +425,7 @@ const equipmentDetails = computed(() => {
     reference, designation, dateMiseEnService, prixAchat
   } = equipement.value;
 
+  const type = equipement.value.type_display || '';
   const lieu = equipement.value.lieu?.nomLieu || '';
   const modele = equipement.value.modele?.nom || '';
   const fournisseur = equipement.value.fournisseur?.nom || '';
@@ -433,7 +434,7 @@ const equipmentDetails = computed(() => {
 
   return {
     id,
-    reference, designation, dateMiseEnService, prixAchat,
+    reference, designation, type, dateMiseEnService, prixAchat,
     lieu, modele, fournisseur, fabricant, statut
   };
 });
@@ -452,6 +453,7 @@ const formatLabel = (key) => {
   const labels = {
     reference: 'Référence',
     designation: 'Désignation',
+    type: "Type d'équipement",
     dateMiseEnService: 'Date de mise en service',
     prixAchat: "Prix d'achat",
     lieu: 'Lieu',

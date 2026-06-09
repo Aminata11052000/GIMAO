@@ -48,10 +48,20 @@ class Equipement(ArchivableMixin, models.Model):
     """
     Représente un équipement physique.
     """
+    TYPE_CHOICES = [
+        ('PEDAGOGIQUE', 'Pédagogique'),
+        ('INFRASTRUCTURE', 'Infrastructure'),
+        ('MECANIQUE', 'Mécanique'),
+        ('ELECTRIQUE', 'Électrique'),
+        ('HYDRAULIQUE', 'Hydraulique'),
+        ('PLURITECHNIQUE', 'Pluritechnique'),
+    ]
+
     numSerie = models.CharField(max_length=100, null=True, blank=True, help_text="Numéro de série de l'équipement")
     reference = models.CharField(max_length=100, null=True, blank=True, help_text="Référence interne ou fournisseur")
     dateCreation = models.DateTimeField(auto_now_add=True, help_text="Date de création de l'équipement")
     designation = models.CharField(max_length=100, help_text="Nom ou désignation de l'équipement")
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True, blank=True, help_text="Type d'équipement")
     dateMiseEnService = models.DateTimeField(null=True, blank=True, help_text="Date de mise en service de l'équipement")
     prixAchat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Prix d'achat de l'équipement")
     lienImage = models.FileField(upload_to='equipement_images/', null=True, blank=True, help_text="Image de l'équipement")

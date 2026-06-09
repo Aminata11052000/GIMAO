@@ -1,6 +1,7 @@
 import ast
 import logging
 import os
+import re
 import traceback
 from urllib.parse import parse_qs
 from django.http import JsonResponse
@@ -121,7 +122,19 @@ class DemandeInterventionViewSet(PaginatedActionMixin, ArchivableViewSetMixin, G
     def get_queryset(self):
         if self.action == 'retrieve':
             return self._get_detail_queryset()
-        return self._get_list_queryset()
+
+        queryset = self._get_list_queryset()
+
+        if self.action == 'list':
+            vue = str(self.request.query_params.get('vue', '')).strip().lower()
+            if vue == 'ancien':
+                # Anciennes DI : transformées (en BT) ou rejetées
+                queryset = queryset.filter(statut__in=['TRANSFORMEE', 'REFUSEE'])
+            else:
+                # Vue par défaut : DI actives (en attente ou acceptées)
+                queryset = queryset.filter(statut__in=['EN_ATTENTE', 'ACCEPTEE'])
+
+        return queryset
 
     def _parse_json_field(self, data, key, default):
         raw = data.get(key, default)
@@ -867,12 +880,30 @@ class BonTravailViewSet(PaginatedActionMixin, ArchivableViewSetMixin, GimaoModel
 
         queryset = queryset.filter(archive=False)
 
-        cloture_raw = str(self.request.query_params.get('cloture', 'false')).strip().lower()
-        include_cloture = cloture_raw in ['true', '1']
-        if include_cloture or statut == 'CLOTURE':
+        # Vue "ancien" : afficher uniquement les BT terminés ou clôturés
+        vue = str(self.request.query_params.get('vue', '')).strip().lower()
+        if vue == 'ancien':
+            return queryset.filter(statut__in=['TERMINE', 'CLOTURE'])
+
+        # Si un statut précis est demandé, on respecte ce choix (déjà filtré plus haut)
+        if statut and statut != 'ALL':
             return queryset
 
-        return queryset.exclude(statut='CLOTURE')
+        cloture_raw = str(self.request.query_params.get('cloture', 'false')).strip().lower()
+        include_cloture = cloture_raw in ['true', '1']
+        if include_cloture:
+            return queryset
+
+        # Vue par défaut (actifs) : on masque les terminés et clôturés
+        return queryset.exclude(statut__in=['TERMINE', 'CLOTURE'])
+
+    def filter_queryset(self, queryset):
+        """Recherche par numéro de BT (ex: "BT-0004", "4") en plus de la recherche texte."""
+        search = str(self.request.query_params.get('search', '')).strip()
+        match = re.match(r'^(?:BT-?)?0*(\d+)$', search, re.IGNORECASE)
+        if match:
+            return queryset.filter(id=int(match.group(1)))
+        return super().filter_queryset(queryset)
 
     def _parse_json_field(self, data, key, default):
         raw = data.get(key, default)

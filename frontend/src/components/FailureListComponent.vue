@@ -18,6 +18,18 @@
     @clear-error="errorMessage = ''"
     @search="handleSearch"
   >
+    <template #filters>
+      <v-btn
+        :color="showAncien ? 'primary' : undefined"
+        :variant="showAncien ? 'flat' : 'outlined'"
+        prepend-icon="mdi-history"
+        size="small"
+        @click="showAncien = !showAncien"
+      >
+        {{ showAncien ? 'Voir les actives' : 'Anciennes' }}
+      </v-btn>
+    </template>
+
     <template #item.createur="{ item }">
       {{ item.utilisateur?.prenom ?? '' }} {{ item.utilisateur?.nomFamille ?? '' }}
     </template>
@@ -107,6 +119,7 @@ const emit = defineEmits(['create', 'row-click']);
 const api = useApi(API_BASE_URL);
 const errorMessage = ref('');
 const containerWidth = ref(0);
+const showAncien = ref(false);
 
 const {
   items: failures,
@@ -123,6 +136,8 @@ const {
   api,
   endpoint: () => props.apiEndpoint,
   initialPageSize: 10,
+  buildParams: () => (showAncien.value ? { vue: 'ancien' } : {}),
+  watchSource: () => [props.apiEndpoint, showAncien.value],
 });
 
 const resolvedErrorMessage = computed(() => errorMessage.value || paginationErrorMessage.value);

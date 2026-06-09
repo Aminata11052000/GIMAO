@@ -35,12 +35,23 @@
         <span class="mr-5">{{ item.nomLieu }}</span>
       </template>
 
-      <!-- Bouton + à droite -->
+      <!-- Boutons modifier + ajouter à droite -->
       <template #append="{ item }">
-        <v-btn 
-          v-if="showCreateButton" 
-          icon 
-          color="primary" 
+        <v-btn
+          v-if="showEditButton"
+          icon
+          color="primary"
+          variant="text"
+          size="x-small"
+          class="mr-1"
+          @click.stop="onEdit(item)"
+        >
+          <v-icon size="18">mdi-pencil</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="showCreateButton"
+          icon
+          color="primary"
           size="x-small"
           @click.stop="onCreate(item)"
         >
@@ -67,9 +78,12 @@ const props = defineProps({
   lockSelection: { type: Boolean, default: false },
   showTitle: { type: Boolean, default: true },
   showCreateButton: { type: Boolean, default: false },
+  showEditButton: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:selected", "create"]);
+const emit = defineEmits(["update:selected", "create", "edit"]);
+
+const onEdit = (item) => emit("edit", item);
 
 const cleanItems = (nodes) => {
   if (!nodes) return [];

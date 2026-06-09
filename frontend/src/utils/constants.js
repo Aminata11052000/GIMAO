@@ -31,6 +31,15 @@ export const EQUIPMENT_CREATE_STEPS = [
     "Lieu d'Installation",
 ];
 
+export const EQUIPMENT_TYPES = [
+    { value: "PEDAGOGIQUE", title: "Pédagogique" },
+    { value: "INFRASTRUCTURE", title: "Infrastructure" },
+    { value: "MECANIQUE", title: "Mécanique" },
+    { value: "ELECTRIQUE", title: "Électrique" },
+    { value: "HYDRAULIQUE", title: "Hydraulique" },
+    { value: "PLURITECHNIQUE", title: "Pluritechnique" },
+];
+
 // ============================================
 // NIVEAUX DE DÉFAILLANCE
 // ============================================
@@ -99,7 +108,7 @@ export const TABLE_HEADERS = {
 
     FAILURES_SUPER_LIGHT: [
         {
-            title: "Nom",
+            title: "N° DI",
             align: "start",
             sortable: true,
             value: "nom",
@@ -120,13 +129,7 @@ export const TABLE_HEADERS = {
 
     FAILURES_LIGHT: [
         {
-            title: "N°",
-            align: "start",
-            sortable: true,
-            value: "id",
-        },
-        {
-            title: "Nom",
+            title: "N° DI",
             align: "start",
             sortable: true,
             value: "nom",
@@ -147,13 +150,7 @@ export const TABLE_HEADERS = {
 
     FAILURES: [
         {
-            title: "N°",
-            align: "start",
-            sortable: true,
-            value: "id",
-        },
-        {
-            title: "Nom",
+            title: "N° DI",
             align: "start",
             sortable: true,
             value: "nom",
@@ -190,7 +187,7 @@ export const TABLE_HEADERS = {
 
     INTERVENTIONS: [
         {
-            title: "N°",
+            title: "N° BT",
             align: "center",
             sortable: true,
             value: "id",
@@ -324,7 +321,7 @@ export const TABLE_HEADERS = {
 
     INTERVENTIONS_EQUIPMENT: [
         {
-            title: "N°",
+            title: "N° BT",
             align: "center",
             sortable: true,
             value: "id",

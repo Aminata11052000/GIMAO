@@ -24,8 +24,18 @@
     @search="handleSearch"
   >
     <template #filters>
+      <v-btn
+        :color="showAncien ? 'primary' : undefined"
+        :variant="showAncien ? 'flat' : 'outlined'"
+        prepend-icon="mdi-history"
+        size="small"
+        class="mr-2"
+        @click="showAncien = !showAncien"
+      >
+        {{ showAncien ? 'Voir les actifs' : 'Anciens' }}
+      </v-btn>
       <v-select
-        v-if="showStatutFilter"
+        v-if="showStatutFilter && !showAncien"
         v-model="selectedStatut"
         label="Statut"
         :items="statutOptions"
@@ -37,6 +47,10 @@
         hide-details
       />
       <slot name="filters"></slot>
+    </template>
+
+    <template #item.id="{ item }">
+      <span class="font-weight-medium">{{ formatBTNumber(item.id) }}</span>
     </template>
 
     <template #item.nom="{ item }">
@@ -146,6 +160,9 @@ const errorMessage = ref('');
 const containerWidth = ref(0);
 const tableContainer = ref(null);
 const selectedStatut = ref(props.statut || '');
+const showAncien = ref(false);
+
+const formatBTNumber = (id) => (id != null ? `BT-${String(id).padStart(4, '0')}` : '-');
 
 let resizeObserver = null;
 let rafId = null;
@@ -190,6 +207,10 @@ const {
   initialPageSize: 10,
   enabled: () => !usesLocalItems.value && props.fetchOnMount,
   buildParams: () => {
+    if (showAncien.value) {
+      return { vue: 'ancien' };
+    }
+
     const statut = activeStatut.value;
 
     if (!statut) {
@@ -205,7 +226,7 @@ const {
       cloture: statut === 'CLOTURE' ? true : undefined,
     };
   },
-  watchSource: () => [props.apiEndpoint, activeStatut.value, props.fetchOnMount],
+  watchSource: () => [props.apiEndpoint, activeStatut.value, showAncien.value, props.fetchOnMount],
   onFetched: (_response, normalized) => {
     emit('loaded', normalized.items);
   },

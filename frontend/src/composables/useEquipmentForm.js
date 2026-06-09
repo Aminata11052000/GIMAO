@@ -64,6 +64,7 @@ export function useEquipmentForm(isEditMode = false) {
     numSerie: '',
     reference: '',
     designation: '',
+    type: null,
     dateMiseEnService: '',
     prixAchat: null,
     lienImageEquipement: null,
@@ -377,6 +378,7 @@ export function useEquipmentForm(isEditMode = false) {
         numSerie: eq.numSerie || '',
         reference: eq.reference || '',
         designation: eq.designation || '',
+        type: eq.type || null,
         dateMiseEnService: formattedDate,
         prixAchat: eq.prixAchat || null,
         lienImageEquipement: eq.lienImage ? (MEDIA_BASE_URL + eq.lienImage) : null,
@@ -497,6 +499,11 @@ export function useEquipmentForm(isEditMode = false) {
   }
 
 
+  // [CODE MORT — OBSOLÈTE]
+  // Utilisée uniquement par l'ancienne étape "Compteurs" du wizard de création
+  // d'équipement, retirée depuis le passage à 3 étapes. Plus appelée en pratique.
+  // NB : forçait tout compteur Calendaire en Numérique (un seul compteur calendaire
+  // par défaut à l'époque). Conservée pour référence.
   const saveCurrentCounter = () => {
     const normalizedCounter = {
       ...currentCounter.value,
@@ -625,7 +632,7 @@ export function useEquipmentForm(isEditMode = false) {
     let hasChanges = false;
 
     const fieldsToCheck = [
-      'numSerie', 'reference', 'designation', 'dateMiseEnService', 'prixAchat',
+      'numSerie', 'reference', 'designation', 'type', 'dateMiseEnService', 'prixAchat',
       'modeleEquipement', 'fournisseur', 'fabricant', 'famille', 'statut'
     ];
 

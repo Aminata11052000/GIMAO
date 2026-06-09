@@ -153,6 +153,28 @@ const limiteMax = computed(() =>
     : Date.now()
 );
 
+// Plage minimale de l'axe (1 jour) pour éviter un axe dégénéré
+// quand l'équipement vient d'être créé (début ≈ fin).
+const UN_JOUR_MS = 24 * 60 * 60 * 1000;
+
+const axisMin = computed(() => {
+  if (limiteMin.value == null || limiteMax.value == null) return undefined;
+  const span = limiteMax.value - limiteMin.value;
+  if (span < UN_JOUR_MS) {
+    return limiteMin.value - (UN_JOUR_MS - span) / 2;
+  }
+  return limiteMin.value;
+});
+
+const axisMax = computed(() => {
+  if (limiteMin.value == null || limiteMax.value == null) return undefined;
+  const span = limiteMax.value - limiteMin.value;
+  if (span < UN_JOUR_MS) {
+    return limiteMax.value + (UN_JOUR_MS - span) / 2;
+  }
+  return limiteMax.value;
+});
+
 // ── Plages filtrées ───────────────────────────────────────────────────────────
 const plagesFiltrees = computed(() => {
   if (!filtreDebut.value && !filtreFin.value) return plages.value;
@@ -207,13 +229,16 @@ const chartOptions = computed(() => ({
   },
   xaxis: {
     type: 'datetime',
-    min:  limiteMin.value ?? undefined,
-    max:  limiteMax.value ?? undefined,
+    min:  axisMin.value ?? undefined,
+    max:  axisMax.value ?? undefined,
+    tickAmount: 6,
     labels: {
+      datetimeUTC: false,
       datetimeFormatter: {
         year:  'yyyy',
         month: 'MMM yyyy',
         day:   'dd MMM',
+        hour:  'HH:mm',
       },
     },
   },

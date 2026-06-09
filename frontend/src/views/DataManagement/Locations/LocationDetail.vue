@@ -40,19 +40,47 @@
               <v-icon left>mdi-arrow-left</v-icon>
               Retour
             </v-btn>
+            <v-spacer />
+            <v-btn
+              v-if="canEdit"
+              color="primary"
+              variant="flat"
+              prepend-icon="mdi-pencil"
+              @click="openEditDialog"
+            >
+              Modifier
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-container>
     </v-main>
+
+    <!-- Dialog de modification du lieu -->
+    <v-dialog v-model="showEditDialog" max-width="600" scrollable>
+      <v-card>
+        <v-card-text class="pa-6">
+          <LieuForm
+            title="Modifier le lieu"
+            submit-button-text="Enregistrer"
+            :is-edit="true"
+            :initial-data="editData"
+            :locations="locations"
+            @updated="onUpdated"
+            @close="showEditDialog = false"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script setup>
 import { useApi } from '@/composables/useApi'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { API_BASE_URL } from '@/utils/constants'
+import LieuForm from '@/components/Forms/LieuForm.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -62,6 +90,21 @@ const api = useApi(API_BASE_URL)
 const location = ref(null)
 const loading = ref(false)
 const error = ref('')
+const showEditDialog = ref(false)
+const locations = ref([])
+
+const canEdit = computed(() => store.getters.hasPermission('loc:edit'))
+
+const editData = computed(() => {
+  if (!location.value) return {}
+  return {
+    id: location.value.id,
+    nomLieu: location.value.nomLieu || '',
+    typeLieu: location.value.typeLieu || '',
+    lienPlan: location.value.lienPlan || '',
+    lieuParent: location.value.lieuParent?.id || location.value.lieuParent || null,
+  }
+})
 
 const fetchLocation = async () => {
   loading.value = true
@@ -77,11 +120,29 @@ const fetchLocation = async () => {
   }
 }
 
+const fetchLocations = async () => {
+  try {
+    locations.value = await api.get('lieux/hierarchy/')
+  } catch (err) {
+    console.error('Error loading locations hierarchy:', err)
+  }
+}
+
+const openEditDialog = () => {
+  showEditDialog.value = true
+}
+
+const onUpdated = async () => {
+  showEditDialog.value = false
+  await fetchLocation()
+}
+
 const goBack = () => {
   router.back()
 }
 
 onMounted(() => {
   fetchLocation()
+  fetchLocations()
 })
 </script>

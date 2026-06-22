@@ -4,10 +4,23 @@
       <v-container fluid>
         <div class="d-flex align-center justify-space-between mb-4 flex-wrap" style="gap: 12px">
           <h1 class="text-h5 font-weight-bold">Maintenance préventive</h1>
-          <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog(null)" size="small">
-            <span class="d-none d-sm-inline">Ajouter une maintenance préventive</span>
-            <span class="d-inline d-sm-none">Ajouter une MP</span>
-          </v-btn>
+          <div class="d-flex flex-wrap" style="gap: 8px">
+            <v-btn
+              color="secondary"
+              variant="outlined"
+              prepend-icon="mdi-calculator-variant"
+              size="small"
+              :loading="forcing"
+              @click="forcerCalcul"
+            >
+              <span class="d-none d-sm-inline">Forcer le calcul des BT préventifs</span>
+              <span class="d-inline d-sm-none">Forcer le calcul</span>
+            </v-btn>
+            <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog(null)" size="small">
+              <span class="d-none d-sm-inline">Ajouter une maintenance préventive</span>
+              <span class="d-inline d-sm-none">Ajouter une MP</span>
+            </v-btn>
+          </div>
         </div>
 
         <!-- Barre de recherche -->
@@ -133,8 +146,8 @@
     </v-dialog>
 
     <!-- Snackbar -->
-    <v-snackbar v-model="snackbar" color="success" timeout="3000">
-      Maintenance préventive enregistrée avec succès.
+    <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="4000">
+      {{ snackbarMessage }}
     </v-snackbar>
   </v-app>
 </template>
@@ -163,6 +176,30 @@ const showEditDialog = ref(false)
 const editPlan       = ref(null)
 const editEquipment  = ref(null)
 const snackbar       = ref(false)
+const snackbarMessage = ref('')
+const snackbarColor  = ref('success')
+const forcing        = ref(false)
+
+const notify = (message, color = 'success') => {
+  snackbarMessage.value = message
+  snackbarColor.value = color
+  snackbar.value = true
+}
+
+const forcerCalcul = async () => {
+  forcing.value = true
+  try {
+    const res = await api.post('plans-maintenance/forcer_calcul/')
+    notify(res?.message || 'Calcul des maintenances préventives effectué.', 'success')
+    // Rafraîchir les plans affichés
+    await fetchData()
+  } catch (e) {
+    console.error(e)
+    notify("Erreur lors du calcul des maintenances préventives.", 'error')
+  } finally {
+    forcing.value = false
+  }
+}
 
 const filteredEquipments = computed(() => {
   const q = search.value?.toLowerCase().trim()
@@ -201,7 +238,7 @@ const goToCounterDetail = () => {
 
 const onSaved = async (equipementId) => {
   showDialog.value = false
-  snackbar.value = true
+  notify('Maintenance préventive enregistrée avec succès.', 'success')
   const id = equipementId || dialogEquipment.value?.id
   if (id) {
     await loadPlansForEquipment(id)

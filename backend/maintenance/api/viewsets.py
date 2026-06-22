@@ -2128,6 +2128,31 @@ class PlanMaintenanceViewSet(GimaoModelViewSet):
         """Utilise le serializer détaillé pour retrieve"""
         return PlanMaintenanceSerializer
 
+    @action(detail=False, methods=['post'])
+    def forcer_calcul(self, request):
+        """
+        Force immédiatement le calcul des maintenances préventives, sans
+        attendre l'exécution nocturne des tâches planifiées (cron).
+
+        Enchaîne les deux traitements du cron :
+        1. Mise à jour des compteurs calendaires à la date du jour.
+        2. Vérification des seuils et génération des bons de travail préventifs.
+        """
+        from tasks.updateCalendarDates import update_calendar_counters
+        from tasks.counterCron import update_counter
+        try:
+            update_calendar_counters()
+            update_counter()
+            return Response(
+                {"message": "Calcul des maintenances préventives effectué avec succès."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Erreur lors du calcul des maintenances préventives : {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
     @action(detail=False, methods=['get'])
     def par_equipement(self, request):
         """

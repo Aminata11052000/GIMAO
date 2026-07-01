@@ -24,9 +24,19 @@
         :variant="showAncien ? 'flat' : 'outlined'"
         prepend-icon="mdi-history"
         size="small"
-        @click="showAncien = !showAncien"
+        class="mr-2"
+        @click="toggleAncien"
       >
         {{ showAncien ? 'Voir les actives' : 'Anciennes' }}
+      </v-btn>
+      <v-btn
+        :color="showTout ? 'primary' : undefined"
+        :variant="showTout ? 'flat' : 'outlined'"
+        prepend-icon="mdi-format-list-bulleted"
+        size="small"
+        @click="toggleTout"
+      >
+        {{ showTout ? 'Voir les actives' : 'Tout afficher' }}
       </v-btn>
     </template>
 
@@ -124,6 +134,17 @@ const api = useApi(API_BASE_URL);
 const errorMessage = ref('');
 const containerWidth = ref(0);
 const showAncien = ref(false);
+const showTout = ref(false);
+
+const toggleAncien = () => {
+  showAncien.value = !showAncien.value;
+  if (showAncien.value) showTout.value = false;
+};
+
+const toggleTout = () => {
+  showTout.value = !showTout.value;
+  if (showTout.value) showAncien.value = false;
+};
 
 const formatDINumber = (id) => (id != null ? `DI-${String(id).padStart(4, '0')}` : '-');
 
@@ -142,8 +163,12 @@ const {
   api,
   endpoint: () => props.apiEndpoint,
   initialPageSize: 10,
-  buildParams: () => (showAncien.value ? { vue: 'ancien' } : {}),
-  watchSource: () => [props.apiEndpoint, showAncien.value],
+  buildParams: () => {
+    if (showAncien.value) return { vue: 'ancien' };
+    if (showTout.value) return { vue: 'tout' };
+    return {};
+  },
+  watchSource: () => [props.apiEndpoint, showAncien.value, showTout.value],
 });
 
 const resolvedErrorMessage = computed(() => errorMessage.value || paginationErrorMessage.value);

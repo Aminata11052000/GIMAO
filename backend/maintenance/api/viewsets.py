@@ -130,6 +130,9 @@ class DemandeInterventionViewSet(PaginatedActionMixin, ArchivableViewSetMixin, G
             if vue == 'ancien':
                 # Anciennes DI : transformées (en BT) ou rejetées
                 queryset = queryset.filter(statut__in=['TRANSFORMEE', 'REFUSEE'])
+            elif vue == 'tout':
+                # Toutes les DI, quel que soit leur statut
+                pass
             else:
                 # Vue par défaut : DI actives (en attente ou acceptées)
                 queryset = queryset.filter(statut__in=['EN_ATTENTE', 'ACCEPTEE'])
@@ -884,6 +887,10 @@ class BonTravailViewSet(PaginatedActionMixin, ArchivableViewSetMixin, GimaoModel
         vue = str(self.request.query_params.get('vue', '')).strip().lower()
         if vue == 'ancien':
             return queryset.filter(statut__in=['TERMINE', 'CLOTURE'])
+
+        # Vue "tout" : tous les BT, quel que soit leur statut
+        if vue == 'tout':
+            return queryset
 
         # Si un statut précis est demandé, on respecte ce choix (déjà filtré plus haut)
         if statut and statut != 'ALL':

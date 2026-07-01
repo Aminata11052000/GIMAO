@@ -741,10 +741,7 @@ const ROLE_RESPONSABLE_GMAO = 'Responsable GMAO';
 const getRoleName = (user) => user?.role?.nomRole || user?.role || '';
 
 const assignableUserItems = computed(() =>
-	userItems.value.filter((user) => {
-		const roleName = getRoleName(user);
-		return roleName.toLowerCase().includes('technicien maintenance') || roleName === ROLE_RESPONSABLE_GMAO;
-	})
+	userItems.value.filter((user) => getRoleName(user).toLowerCase().includes('technicien maintenance'))
 );
 
 const selectedResponsableItem = computed(() => {

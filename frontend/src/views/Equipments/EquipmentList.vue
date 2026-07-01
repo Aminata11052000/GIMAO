@@ -277,7 +277,7 @@ const computedTableHeaders = computed(() => {
 });
 
 const fullHeaders = [
-  { title: "Référence", key: "reference", sortable: true, align: "center" },
+  { title: "Code GMAO", key: "reference", sortable: true, align: "center" },
   { title: "Désignation", key: "designation", sortable: true, align: "center" },
   { title: "Lieu", key: "lieu.nomLieu", sortable: false, align: "center" },
   { title: "Modèle", key: "modele", sortable: false, align: "center" },
@@ -294,7 +294,7 @@ const fullHeaders = [
 ];
 
 const compactHeaders = [
-  { title: "Réf.", key: "reference", align: "center" },
+  { title: "Code GMAO", key: "reference", align: "center" },
   { title: "Désignation", key: "designation", align: "center" },
   { title: "Statut", key: "statut.statut", align: "center" },
 ];

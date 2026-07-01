@@ -336,7 +336,7 @@ const formattedEquipmentLabel = computed(() => {
   if (!defaillance.value?.equipement) return {};
   const eq = defaillance.value.equipement;
   return {
-    'Référence': eq.reference || 'Non spécifié',
+    'Code GMAO': eq.reference || 'Non spécifié',
     'Désignation': eq.designation || 'Non spécifié',
     'Lieu': eq.lieu || 'Non spécifié',
     'Statut': eq.dernier_statut?.statut || 'Non spécifié'

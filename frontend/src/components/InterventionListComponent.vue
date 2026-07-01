@@ -30,12 +30,22 @@
         prepend-icon="mdi-history"
         size="small"
         class="mr-2"
-        @click="showAncien = !showAncien"
+        @click="toggleAncien"
       >
         {{ showAncien ? 'Voir les actifs' : 'Anciens' }}
       </v-btn>
+      <v-btn
+        :color="showTout ? 'primary' : undefined"
+        :variant="showTout ? 'flat' : 'outlined'"
+        prepend-icon="mdi-format-list-bulleted"
+        size="small"
+        class="mr-2"
+        @click="toggleTout"
+      >
+        {{ showTout ? 'Voir les actifs' : 'Tout afficher' }}
+      </v-btn>
       <v-select
-        v-if="showStatutFilter && !showAncien"
+        v-if="showStatutFilter && !showAncien && !showTout"
         v-model="selectedStatut"
         label="Statut"
         :items="statutOptions"
@@ -161,6 +171,17 @@ const containerWidth = ref(0);
 const tableContainer = ref(null);
 const selectedStatut = ref(props.statut || '');
 const showAncien = ref(false);
+const showTout = ref(false);
+
+const toggleAncien = () => {
+  showAncien.value = !showAncien.value;
+  if (showAncien.value) showTout.value = false;
+};
+
+const toggleTout = () => {
+  showTout.value = !showTout.value;
+  if (showTout.value) showAncien.value = false;
+};
 
 const formatBTNumber = (id) => (id != null ? `BT-${String(id).padStart(4, '0')}` : '-');
 
@@ -211,6 +232,10 @@ const {
       return { vue: 'ancien' };
     }
 
+    if (showTout.value) {
+      return { vue: 'tout' };
+    }
+
     const statut = activeStatut.value;
 
     if (!statut) {
@@ -226,7 +251,7 @@ const {
       cloture: statut === 'CLOTURE' ? true : undefined,
     };
   },
-  watchSource: () => [props.apiEndpoint, activeStatut.value, showAncien.value, props.fetchOnMount],
+  watchSource: () => [props.apiEndpoint, activeStatut.value, showAncien.value, showTout.value, props.fetchOnMount],
   onFetched: (_response, normalized) => {
     emit('loaded', normalized.items);
   },
@@ -370,6 +395,7 @@ onBeforeUnmount(() => {
 :deep(.bt-table .v-table__wrapper > table) {
   table-layout: fixed;
   width: 100%;
+  min-width: 600px;
 }
 
 :deep(.bt-table td) {

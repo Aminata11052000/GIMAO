@@ -111,7 +111,7 @@
           <!-- Section compteurs -->
           <div>
             <v-card elevation="2" class="mb-4" v-if="store.getters.hasPermission('cp:viewList')">
-              <v-card-title class="text-h6">Compteurs</v-card-title>
+              <v-card-title class="text-h6">Maintenances préventives</v-card-title>
               <v-divider></v-divider>
               <v-card-text>
 
@@ -119,13 +119,15 @@
                   :headers="TABLE_HEADERS.COUNTER" class="elevation-1" hide-default-footer>
 
                   <template #item.valeurCourante="{ item }">
-                    {{ item.type === 'Calendaire' 
-                        ? formatCalendarDate(item.valeurCourante) 
-                        : item.valeurCourante 
+                    {{ item.type === 'Calendaire'
+                        ? formatCalendarDate(item.valeurCourante)
+                        : item.valeurCourante
                     }}
                   </template>
 
-
+                  <template #item.type="{ item }">
+                    {{ item.type === 'Calendaire' ? 'Calendrier' : item.type }}
+                  </template>
 
                   <template #item.action="{ item }">
                     <v-btn icon size="small" @click="viewCounter(item)">
@@ -133,12 +135,12 @@
                     </v-btn>
                   </template>
                 </v-data-table>
-                <p v-else class="text-caption text-grey">Aucun compteur disponible</p>
+                <p v-else class="text-caption text-grey">Aucune maintenance préventive disponible</p>
 
               </v-card-text>
               <div class="justify-end d-flex">
                 <v-btn text color="primary align-self-end" class="my-2 mx-2" @click="openAddCounterDialog" v-if="store.getters.hasPermission('cp:create')">
-                  Ajouter un compteur
+                  Ajouter une maintenance préventive
                 </v-btn>
               </div>
             </v-card>
@@ -252,10 +254,10 @@
     </v-card>
   </v-dialog>
 
-  <!-- Dialog pour ajouter un compteur -->
+  <!-- Dialog pour ajouter une maintenance préventive -->
   <v-dialog v-model="showCounterDialog" max-width="600px" @click:outside="closeCounterDialog">
     <v-card>
-      <v-card-title>Ajouter un compteur</v-card-title>
+      <v-card-title>Ajouter une maintenance préventive</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <CounterInlineForm 
@@ -451,7 +453,7 @@ const fetchEquipmentData = async () => {
 
 const formatLabel = (key) => {
   const labels = {
-    reference: 'Référence',
+    reference: 'Code GMAO',
     designation: 'Désignation',
     type: "Type d'équipement",
     dateMiseEnService: 'Date de mise en service',

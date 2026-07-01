@@ -141,10 +141,10 @@ export const TABLE_HEADERS = {
             value: "id",
         },
         {
-            title: "Créateur",
-            align: "center",
-            sortable: true,
-            value: "createur",
+            title: "Désignation",
+            align: "start",
+            sortable: false,
+            value: "commentaire",
         },
         {
             title: "Statut",
@@ -162,16 +162,10 @@ export const TABLE_HEADERS = {
             value: "id",
         },
         {
-            title: "Commentaire",
-            align: "center",
+            title: "Désignation",
+            align: "start",
             sortable: false,
             value: "commentaire",
-        },
-        {
-            title: "Créateur",
-            align: "center",
-            sortable: true,
-            value: "createur",
         },
         {
             title: "Statut",

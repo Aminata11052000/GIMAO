@@ -44,10 +44,6 @@
       <span class="font-weight-medium">{{ formatDINumber(item.id) }}</span>
     </template>
 
-    <template #item.createur="{ item }">
-      {{ item.utilisateur?.prenom ?? '' }} {{ item.utilisateur?.nomFamille ?? '' }}
-    </template>
-
     <template #item.commentaire="{ item }">
       {{ item.commentaire?.length > 50 ? `${item.commentaire.substring(0, 50)}...` : item.commentaire }}
     </template>

@@ -77,7 +77,7 @@ const props = defineProps({
   tableHeaders: {
     type: Array,
     default: () => [
-      { title: "Référence", key: "reference", sortable: true, align: "center" },
+      { title: "Code GMAO", key: "reference", sortable: true, align: "center" },
       { title: "Désignation", key: "designation", sortable: true, align: "center" },
       { title: "Lieu", key: "lieu.nomLieu", sortable: false, align: "center" },
       { title: "Modèle", key: "modele", sortable: false, align: "center" },

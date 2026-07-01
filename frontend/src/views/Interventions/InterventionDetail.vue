@@ -6,7 +6,12 @@
       <v-row v-if="data">
         <!-- Colonne gauche : champs du BT -->
         <v-col cols="12" md="6" class="detail-column">
-          <h3 class="text-h6 mb-4 text-primary detail-title">{{ data.nom }}</h3>
+          <h3 class="text-h6 mb-4 text-primary detail-title">
+            {{ data.nom }}
+            <span v-if="equipement" class="text-medium-emphasis font-weight-regular">
+              - {{ equipement.designation }}
+            </span>
+          </h3>
           <div class="detail-field">
             <label class="detail-label">ID</label>
             <div class="detail-value">{{ data.id || "Non spécifié" }}</div>
@@ -175,7 +180,7 @@
           <!-- Section Équipement (provient de la DI) -->
           <v-card class="mt-4" elevation="2">
             <v-card-title class="text-h6 d-flex align-center cursor-pointer" @click="toggleEquipementDetails">
-              Équipement
+              {{ equipement ? equipement.designation : 'Équipement' }}
               <v-spacer></v-spacer>
               <v-btn color="primary" size="small" class="mr-2" @click.stop="openEquipement" :disabled="!equipementId">
                 Ouvrir
@@ -432,7 +437,7 @@ const formattedEquipement = computed(() => {
   const e = equipement.value;
   if (!e) return {};
   return {
-    Référence: e.reference || "Non spécifié",
+    "Code GMAO": e.reference || "Non spécifié",
     Désignation: e.designation || "Non spécifié",
     Lieu: e.lieu || "Non spécifié",
     Statut: e.dernier_statut?.statut || "Non spécifié",

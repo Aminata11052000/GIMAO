@@ -10,14 +10,14 @@
 
       <!-- Filtres + Recherche ensemble -->
       <v-col cols="12" md="7">
-        <div class="d-flex align-center justify-end ga-3">
+        <div class="d-flex align-center justify-end flex-wrap ga-3" style="row-gap: 12px;">
           <!-- Slot filtres (maintenant à côté de la recherche) -->
           <slot name="filters"></slot>
 
           <!-- Barre de recherche -->
           <v-text-field v-if="showSearch" v-model="searchQuery" :label="searchLabel" :placeholder="searchPlaceholder"
             prepend-inner-icon="mdi-magnify" clearable variant="outlined" density="compact" hide-details
-            style="max-width: 350px;" @keydown.enter.prevent />
+            style="max-width: 350px; min-width: 180px; flex: 1 1 180px;" @keydown.enter.prevent />
         </div>
       </v-col>
 

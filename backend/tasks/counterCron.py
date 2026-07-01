@@ -9,8 +9,6 @@ from utilisateur.models import Utilisateur
 
 logger = logging.getLogger('tasks')
 
-ALERT_THRESHOLD = 0.85
-
 
 def update_counter():
     try:
@@ -29,6 +27,9 @@ def update_counter():
                 logger.warning(f"Counter {counter.id} ignoré (valeurCourante nulle)")
                 continue
 
+            # Détection calendaire (même logique que dans DeclenchementViewSet)
+            is_calendaire = counter.type == 'Calendaire' or counter.unite == 'date'
+
             # Récupérer les déclenchements associés (table declencher)
             declenchements = counter.declenchements.all()
 
@@ -36,20 +37,21 @@ def update_counter():
                 # Récupérer le plan de maintenance associé
                 plan_maintenance = declencher.planMaintenance
 
-                if (
-                    declencher.derniereIntervention is None
-                    or declencher.ecartInterventions is None
-                    or declencher.prochaineMaintenance is None
-                ): continue
+                if declencher.prochaineMaintenance is None:
+                    continue
 
-                since_last = counter.valeurCourante - declencher.derniereIntervention
-                alert_value = ALERT_THRESHOLD * declencher.ecartInterventions
+                # Seuil effectif : la prochaine maintenance, anticipee si demande.
+                # NB: on compare directement a prochaineMaintenance (et non a un
+                # pourcentage de ecartInterventions) car ecartInterventions est
+                # stocke dans une unite differente pour les compteurs calendaires
+                # (millisecondes) que valeurCourante/prochaineMaintenance (jours
+                # ordinaux) : comparer les deux provoquait un decalage d'unites
+                # qui empechait tout declenchement.
+                seuil_effectif = declencher.prochaineMaintenance
+                if is_calendaire and declencher.anticipationJours:
+                    seuil_effectif = declencher.prochaineMaintenance - declencher.anticipationJours
 
-                # Debug log
-                # msg = f"Counter {since_last}/{declencher.ecartInterventions} = {since_last/declencher.ecartInterventions}"
-                # logger.info(msg)
-
-                if since_last >= alert_value:
+                if counter.valeurCourante >= seuil_effectif:
                     if plan_maintenance:
 
                         # Check if a BT already exists and is active for this PlanMaintenance
@@ -102,5 +104,8 @@ def update_counter():
 
         logger.info(f"[{datetime.datetime.now().strftime('%Y-%m-%d')}] Compteurs en alerte: {counters_on_alert}; BonTravail crees: {BT_created}")
 
+        return BT_created
+
     except Exception as e:
         logger.exception("Erreur dans le cron update_counter")
+        raise

@@ -1,6 +1,24 @@
 <template>
   <v-container fluid style="max-width: 90%">
     <div class="dashboard">
+      <!-- Action : forcer le calcul du préventif -->
+      <div
+        v-if="store.getters.hasPermission('mp:create')"
+        class="d-flex justify-end mb-3"
+      >
+        <v-btn
+          color="primary"
+          variant="flat"
+          prepend-icon="mdi-calculator-variant"
+          size="small"
+          :loading="forcing"
+          @click="forcerCalcul"
+        >
+          <span class="d-none d-sm-inline">Forcer le calcul des BT préventifs</span>
+          <span class="d-inline d-sm-none">Forcer le calcul</span>
+        </v-btn>
+      </div>
+
       <!-- STATS COMPONENT -->
       <StatsComponent v-if="hasStats" :perms="getPermsForStats" />
 
@@ -182,6 +200,10 @@
       confirm-icon="mdi-logout"
       @confirm="logout"
     />
+
+    <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="4000">
+      {{ snackbarMessage }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -196,9 +218,35 @@ import InterventionListComponent from "@/components/InterventionListComponent.vu
 import EquipmentListComponent from "@/components/EquipmentListComponent.vue";
 import StatsComponent from "@/components/StatsComponent.vue";
 import Stocks from "@/views/Stocks/Stocks.vue";
+import { useApi } from "@/composables/useApi";
+import { API_BASE_URL } from "@/utils/constants";
 
 const store = useStore();
 const router = useRouter();
+const api = useApi(API_BASE_URL);
+
+const forcing = ref(false);
+const snackbar = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("success");
+
+const forcerCalcul = async () => {
+  if (forcing.value) return;
+  forcing.value = true;
+  try {
+    const res = await api.post("plans-maintenance/forcer_calcul/");
+    snackbarMessage.value = res?.message || "Calcul des maintenances préventives effectué.";
+    snackbarColor.value = "success";
+    snackbar.value = true;
+  } catch (e) {
+    console.error(e);
+    snackbarMessage.value = "Erreur lors du calcul des maintenances préventives.";
+    snackbarColor.value = "error";
+    snackbar.value = true;
+  } finally {
+    setTimeout(() => { forcing.value = false; }, 4000);
+  }
+};
 
 const role = computed(() => store.getters.userRole);
 

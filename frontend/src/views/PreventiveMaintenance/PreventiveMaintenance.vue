@@ -187,6 +187,7 @@ const notify = (message, color = 'success') => {
 }
 
 const forcerCalcul = async () => {
+  if (forcing.value) return
   forcing.value = true
   try {
     const res = await api.post('plans-maintenance/forcer_calcul/')
@@ -197,7 +198,8 @@ const forcerCalcul = async () => {
     console.error(e)
     notify("Erreur lors du calcul des maintenances préventives.", 'error')
   } finally {
-    forcing.value = false
+    // Cooldown anti double-clic : on garde le bouton désactivé quelques secondes
+    setTimeout(() => { forcing.value = false }, 4000)
   }
 }
 

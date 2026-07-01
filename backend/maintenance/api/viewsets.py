@@ -2142,9 +2142,13 @@ class PlanMaintenanceViewSet(GimaoModelViewSet):
         from tasks.counterCron import update_counter
         try:
             update_calendar_counters()
-            update_counter()
+            bt_crees = update_counter() or 0
+            if bt_crees > 0:
+                message = f"{bt_crees} bon(s) de travail préventif(s) généré(s)."
+            else:
+                message = "Calcul effectué : aucun nouveau bon de travail à générer."
             return Response(
-                {"message": "Calcul des maintenances préventives effectué avec succès."},
+                {"message": message, "bt_crees": bt_crees},
                 status=status.HTTP_200_OK
             )
         except Exception as e:

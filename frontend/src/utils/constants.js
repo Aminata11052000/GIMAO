@@ -111,7 +111,13 @@ export const TABLE_HEADERS = {
             title: "N° DI",
             align: "start",
             sortable: true,
-            value: "nom",
+            value: "id",
+        },
+        {
+            title: "Désignation",
+            align: "start",
+            sortable: false,
+            value: "commentaire",
         },
         {
             title: "Equipement",
@@ -132,7 +138,7 @@ export const TABLE_HEADERS = {
             title: "N° DI",
             align: "start",
             sortable: true,
-            value: "nom",
+            value: "id",
         },
         {
             title: "Créateur",
@@ -153,7 +159,7 @@ export const TABLE_HEADERS = {
             title: "N° DI",
             align: "start",
             sortable: true,
-            value: "nom",
+            value: "id",
         },
         {
             title: "Commentaire",
@@ -275,7 +281,13 @@ export const TABLE_HEADERS = {
 
     INTERVENTIONS_MOBILE: [
         {
-            title: "Nom",
+            title: "N° BT",
+            align: "start",
+            sortable: true,
+            value: "id",
+        },
+        {
+            title: "Désignation",
             align: "start",
             sortable: true,
             value: "nom",

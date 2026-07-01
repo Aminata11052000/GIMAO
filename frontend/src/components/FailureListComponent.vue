@@ -30,6 +30,10 @@
       </v-btn>
     </template>
 
+    <template #item.id="{ item }">
+      <span class="font-weight-medium">{{ formatDINumber(item.id) }}</span>
+    </template>
+
     <template #item.createur="{ item }">
       {{ item.utilisateur?.prenom ?? '' }} {{ item.utilisateur?.nomFamille ?? '' }}
     </template>
@@ -120,6 +124,8 @@ const api = useApi(API_BASE_URL);
 const errorMessage = ref('');
 const containerWidth = ref(0);
 const showAncien = ref(false);
+
+const formatDINumber = (id) => (id != null ? `DI-${String(id).padStart(4, '0')}` : '-');
 
 const {
   items: failures,

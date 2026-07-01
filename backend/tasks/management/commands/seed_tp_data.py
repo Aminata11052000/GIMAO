@@ -652,9 +652,17 @@ class Command(BaseCommand):
             di_data = scenario["di"]
             bt_data = scenario["bt"]
 
+            # Le numero de DI suit le meme format DI-XXXX que celui genere
+            # automatiquement a la creation depuis l'application (FailureForm.vue).
+            # Le titre descriptif d'origine est conserve dans le commentaire.
+            numero_di = f"DI-{str(nb_di + 1).zfill(4)}"
+            titre = di_data["nom"]
+            commentaire_origine = di_data.get("commentaire", "")
+            commentaire_final = f"{titre}\n{commentaire_origine}".strip()
+
             di = DemandeIntervention.objects.create(
-                nom=di_data["nom"],
-                commentaire=di_data.get("commentaire", ""),
+                nom=numero_di,
+                commentaire=commentaire_final,
                 statut=di_data["statut"],
                 statut_suppose=di_data["statut_suppose"],
                 utilisateur=di_data["utilisateur"],

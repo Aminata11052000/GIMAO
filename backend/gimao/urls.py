@@ -58,6 +58,7 @@ urlpatterns = [
     path('api/', include('donnees.api.urls')),
     path('api/', include('stock.api.urls')),
     path('api/export/', include('exportData.urls')),
+    path('api/import/', include('importData.urls')),
 ]
 
 

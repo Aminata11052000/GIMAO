@@ -7,8 +7,9 @@ Ce guide décrit les fonctionnalités disponibles pour chaque rôle de l'applica
 ## Sommaire
 
 - [Connexion](#connexion)
-- [Opérateur](#operateur)
-- [Technicien](#technicien)
+- [Opérateur prod](#operateur-prod)
+- [Technicien prod](#technicien-prod)
+- [Technicien maintenance](#technicien-maintenance)
 - [Magasinier](#magasinier)
 - [Responsable GMAO](#responsable-gmao)
 
@@ -36,9 +37,9 @@ Depuis le menu en haut à droite, accéder à votre profil puis cliquer sur **Ch
 
 ---
 
-## Opérateur
+## Opérateur prod
 
-Le rôle Opérateur permet de signaler des anomalies sur les équipements et de suivre l'avancement des demandes créées.
+Le rôle Opérateur prod permet de signaler des anomalies sur les équipements et de suivre l'avancement des demandes créées.
 
 ### Tableau de bord
 
@@ -90,9 +91,9 @@ Une demande peut être modifiée uniquement si elle est encore **En attente** et
 
 ---
 
-## Technicien
+## Technicien prod
 
-Le rôle Technicien permet de consulter et traiter les bons de travail assignés, et de déclarer des interventions.
+Le rôle Technicien prod permet de consulter et traiter les bons de travail assignés, et de déclarer des interventions.
 
 ### Tableau de bord
 
@@ -153,6 +154,24 @@ Lorsque l'intervention est terminée :
 ### Déclarer une demande d'intervention
 
 Un technicien peut également créer une DI s'il constate une anomalie pendant sa tournée, selon la même procédure que l'opérateur.
+
+---
+
+## Technicien maintenance
+
+Le rôle Technicien maintenance dispose des mêmes actions que le [Technicien prod](#technicien-prod) (consultation et traitement des bons de travail assignés, déclaration d'interventions, consultation des équipements et des compteurs), avec deux capacités supplémentaires :
+
+### Accéder au calendrier des maintenances
+
+1. Aller dans **Calendrier**.
+2. Le calendrier affiche les interventions planifiées (BT avec date prévue) et les prochaines échéances de maintenance préventive.
+
+### Créer et modifier des plans de maintenance préventive
+
+1. Aller dans **Équipements** et ouvrir un équipement.
+2. Accéder à l'onglet **Plans de maintenance**.
+3. Créer un plan en renseignant le nom, le type, les habilitations requises, les consommables nécessaires et les documents associés.
+4. Ajouter des compteurs de déclenchement (compteur numérique ou calendaire) avec leur seuil et leur périodicité.
 
 ---
 

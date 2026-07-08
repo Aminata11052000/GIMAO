@@ -83,7 +83,7 @@ Le script `install.bat` s'appuie sur Docker Compose et les images publiées sur 
 
 ### Gestion des utilisateurs
 
-- Rôles : `Opérateur`, `Technicien`, `Magasinier`, `Responsable GMAO`.
+- Rôles : `Opérateur prod`, `Technicien prod`, `Technicien maintenance`, `Magasinier`, `Responsable GMAO`.
 - Gestion des permissions par module et par action (lecture, écriture, suppression).
 - Journalisation des actions (table, type d'opération, utilisateur, champs modifiés, date).
 
@@ -326,7 +326,7 @@ Chaque application Django suit la structure standard DRF :
 
 ### `init_data`
 
-Crée les rôles (`Opérateur`, `Technicien`, `Magasinier`, `Responsable GMAO`), les modules et les permissions associées. Idempotente : peut être relancée sans risque.
+Crée les rôles (`Opérateur prod`, `Technicien prod`, `Technicien maintenance`, `Magasinier`, `Responsable GMAO`), les modules et les permissions associées. Idempotente : peut être relancée sans risque.
 
 ```bash
 python manage.py init_data

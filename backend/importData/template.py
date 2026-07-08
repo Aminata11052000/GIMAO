@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
-from equipement.models import Equipement
+from equipement.models import Equipement, StatutEquipement
 
 EXEMPLE_MARQUEUR = "(EXEMPLE)"
 
@@ -23,23 +23,51 @@ EXEMPLE_MARQUEUR = "(EXEMPLE)"
 SHEET_DEFINITIONS = [
     (
         "Lieux",
-        ["Nom *", "Type de lieu", "Lieu parent"],
-        [f"Atelier Mecanique {EXEMPLE_MARQUEUR}", "Atelier", ""],
+        ["Nom *", "Type de lieu", "Lieu parent", "Lien du plan"],
+        [f"Atelier Mecanique {EXEMPLE_MARQUEUR}", "Atelier", "", ""],
     ),
     (
         "Fabricants",
-        ["Nom *", "Email", "Telephone"],
-        [f"Siemens AG {EXEMPLE_MARQUEUR}", "contact@siemens.fr", "0100000000"],
+        [
+            "Nom *",
+            "Email",
+            "Telephone",
+            "Service apres-vente (Oui/Non)",
+            "N adresse",
+            "Rue",
+            "Ville",
+            "Code postal",
+            "Pays",
+            "Complement adresse",
+        ],
+        [
+            f"Siemens AG {EXEMPLE_MARQUEUR}", "contact@siemens.fr", "0100000000", "Oui",
+            "12", "Rue de l'Industrie", "Anglet", "64600", "France", "",
+        ],
     ),
     (
         "Fournisseurs",
-        ["Nom *", "Email", "Telephone"],
-        [f"Distrelec {EXEMPLE_MARQUEUR}", "contact@distrelec.fr", "0200000000"],
+        [
+            "Nom *",
+            "Email",
+            "Telephone",
+            "Service apres-vente (Oui/Non)",
+            "N adresse",
+            "Rue",
+            "Ville",
+            "Code postal",
+            "Pays",
+            "Complement adresse",
+        ],
+        [
+            f"Distrelec {EXEMPLE_MARQUEUR}", "contact@distrelec.fr", "0200000000", "Non",
+            "5", "Avenue des Fournisseurs", "Bayonne", "64100", "France", "",
+        ],
     ),
     (
         "Familles",
-        ["Nom *"],
-        [f"Equipements electriques {EXEMPLE_MARQUEUR}"],
+        ["Nom *", "Famille parente"],
+        [f"Moteurs electriques {EXEMPLE_MARQUEUR}", f"Equipements electriques {EXEMPLE_MARQUEUR}"],
     ),
     (
         "Modeles",
@@ -49,9 +77,10 @@ SHEET_DEFINITIONS = [
     (
         "Equipements",
         [
-            "Code GMAO",
+            "Code GMAO *",
             "Designation *",
             "Type",
+            "Statut *",
             "Lieu *",
             "Fabricant",
             "Fournisseur",
@@ -65,6 +94,7 @@ SHEET_DEFINITIONS = [
             f"EQ-001 {EXEMPLE_MARQUEUR}",
             f"Perceuse a colonne {EXEMPLE_MARQUEUR}",
             "MECANIQUE",
+            "EN_FONCTIONNEMENT",
             f"Atelier Mecanique {EXEMPLE_MARQUEUR}",
             f"Siemens AG {EXEMPLE_MARQUEUR}",
             f"Distrelec {EXEMPLE_MARQUEUR}",
@@ -72,7 +102,7 @@ SHEET_DEFINITIONS = [
             f"S7-1200 {EXEMPLE_MARQUEUR}",
             "15/03/2023",
             "1250.50",
-            "SN-000123",
+            "FR-000123",
         ],
     ),
 ]
@@ -91,11 +121,21 @@ def _build_instructions_sheet(workbook):
         "encore, il sera cree automatiquement lors de l'import.",
         "4. N'ajoutez pas, ne renommez pas et ne supprimez pas les onglets ou les colonnes.",
         f"5. Valeurs possibles pour la colonne Type (onglet Equipements) : "
-        f"{', '.join(label for _, label in Equipement.TYPE_CHOICES)}.",
-        "6. Les dates doivent etre au format JJ/MM/AAAA.",
-        "7. Chaque onglet contient une ligne d'exemple (EXEMPLE) montrant le format attendu : "
+        f"{', '.join(code for code, _ in Equipement.TYPE_CHOICES)}.",
+        f"6. Valeurs possibles pour la colonne Statut (onglet Equipements) : "
+        f"{', '.join(code for code, _ in StatutEquipement.STATUTS_CHOICES)}.",
+        "7. Le Code GMAO identifie chaque equipement de maniere unique : reimporter un fichier avec les memes "
+        "codes GMAO ne creera pas de doublons (les lignes deja presentes sont ignorees).",
+        "8. Les dates doivent etre au format JJ/MM/AAAA.",
+        "9. Chaque onglet contient une ligne d'exemple (EXEMPLE) montrant le format attendu : "
         "elle est ignoree automatiquement lors de l'import, meme si vous oubliez de la supprimer.",
-        "8. Une fois rempli, importez ce fichier depuis la page Equipements, bouton 'Importer depuis Excel'.",
+        "10. Pour Service apres-vente, utilisez Oui ou Non (Non par defaut si laisse vide).",
+        "11. L'adresse (N adresse, Rue, Ville, Code postal, Pays, Complement) est facultative pour "
+        "un fabricant ou un fournisseur : elle n'est enregistree que si au moins un de ces champs est rempli.",
+        "12. La photo d'un equipement et les consommables associes ne sont PAS geres par cet import "
+        "(l'un est une image, l'autre necessite des quantites) : ajoutez-les ensuite manuellement sur la fiche "
+        "de l'equipement une fois cree.",
+        "13. Une fois rempli, importez ce fichier depuis la page Equipements, bouton 'Importer depuis Excel'.",
     ]
     row = 3
     for ligne in regles:

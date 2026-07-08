@@ -22,19 +22,22 @@
         variant="outlined"
         color="primary"
         prepend-icon="mdi-file-download-outline"
-        class="mr-2"
+        size="small"
         @click="downloadTemplate"
         :loading="downloadingTemplate"
       >
-        Modèle Excel
+        <span class="d-none d-sm-inline">Modèle Excel</span>
+        <span class="d-inline d-sm-none">Modèle</span>
       </v-btn>
       <v-btn
         variant="outlined"
         color="primary"
         prepend-icon="mdi-file-upload-outline"
+        size="small"
         @click="showImportDialog = true"
       >
-        Importer depuis Excel
+        <span class="d-none d-sm-inline">Importer depuis Excel</span>
+        <span class="d-inline d-sm-none">Importer</span>
       </v-btn>
     </template>
 

@@ -22,13 +22,15 @@
       </v-col>
 
       <!-- Actions (si besoin) -->
-      <v-col v-if="showCreateButton || $slots.actions" cols="12" md="auto" class="d-flex justify-end">
-        <slot name="actions">
-          <v-btn v-if="showCreateButton" :color="createButtonColor" :prepend-icon="createButtonIcon"
-            @click="$emit('create')">
-            {{ createButtonText }}
-          </v-btn>
-        </slot>
+      <v-col v-if="showCreateButton || $slots.actions" cols="12" md="auto">
+        <div class="d-flex justify-end flex-wrap" style="gap: 8px; row-gap: 12px;">
+          <slot name="actions">
+            <v-btn v-if="showCreateButton" :color="createButtonColor" :prepend-icon="createButtonIcon"
+              @click="$emit('create')">
+              {{ createButtonText }}
+            </v-btn>
+          </slot>
+        </div>
       </v-col>
     </v-row>
 

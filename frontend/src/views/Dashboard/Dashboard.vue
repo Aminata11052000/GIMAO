@@ -1,12 +1,27 @@
 <template>
   <v-container fluid style="max-width: 90%">
     <div class="dashboard">
-      <!-- Action : forcer le calcul du préventif -->
+      <!-- Actions administrateur -->
       <div
-        v-if="store.getters.hasPermission('mp:create')"
-        class="d-flex justify-end mb-3"
+        v-if="store.getters.hasPermission('mp:create') || isResponsableGmao"
+        class="d-flex justify-end flex-wrap mb-3"
+        style="gap: 8px; row-gap: 12px;"
       >
         <v-btn
+          v-if="isResponsableGmao"
+          color="secondary"
+          variant="outlined"
+          prepend-icon="mdi-database-import-outline"
+          size="small"
+          :loading="seeding"
+          @click="showSeedConfirm = true"
+        >
+          <span class="d-none d-sm-inline">Précharger les données de démo</span>
+          <span class="d-inline d-sm-none">Données de démo</span>
+        </v-btn>
+
+        <v-btn
+          v-if="store.getters.hasPermission('mp:create')"
           color="primary"
           variant="flat"
           prepend-icon="mdi-calculator-variant"
@@ -201,6 +216,17 @@
       @confirm="logout"
     />
 
+    <ConfirmationModal
+      v-model="showSeedConfirm"
+      type="warning"
+      title="Précharger les données de démonstration"
+      message="Cette action supprime les données existantes (équipements, utilisateurs, interventions, stocks) et les remplace par un jeu de données de démonstration. À utiliser uniquement en environnement de test ou de formation, jamais sur une base de production. Continuer ?"
+      confirm-text="Précharger"
+      cancel-text="Annuler"
+      confirm-icon="mdi-database-import-outline"
+      @confirm="chargerDonneesDemo"
+    />
+
     <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="4000">
       {{ snackbarMessage }}
     </v-snackbar>
@@ -277,6 +303,28 @@ const hasDIandBtHorizontal = computed(() => {
 });
 
 const showLogoutConfirm = ref(false);
+const showSeedConfirm = ref(false);
+const seeding = ref(false);
+
+const isResponsableGmao = computed(() => role.value === "Responsable GMAO");
+
+const chargerDonneesDemo = async () => {
+  if (seeding.value) return;
+  seeding.value = true;
+  try {
+    const res = await api.post("tasks/seed-demo-data/");
+    snackbarMessage.value = res?.message || "Données de démonstration chargées avec succès.";
+    snackbarColor.value = "success";
+    snackbar.value = true;
+  } catch (e) {
+    console.error(e);
+    snackbarMessage.value = "Erreur lors du chargement des données de démonstration.";
+    snackbarColor.value = "error";
+    snackbar.value = true;
+  } finally {
+    seeding.value = false;
+  }
+};
 
 const logout = () => {
   store.dispatch("logout");

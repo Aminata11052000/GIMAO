@@ -39,7 +39,6 @@ echo  [4/4] Initialisation de la base de donnees (merci de patienter)
 timeout /t 15 /nobreak >nul
 docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
 docker compose -f docker-compose.prod.yml exec backend python manage.py init_data
-docker compose -f docker-compose.prod.yml exec backend python manage.py seed_tp_data
 if errorlevel 1 goto erreur
 
 timeout /t 3 /nobreak >nul

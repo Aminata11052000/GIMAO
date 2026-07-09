@@ -42,9 +42,11 @@ Pour installer l'application sans passer par les commandes Docker manuelles, un 
 3. Double-cliquer sur **`install.bat`**.
 4. Attendre la fin du script : l'application s'ouvre automatiquement dans le navigateur sur `http://localhost`.
 
-Identifiants créés automatiquement à la première installation :
-- Identifiant : `admin`
-- Mot de passe : `Admin1234!`
+Un seul compte est créé automatiquement, avec le rôle Responsable GMAO :
+- Identifiant : `responsable`
+- Aucun mot de passe par défaut : il est défini à la première connexion.
+
+Aucune donnée n'est préchargée. Un jeu de données de démonstration peut être chargé depuis l'application (bouton dédié sur le tableau de bord, réservé au Responsable GMAO) — voir [Commandes de gestion](#commandes-de-gestion).
 
 ### 3. Mettre à jour l'application
 

@@ -2,94 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // Utils
 import store, { checkAuthValidity } from '@/store'
-// ---------------------------------------------------------------
-// AUTH
-import Login from '@/views/Auth/Login.vue'
-import SetPassword from '@/views/Auth/SetPassword.vue'
-
-// ---------------------------------------------------------------
-import Dashboard from '@/views/Dashboard/Dashboard.vue'
-import EquipmentList from '@/views/Equipments/EquipmentList.vue'
-import InterventionList from '@/views/Interventions/InterventionList.vue'
-import AccountManagement from '@/views/Users/UserList.vue'
-import AfficherUser from '@/views/Users/UserDetail.vue'
-import ModifierUser from '@/views/Users/EditUser.vue'
-import CreerUser from '@/views/Users/CreateUser.vue'
-import Stocks from '@/views/Stocks/Stocks.vue'
-import CreateConsumable from '@/views/Stocks/CreateConsumable.vue'
-import EditConsumable from '@/views/Stocks/EditConsumable.vue'
-import ConsumableDetail from '@/views/Stocks/ConsumableDetail.vue'
-import FailureList from '@/views/Failures/FailureList.vue'
-
-
-// ---------------------------------------------------------------
-import InterventionDetail from '@/views/Interventions/InterventionDetail.vue'
-import CreateIntervention from '@/views/Interventions/CreateIntervention.vue'
-import EditIntervention from '@/views/Interventions/EditIntervention.vue'
-import AddDocumentIntervention from '@/views/Interventions/AddDocumentIntervention.vue'
-
-// ------------------------------------------------------------------
-import EquipmentDetail from '@/views/Equipments/EquipmentDetail.vue'
-import CreateEquipment from '@/views/Equipments/CreateEquipment.vue'
-import EditEquipment from '@/views/Equipments/EditEquipment.vue'
-
-// ------------------------------------------------------------------
-import CreateFailure from '@/views/Failures/CreateFailure.vue'
-import FailureDetail from '@/views/Failures/FailureDetail.vue'
-import EditFailure from '@/views/Failures/EditFailure.vue'
-import AddDocumentFailure from '@/views/Failures/AddDocumentFailure.vue'
-
-// ------------------------------------------------------------------
-import NoticesHome from '@/views/Notices/NoticesHome.vue'
-
-// ------------------------------------------------------------------
-
-import PreventiveMaintenance from '@/views/PreventiveMaintenance/PreventiveMaintenance.vue'
-import DataManagement from '@/views/DataManagement/DataManagement.vue'
-import ExportData from '@/views/DataManagement/ExportData.vue'
-
-import CreateLocation from '@/views/DataManagement/Locations/CreateLocation.vue'
-import LocationList from '@/views/DataManagement/Locations/LocationList.vue'
-import LocationDetail from '@/views/DataManagement/Locations/LocationDetail.vue'
-
-import CreateSupplier from '@/views/DataManagement/Suppliers/CreateSupplier.vue'
-import SupplierList from '@/views/DataManagement/Suppliers/SupplierList.vue'
-import SupplierDetail from '@/views/DataManagement/Suppliers/SupplierDetail.vue'
-
-import CreateManufacturer from '@/views/DataManagement/Manufacturers/CreateManufacturer.vue'
-import ManufacturerList from '@/views/DataManagement/Manufacturers/ManufacturerList.vue'
-import ManufacturerDetail from '@/views/DataManagement/Manufacturers/ManufacturerDetail.vue'
-import EditManufacturer from '../views/DataManagement/Manufacturers/EditManufacturer.vue'
-
-import ModelEquipmentList from '@/views/DataManagement/EquipmentsModels/ModelEquipmentList.vue'
-import CreateModelEquipment from '@/views/DataManagement/EquipmentsModels/CreateModelEquipment.vue'
-import ModelEquipmentDetail from '@/views/DataManagement/EquipmentsModels/ModelEquipmentDetail.vue'
-import EditModelEquipment from '@/views/DataManagement/EquipmentsModels/EditModelEquipment.vue'
-
-import CounterDetail from '@/views/Equipments/Counters/CounterDetail.vue'
-import EditSupplier from '@/views/DataManagement/Suppliers/EditSupplier.vue'
-
-// Dashboard
-import Calendar from '@/views/Calendar/Calendar.vue'
-
-
-// ---------------------------------------------------------------
-// ROLES ET PERMISSIONS
-import RoleList from '@/views/Users/RoleList.vue'
-import UserPermissions from '@/views/Users/UserPermissions.vue'
 
 const routes = [
   // Auth routes (publiques)
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () => import('@/views/Auth/Login.vue'),
     meta: { public: true }
   },
   {
     path: '/set-password',
     name: 'SetPassword',
-    component: SetPassword,
+    component: () => import('@/views/Auth/SetPassword.vue'),
     meta: { public: true }
   },
 
@@ -97,20 +22,20 @@ const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: Dashboard,
+    component: () => import('@/views/Dashboard/Dashboard.vue'),
     meta: { title: 'Tableau de Bord' }
   },
   //  ROLES ET PERMISSIONS
   {
     path: '/RoleList',
     name: 'RoleList',
-    component: RoleList,
+    component: () => import('@/views/Users/RoleList.vue'),
     meta: { title: 'Gestion des rôles', requiresPermissions: ['role:viewList'] }
   },
   {
     path: '/UserPermissions/:id',
     name: 'UserPermissions',
-    component: UserPermissions,
+    component: () => import('@/views/Users/UserPermissions.vue'),
     props: true,
     meta: { title: 'Permissions utilisateur', requiresPermissions: ['user:edit'] }
   },
@@ -119,7 +44,7 @@ const routes = [
   {
     path: '/UserList',
     name: 'UserList',
-    component: AccountManagement,
+    component: () => import('@/views/Users/UserList.vue'),
     meta: {
       title: 'Gestion des Comptes',
       requiresPermissions: ['user:viewList']
@@ -129,7 +54,7 @@ const routes = [
   {
     path: '/UserDetail/:id',
     name: 'UserDetail',
-    component: AfficherUser,
+    component: () => import('@/views/Users/UserDetail.vue'),
     props: true,
     meta: {
       title: 'Afficher un utilisateur',
@@ -141,7 +66,7 @@ const routes = [
   {
     path: '/EditUser/:id',
     name: 'EditUser',
-    component: ModifierUser,
+    component: () => import('@/views/Users/EditUser.vue'),
     props: true,
     meta: { title: 'Modifier un utilisateur', requiresPermissions: ['user:edit'], checksIfSelf: true }
   },
@@ -149,31 +74,30 @@ const routes = [
   {
     path: '/CreateUser',
     name: 'CreateUser',
-    component: CreerUser,
+    component: () => import('@/views/Users/CreateUser.vue'),
     meta: { title: 'Créer un utilisateur', requiresPermissions: ['user:create'] }
   },
-
 
   // Stocks & Consommables --------------------------------------------------------
 
   {
     path: '/stocks',
     name: 'Stocks',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     meta: { title: 'Stocks', requiresPermissions: ['stock:view'] }
   },
 
   {
     path: '/CreateConsumable',
     name: 'CreateConsumable',
-    component: CreateConsumable,
+    component: () => import('@/views/Stocks/CreateConsumable.vue'),
     meta: { title: 'Créer un consommable', requiresPermissions: ['cons:create'] }
   },
 
   {
     path: '/EditConsumable/:id',
     name: 'EditConsumable',
-    component: EditConsumable,
+    component: () => import('@/views/Stocks/EditConsumable.vue'),
     props: true,
     meta: { title: 'Modifier un consommable', requiresPermissions: ['cons:edit'] }
   },
@@ -181,7 +105,7 @@ const routes = [
   {
     path: '/Consumable/:id',
     name: 'ConsumableDetail',
-    component: ConsumableDetail,
+    component: () => import('@/views/Stocks/ConsumableDetail.vue'),
     props: true,
     meta: { title: 'Détails du consommable', requiresPermissions: ['cons:viewDetail'] }
   },
@@ -189,7 +113,7 @@ const routes = [
   {
     path: '/DeleteConsumable/:id',
     name: 'DeleteConsumable',
-    component: CreateConsumable,
+    component: () => import('@/views/Stocks/CreateConsumable.vue'),
     props: true,
     meta: { title: 'Supprimer un consommable', requiresPermissions: ['cons:delete'] }
   },
@@ -198,14 +122,14 @@ const routes = [
   {
     path: '/MagasinList',
     name: 'MagasinList',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     meta: { title: 'Magasins', requiresPermissions: ['mag:viewList'] }
   },
 
   {
     path: '/MagasinDetail/:id',
     name: 'MagasinDetail',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     props: true,
     meta: { title: 'Détails du magasin', requiresPermissions: ['mag:viewDetail'] }
   },
@@ -213,14 +137,14 @@ const routes = [
   {
     path: '/CreateMagasin',
     name: 'CreateMagasin',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     meta: { title: 'Créer un magasin', requiresPermissions: ['mag:create'] }
   },
 
   {
     path: '/EditMagasin/:id',
     name: 'EditMagasin',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     props: true,
     meta: { title: 'Modifier un magasin', requiresPermissions: ['mag:edit'] }
   },
@@ -228,39 +152,38 @@ const routes = [
   {
     path: '/DeleteMagasin/:id',
     name: 'DeleteMagasin',
-    component: Stocks,
+    component: () => import('@/views/Stocks/Stocks.vue'),
     props: true,
     meta: { title: 'Supprimer un magasin', requiresPermissions: ['mag:delete'] }
   },
-
 
   // Fabricants ------------------------------------------------------------------
 
   {
     path: '/ManufacturerList',
     name: 'ManufacturerList',
-    component: ManufacturerList,
+    component: () => import('@/views/DataManagement/Manufacturers/ManufacturerList.vue'),
     meta: { title: 'Fabricants', requiresPermissions: ['man:viewList'] }
   },
 
   {
     path: '/CreateManufacturer',
     name: 'CreateManufacturer',
-    component: CreateManufacturer,
+    component: () => import('@/views/DataManagement/Manufacturers/CreateManufacturer.vue'),
     meta: { title: 'Creer un Fabricant', requiresPermissions: ['man:create'] }
   },
 
   {
     path: '/ManufacturerDetail/:id',
     name: 'ManufacturerDetail',
-    component: ManufacturerDetail,
+    component: () => import('@/views/DataManagement/Manufacturers/ManufacturerDetail.vue'),
     props: true,
     meta: { title: 'Détails d\'un fabricant', requiresPermissions: ['man:viewDetail'] }
   },
   {
     path: '/EditManufacturer/:id',
     name: 'EditManufacturer',
-    component: EditManufacturer,
+    component: () => import('@/views/DataManagement/Manufacturers/EditManufacturer.vue'),
     props: true,
     meta: { title: 'Modifier un Fabricant', requiresPermissions: ['man:edit'] }
   },
@@ -270,40 +193,38 @@ const routes = [
   {
     path: '/SupplierList',
     name: 'SupplierList',
-    component: SupplierList,
+    component: () => import('@/views/DataManagement/Suppliers/SupplierList.vue'),
     meta: { title: 'Fournisseurs', requiresPermissions: ['sup:viewList'] }
   },
 
   {
     path: '/CreateSupplier',
     name: 'CreateSupplier',
-    component: CreateSupplier,
+    component: () => import('@/views/DataManagement/Suppliers/CreateSupplier.vue'),
     meta: { title: 'Creer un Fournisseur', requiresPermissions: ['sup:create'] }
   },
 
   {
     path: '/SupplierDetail/:id',
     name: 'SupplierDetail',
-    component: SupplierDetail,
+    component: () => import('@/views/DataManagement/Suppliers/SupplierDetail.vue'),
     props: true,
     meta: { title: 'Détails d\'un Fournisseur', requiresPermissions: ['sup:viewDetail'] }
   },
   {
     path: '/EditSupplier/:id',
     name: 'EditSupplier',
-    component: EditSupplier,
+    component: () => import('@/views/DataManagement/Suppliers/EditSupplier.vue'),
     props: true,
     meta: { title: 'Modifier un Fournisseur', requiresPermissions: ['sup:edit'] }
   },
-
-
 
   // GestionDonnees ---------------------------------------------------------------
 
   {
     path: '/DataManagement',
     name: 'DataManagement',
-    component: DataManagement,
+    component: () => import('@/views/DataManagement/DataManagement.vue'),
     // meta: { title: 'Gestion des données', requiresPermissions: ['loc:viewList'] }
     meta: { title: 'Gestion des données', requiresPermissions: ['menu:dataManagement'] }
   },
@@ -311,7 +232,7 @@ const routes = [
   {
     path: '/ExportData',
     name: 'ExportData',
-    component: ExportData,
+    component: () => import('@/views/DataManagement/ExportData.vue'),
     meta: { title: 'Export de données', requiresPermissions: ['export:view'] }
   },
 
@@ -320,14 +241,14 @@ const routes = [
   {
     path: '/InterventionList',
     name: 'InterventionList',
-    component: InterventionList,
+    component: () => import('@/views/Interventions/InterventionList.vue'),
     meta: { title: 'Bon de travail', requiresPermissions: ['bt:viewList'] }
   },
 
   {
     path: '/intervention/:id',
     name: 'InterventionDetail',
-    component: InterventionDetail,
+    component: () => import('@/views/Interventions/InterventionDetail.vue'),
     props: true,
     meta: { title: 'Détails du bon de travail', requiresPermissions: ['bt:viewDetail'] }
   },
@@ -335,14 +256,14 @@ const routes = [
   {
     path: '/CreateIntervention/',
     name: 'CreateIntervention',
-    component: CreateIntervention,
+    component: () => import('@/views/Interventions/CreateIntervention.vue'),
     meta: { title: 'Créer un bon de travail', requiresPermissions: ['bt:create'] }
   },
 
   {
     path: '/EditIntervention/:id',
     name: 'EditIntervention',
-    component: EditIntervention,
+    component: () => import('@/views/Interventions/EditIntervention.vue'),
     props: true,
     meta: { title: 'Modifier un bon de travail', requiresPermissions: ['bt:editAll', 'bt:editAssigned'], permissionMode: 'OR' }
   },
@@ -350,7 +271,7 @@ const routes = [
   {
     path: '/intervention/:id/AddDocumentIntervention',
     name: 'AddDocumentIntervention',
-    component: AddDocumentIntervention,
+    component: () => import('@/views/Interventions/AddDocumentIntervention.vue'),
     props: true,
     meta: { title: 'Ajouter un document au bon de travail', requiresPermissions: ['bt:editAll', 'bt:editAssigned'], permissionMode: 'OR' }
   },
@@ -360,14 +281,14 @@ const routes = [
   {
     path: '/EquipmentList',
     name: 'EquipmentList',
-    component: EquipmentList,
+    component: () => import('@/views/Equipments/EquipmentList.vue'),
     meta: { title: 'Équipements', requiresPermissions: ['eq:viewList'] }
   },
 
   {
     path: '/EquipmentDetail/:id',
     name: 'EquipmentDetail',
-    component: EquipmentDetail,
+    component: () => import('@/views/Equipments/EquipmentDetail.vue'),
     props: true,
     meta: { title: 'Descriptif de l\'équipement', requiresPermissions: ['eq:viewDetail'] }
   },
@@ -375,21 +296,21 @@ const routes = [
   {
     path: '/CreateEquipment',
     name: 'CreateEquipment',
-    component: CreateEquipment,
+    component: () => import('@/views/Equipments/CreateEquipment.vue'),
     meta: { title: 'Ajouter Equipement', requiresPermissions: ['eq:create'] }
   },
 
   {
     path: '/EditEquipment/:id',
     name: 'EditEquipment',
-    component: EditEquipment,
+    component: () => import('@/views/Equipments/EditEquipment.vue'),
     meta: { title: 'Modifier Equipement', requiresPermissions: ['eq:edit'] }
   },
 
   {
     path: '/CounterDetail/:id',
     name: 'CounterDetail',
-    component: CounterDetail,
+    component: () => import('@/views/Equipments/Counters/CounterDetail.vue'),
     meta: { title: 'Détails du compteur', requiresPermissions: ['cp:viewDetail'] }
   },
 
@@ -397,14 +318,14 @@ const routes = [
   {
     path: '/FailureList',
     name: 'FailureList',
-    component: FailureList,
+    component: () => import('@/views/Failures/FailureList.vue'),
     meta: { title: 'Demandes d\'interventions', requiresPermissions: ['di:viewList'] }
   },
 
   {
     path: '/CreateFailure/:equipementReference?',
     name: 'CreateFailure',
-    component: CreateFailure,
+    component: () => import('@/views/Failures/CreateFailure.vue'),
     props: true,
     meta: { title: 'Demande d\'intervention', requiresPermissions: ['di:create'] }
   },
@@ -412,7 +333,7 @@ const routes = [
   {
     path: '/Failure/:id',
     name: 'FailureDetail',
-    component: FailureDetail,
+    component: () => import('@/views/Failures/FailureDetail.vue'),
     props: true,
     meta: { title: 'Détails de la demande ', requiresPermissions: ['di:viewDetail'] }
   },
@@ -420,7 +341,7 @@ const routes = [
   {
     path: '/Failure/:id/edit',
     name: 'EditFailure',
-    component: EditFailure,
+    component: () => import('@/views/Failures/EditFailure.vue'),
     props: true,
     meta: { title: 'Modifier la demande d\'intervention', requiresPermissions: ['di:editCreated', 'di:editAll'], permissionMode: 'OR' }
   },
@@ -428,7 +349,7 @@ const routes = [
   {
     path: '/Failure/:id/addDocument',
     name: 'AddDocumentFailure',
-    component: AddDocumentFailure,
+    component: () => import('@/views/Failures/AddDocumentFailure.vue'),
     props: true,
     meta: { title: 'Ajouter un document à la demande d\'intervention', requiresPermissions: ['di:editCreated', 'di:editAll'], permissionMode: 'OR' }
   },
@@ -437,7 +358,7 @@ const routes = [
   {
     path: '/Notice',
     name: 'Notice',
-    component: NoticesHome,
+    component: () => import('@/views/Notices/NoticesHome.vue'),
     meta: { title: "Notices d'utilisation", public: true }
   },
 
@@ -446,52 +367,51 @@ const routes = [
   {
     path: '/LocationList',
     name: 'LocationList',
-    component: LocationList,
+    component: () => import('@/views/DataManagement/Locations/LocationList.vue'),
     meta: { title: 'Lieux', requiresPermissions: ['loc:viewList'] }
   },
 
   {
     path: '/CreateLocation',
     name: 'CreateLocation',
-    component: CreateLocation,
+    component: () => import('@/views/DataManagement/Locations/CreateLocation.vue'),
     meta: { title: 'Creer un lieu', requiresPermissions: ['loc:create'] }
   },
 
   {
     path: '/LocationDetail/:id',
     name: 'LocationDetail',
-    component: LocationDetail,
+    component: () => import('@/views/DataManagement/Locations/LocationDetail.vue'),
     props: true,
     meta: { title: 'Détails d\'un lieu', requiresPermissions: ['loc:viewDetail'] }
   },
-
 
   // Modele Equipements ---------------------------------------------------------------
 
   {
     path: '/ModelEquipmentList',
     name: 'ModelEquipmentList',
-    component: ModelEquipmentList,
+    component: () => import('@/views/DataManagement/EquipmentsModels/ModelEquipmentList.vue'),
     meta: { title: 'Modèle', requiresPermissions: ['eqmod:viewList'] }
   },
 
   {
     path: '/CreateModelEquipment',
     name: 'CreateModelEquipment',
-    component: CreateModelEquipment,
+    component: () => import('@/views/DataManagement/EquipmentsModels/CreateModelEquipment.vue'),
     meta: { title: 'Creer un modele equipement', requiresPermissions: ['eqmod:create'] }
   },
 
   {
     path: '/ModelEquipmentDetail/:id',
     name: 'ModelEquipmentDetail',
-    component: ModelEquipmentDetail,
+    component: () => import('@/views/DataManagement/EquipmentsModels/ModelEquipmentDetail.vue'),
     meta: { title: 'Detail du modele equipement', requiresPermissions: ['eqmod:viewDetail'] }
   },
   {
     path: '/EditModelEquipment/:id',
     name: 'EditModelEquipment',
-    component: EditModelEquipment,
+    component: () => import('@/views/DataManagement/EquipmentsModels/EditModelEquipment.vue'),
     meta: { title: 'Modifier modele equipement', requiresPermissions: ['eqmod:edit'] }
   },
 
@@ -499,7 +419,7 @@ const routes = [
   {
     path: '/MaintenancePreventive',
     name: 'PreventiveMaintenance',
-    component: PreventiveMaintenance,
+    component: () => import('@/views/PreventiveMaintenance/PreventiveMaintenance.vue'),
     meta: { title: 'Maintenance préventive', requiresPermissions: ['mp:viewList'] }
   },
 
@@ -507,7 +427,7 @@ const routes = [
   {
     path: '/Calendar',
     name: 'Calendar',
-    component: Calendar,
+    component: () => import('@/views/Calendar/Calendar.vue'),
     meta: { title: 'Calendrier', requiresPermissions: ['menu:calendar'] }
   }
 ]
@@ -581,10 +501,8 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-
 router.afterEach((to) => {
   document.title = to.meta.title ? `GIMAO - ${to.meta.title}` : 'GIMAO'
 })
-
 
 export default router

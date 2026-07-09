@@ -135,7 +135,7 @@ class Command(BaseCommand):
 
         users_data = [
             # (nomUtilisateur, prenom, nomFamille, email, role, password)
-            ("jm.ferrer",   "Jean-Michel", "Ferrer", "jm.ferrer@gimao.fr", role_resp, "Responsable1!"),
+            ("responsable.gmao", "Responsable", "GMAO", "responsable.gmao@gimao.fr", role_resp, "Responsable1!"),
             ("t.martin",    "Thomas",   "Martin",    "t.martin@gimao.fr",    role_tech, "Technicien1!"),
             ("a.bernard",   "Alice",    "Bernard",   "a.bernard@gimao.fr",   role_tech, "Technicien1!"),
             ("l.moreau",    "Lucas",    "Moreau",    "l.moreau@gimao.fr",    role_tm,   "Technicien1!"),
@@ -278,7 +278,7 @@ class Command(BaseCommand):
     def _create_equipements(self):
         from equipement.models import Equipement, StatutEquipement, Compteur, FamilleEquipement
 
-        resp = self.users["jm.ferrer"]
+        resp = self.users["responsable.gmao"]
         now = timezone.now()
         fam_elec = FamilleEquipement.objects.get(nom="Équipements électriques")
         fam_meca = FamilleEquipement.objects.get(nom="Équipements mécaniques")
@@ -466,7 +466,7 @@ class Command(BaseCommand):
         now = timezone.now()
         op1   = self.users["o.durand"]
         op2   = self.users["s.leroy"]
-        resp  = self.users["jm.ferrer"]
+        resp  = self.users["responsable.gmao"]
         tech1 = self.users["t.martin"]
         tech2 = self.users["a.bernard"]
         tech3 = self.users["l.moreau"]
@@ -703,7 +703,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("║       COMPTES UTILISATEURS TP        ║"))
         self.stdout.write(self.style.SUCCESS("╠══════════════════════════════════════╣"))
         accounts = [
-            ("jm.ferrer",    "Responsable1!", "Responsable GMAO"),
+            ("responsable.gmao", "Responsable1!", "Responsable GMAO"),
             ("t.martin",     "Technicien1!",  "Technicien prod"),
             ("a.bernard",    "Technicien1!",  "Technicien prod"),
             ("l.moreau",     "Technicien1!",  "Technicien prod"),

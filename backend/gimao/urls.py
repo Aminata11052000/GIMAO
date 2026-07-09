@@ -8,6 +8,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from gimao.views import home_view
 from maintenance.api.viewsets import BonTravailViewSet
+from tasks.views import SeedDemoDataView
 
 # ---- Personnalisation de l'interface d'administration ----
 admin.site.site_header = "GIMAO — Administration"
@@ -59,6 +60,7 @@ urlpatterns = [
     path('api/', include('stock.api.urls')),
     path('api/export/', include('exportData.urls')),
     path('api/import/', include('importData.urls')),
+    path('api/tasks/seed-demo-data/', SeedDemoDataView.as_view(), name='seed-demo-data'),
 ]
 
 

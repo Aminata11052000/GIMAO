@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest'
+import { createStore } from 'vuex'
 
 // Vuetify pour le rendu des composants
 import { createVuetify } from 'vuetify'
@@ -20,6 +21,14 @@ const API_BASE_URL = '/api/'
 
 // Instancie Vuetify pour que Testing Library comprenne les <v-btn>, <v-data-table>, etc.
 const vuetify = createVuetify({ components, directives })
+
+// Store minimal : le composant vérifie la permission 'eq:create' pour afficher
+// les boutons d'import Excel (voir EquipmentListComponent.vue).
+const store = createStore({
+  getters: {
+    hasPermission: () => () => true
+  }
+})
 
 // Initialisation de MSW (Mock Service Worker)
 // Il intercepte toutes les vraies requêtes réseau de "useApi" (axios/fetch)
@@ -61,7 +70,7 @@ const renderComponent = (props = {}) => {
       ...props
     },
     global: {
-      plugins: [vuetify]
+      plugins: [vuetify, store]
     }
   })
 }

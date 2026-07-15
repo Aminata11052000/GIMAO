@@ -9,7 +9,7 @@
       Il centralise les informations essentielles liées à votre activité.
       <br /><br />
 
-      <template v-if="role === 'Opérateur'">
+      <template v-if="role === 'Opérateur prod'">
         En haut de l'écran, vous trouverez plusieurs indicateurs :
         <br /><br />
 
@@ -50,8 +50,10 @@
       Le contenu affiché dépend des droits attribués à votre compte.
     </div>
 
-    <ZoomImage :src="require('@/assets/images/notices/Dashboard/opérateur.png')" alt="Tableau de bord" v-if="role === 'Opérateur'"/>
-    <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien.png')" alt="Tableau de bord" v-if="role === 'Technicien' || role === 'Responsable GMAO'"/>
+    <ZoomImage :src="require('@/assets/images/notices/Dashboard/opérateur.png')" alt="Tableau de bord" v-if="role === 'Opérateur prod'"/>
+    <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien-prod.png')" alt="Tableau de bord" v-if="role === 'Technicien prod'"/>
+    <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien-maintenance.png')" alt="Tableau de bord" v-if="role === 'Technicien maintenance'"/>
+    <ZoomImage :src="require('@/assets/images/notices/Dashboard/responsable.png')" alt="Tableau de bord" v-if="role === 'Responsable GMAO'"/>
   </div>
 </template>
 
@@ -61,7 +63,7 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Opérateur"
+    default: "Opérateur prod"
   }
 });
 </script>

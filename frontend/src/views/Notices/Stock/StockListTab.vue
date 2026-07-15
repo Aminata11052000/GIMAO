@@ -30,11 +30,11 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Technicien"
+    default: "Technicien prod"
   }
 });
 
-const roles = ["Technicien", "Magasinier", "Responsable GMAO"];
+const roles = ["Technicien prod", "Technicien maintenance", "Magasinier", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);

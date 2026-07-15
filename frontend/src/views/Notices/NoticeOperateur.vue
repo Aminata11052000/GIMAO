@@ -19,15 +19,15 @@
       </v-window-item>
 
       <v-window-item value="dashboard">
-        <DashboardTab role="Opérateur"/>
+        <DashboardTab role="Opérateur prod"/>
       </v-window-item>
 
       <v-window-item value="di">
-        <DIGeneralTab :role="Opérateur"/>
+        <DIGeneralTab role="Opérateur prod"/>
       </v-window-item>
 
       <v-window-item value="equipements">
-        <EquipementsTab />
+        <EquipementsTab role="Opérateur prod" />
       </v-window-item>
 
       

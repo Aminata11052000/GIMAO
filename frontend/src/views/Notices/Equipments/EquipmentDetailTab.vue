@@ -27,7 +27,7 @@
 
     <ZoomImage v-if="detailEqCreerDiImg" :src="detailEqCreerDiImg" alt="Signalement depuis détail équipement" />
 
-    <div v-if="roleIsAbove('Technicien')" class="mt-4">
+    <div v-if="roleIsAbove('Technicien prod')" class="mt-4">
       <div class="text-body-1 font-weight-bold mb-2">
         Modification et compteurs
       </div>
@@ -44,11 +44,11 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Opérateur"
+    default: "Opérateur prod"
   }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
@@ -58,19 +58,19 @@ const getEquipImg = (name) => {
   try { return require(`@/assets/images/notices/equips/${name}`) } catch { return null }
 }
 
-const detailEqImg = props.role === 'Opérateur'
+const detailEqImg = props.role === 'Opérateur prod'
   ? getEquipImg('detail-eq-operateur.png')
   : props.role === 'Responsable GMAO'
       ? getEquipImg('detail-eq-responsable.png') || getEquipImg('detail-eq-technicien.png')
       : getEquipImg('detail-eq-technicien.png')
 
-const detailEqDocsImg = props.role === 'Opérateur'
+const detailEqDocsImg = props.role === 'Opérateur prod'
   ? getEquipImg('detail-eq-docs-operateur.png')
   : props.role === 'Responsable GMAO'
       ? getEquipImg('detail-eq-docs-responsable.png') || getEquipImg('detail-eq-docs-technicien.png')
       : getEquipImg('detail-eq-docs-technicien.png')
 
-const detailEqCreerDiImg = props.role === 'Opérateur'
+const detailEqCreerDiImg = props.role === 'Opérateur prod'
   ? getEquipImg('detail-eq-creer-di-operateur.png')
   : props.role === 'Responsable GMAO'
       ? getEquipImg('detail-eq-creer-di-responsable.png') || getEquipImg('detail-eq-creer-di-technicien.png')

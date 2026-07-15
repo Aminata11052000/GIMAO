@@ -2,7 +2,7 @@
   <v-expansion-panels multiple variant="accordion" class="doc-page">
 
     <!-- LISTE -->
-    <v-expansion-panel v-if="roleIsAbove('Opérateur')" >
+    <v-expansion-panel v-if="roleIsAbove('Opérateur prod')" >
       <v-expansion-panel-title>
         Liste des équipements
       </v-expansion-panel-title>
@@ -13,7 +13,7 @@
     </v-expansion-panel>
 
     <!-- DÉTAIL -->
-    <v-expansion-panel v-if="roleIsAbove('Opérateur')">
+    <v-expansion-panel v-if="roleIsAbove('Opérateur prod')">
       <v-expansion-panel-title>
         Détails d'un équipement
       </v-expansion-panel-title>
@@ -24,7 +24,7 @@
     </v-expansion-panel>
 
     <!-- DÉFAILLANCE -->
-    <v-expansion-panel v-if="roleIsAbove('Opérateur')">
+    <v-expansion-panel v-if="roleIsAbove('Opérateur prod')">
       <v-expansion-panel-title>
         Signaler une défaillance
       </v-expansion-panel-title>
@@ -45,11 +45,11 @@ import SignalFailureTab from "./SignalFailureTab.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Opérateur"
+    default: "Opérateur prod"
   }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);

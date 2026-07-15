@@ -10,7 +10,7 @@
       Le fonctionnement de ce formulaire est détaillé dans la section Demande d'Intervention > Création d'une DI.
     </div>
 
-    <ZoomImage :src="require('@/assets/images/notices/equips/detail-eq-creer-di-operateur.png')" alt="Signalement depuis détail équipement" v-if="role === 'Opérateur'"/>
+    <ZoomImage :src="require('@/assets/images/notices/equips/detail-eq-creer-di-operateur.png')" alt="Signalement depuis détail équipement" v-if="role === 'Opérateur prod'"/>
     <ZoomImage :src="require('@/assets/images/notices/equips/detail-eq-creer-di-technicien.png')" alt="Signalement depuis détail équipement" v-else/>
   </div>
 </template>
@@ -21,11 +21,11 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Opérateur"
+    default: "Opérateur prod"
   }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);

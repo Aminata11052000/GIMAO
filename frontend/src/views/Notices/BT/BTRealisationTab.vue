@@ -60,7 +60,7 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Technicien"
+    default: "Technicien prod"
   }
 });
 

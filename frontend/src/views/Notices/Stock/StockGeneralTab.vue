@@ -33,7 +33,7 @@ import StockDetailTab from "./StockDetailTab.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Technicien"
+    default: "Technicien prod"
   }
 });
 </script>

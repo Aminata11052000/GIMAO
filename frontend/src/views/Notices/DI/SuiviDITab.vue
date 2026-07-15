@@ -1,6 +1,6 @@
 <template>
     <v-container class="doc-page">
-        <h4 v-if="role === 'Opérateur'">
+        <h4 v-if="role === 'Opérateur prod'">
             Consulter vos demandes d'intervention
         </h4>
         <h4 v-else>
@@ -8,7 +8,7 @@
         </h4>
 
         <div class="text-body-2 mb-4 mt-2">
-            <template v-if="role === 'Opérateur'">
+            <template v-if="role === 'Opérateur prod'">
                 Dans la liste « Vos DI », vous retrouvez l'ensemble des Demandes d'Intervention que vous avez créées.
                 Elle regroupe toutes les défaillances que vous avez signalées par le passé et vous permet de les consulter à tout moment.
                 Cette liste vous aide également à suivre l'état d'avancement de vos demandes afin, si nécessaire, de les
@@ -52,11 +52,11 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
     role: {
         type: String,
-        default: "Opérateur"
+        default: "Opérateur prod"
     }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"]
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"]
 
 const roleIsAbove = (role) => {
     return roles.indexOf(props.role) >= roles.indexOf(role);
@@ -66,7 +66,7 @@ const getDIImg = (name) => {
     try { return require(`@/assets/images/notices/DI/${name}`) } catch { return null }
 }
 
-const listeDiImg = props.role === 'Opérateur'
+const listeDiImg = props.role === 'Opérateur prod'
     ? getDIImg('liste-di.png')
     : props.role === 'Responsable GMAO'
         ? getDIImg('liste-di-responsable.png') || getDIImg('liste-di-technicien.png')

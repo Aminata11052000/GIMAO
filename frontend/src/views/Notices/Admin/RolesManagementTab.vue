@@ -23,7 +23,7 @@
         <ZoomImage v-if="boutonAjouterImg" :src="boutonAjouterImg" alt="Bouton Ajouter un utilisateur" />
 
         <li>Renseignez le nom d'utilisateur, le prénom, le nom, l'adresse e-mail et le mot de passe temporaire.</li>
-        <li>Sélectionnez le rôle approprié : Opérateur, Technicien, Magasinier ou Responsable GMAO.</li>
+        <li>Sélectionnez le rôle approprié : Opérateur prod, Technicien prod, Technicien maintenance, Magasinier ou Responsable GMAO.</li>
         <li>Validez : l'utilisateur peut désormais se connecter avec ses identifiants.</li>
       </ul>
 
@@ -51,10 +51,11 @@
 
       <ZoomImage v-if="rubriqueRoleImg" :src="rubriqueRoleImg" alt="Rubrique Rôles dans le menu" />
 
-      <strong>Les quatre rôles disponibles :</strong>
+      <strong>Les cinq rôles disponibles :</strong>
       <ul class="ml-4 mt-2 mb-4">
-        <li><strong>Opérateur</strong> : peut créer et suivre ses propres Demandes d'Intervention.</li>
-        <li><strong>Technicien</strong> : reçoit et réalise les Bons de Travail, consulte les équipements et les stocks.</li>
+        <li><strong>Opérateur prod</strong> : peut créer et suivre ses propres Demandes d'Intervention.</li>
+        <li><strong>Technicien prod</strong> : reçoit et réalise les Bons de Travail, consulte les équipements et les stocks.</li>
+        <li><strong>Technicien maintenance</strong> : dispose des mêmes droits que le Technicien prod, ainsi que l'accès au calendrier des maintenances et à la création des plans de maintenance préventive.</li>
         <li><strong>Magasinier</strong> : gère les stocks, les magasins et valide les demandes de consommables.</li>
         <li><strong>Responsable GMAO</strong> : accès complet à toutes les fonctionnalités de l'application.</li>
       </ul>
@@ -66,7 +67,7 @@
       Chaque rôle regroupe un ensemble de permissions précises (consulter, créer, modifier, supprimer) sur chaque module.
       En cliquant sur un rôle, vous visualisez le détail de ses permissions.
       <br /><br />
-      Les quatre rôles (Responsable GMAO, Technicien, Magasinier, Opérateur) sont des rôles par défaut : ils ne peuvent pas être supprimés, mais vous pouvez modifier leurs permissions ou les dupliquer pour créer de nouveaux rôles personnalisés avec plus ou moins de droits.
+      Les cinq rôles (Responsable GMAO, Technicien prod, Technicien maintenance, Magasinier, Opérateur prod) sont des rôles par défaut : ils ne peuvent pas être supprimés, mais vous pouvez modifier leurs permissions ou les dupliquer pour créer de nouveaux rôles personnalisés avec plus ou moins de droits.
     </div>
 
   </v-container>

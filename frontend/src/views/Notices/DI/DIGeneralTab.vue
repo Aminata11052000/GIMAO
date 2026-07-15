@@ -2,12 +2,12 @@
     <v-expansion-panels multiple variant="accordion" class="doc-page">
 
       <!-- CONSULTER DI -->
-      <v-expansion-panel v-if="roleIsAbove('Opérateur')">
-        <v-expansion-panel-title v-if="role === 'Opérateur'">
+      <v-expansion-panel v-if="roleIsAbove('Opérateur prod')">
+        <v-expansion-panel-title v-if="role === 'Opérateur prod'">
           Consulter vos demandes d'intervention
         </v-expansion-panel-title>
 
-        <v-expansion-panel-title v-if="roleIsAbove('Technicien')">
+        <v-expansion-panel-title v-if="roleIsAbove('Technicien prod')">
           Consulter les demandes d'intervention
         </v-expansion-panel-title>
 
@@ -17,7 +17,7 @@
       </v-expansion-panel>
 
       <!-- CRÉER DI -->
-      <v-expansion-panel v-if="roleIsAbove('Opérateur')">
+      <v-expansion-panel v-if="roleIsAbove('Opérateur prod')">
         <v-expansion-panel-title>
           Créer une demande d'intervention
         </v-expansion-panel-title>
@@ -28,7 +28,7 @@
       </v-expansion-panel>
 
       <!-- MODIFIER DI -->
-      <v-expansion-panel v-if="roleIsAbove('Opérateur')">
+      <v-expansion-panel v-if="roleIsAbove('Opérateur prod')">
         <v-expansion-panel-title>
           Modifier une demande d'intervention
         </v-expansion-panel-title>
@@ -49,11 +49,11 @@ import ModificationDITab from "./ModificationDITab.vue";
 const props = defineProps({
   role: {
     type: String,
-    default: "Opérateur"
+    default: "Opérateur prod"
   }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);

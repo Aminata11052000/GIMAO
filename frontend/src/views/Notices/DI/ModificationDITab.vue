@@ -4,7 +4,7 @@
             Modifier une demande d'intervention
         </h4>
 
-        <div class="text-body-2 mb-4" v-if="role === 'Opérateur'">
+        <div class="text-body-2 mb-4" v-if="role === 'Opérateur prod'">
             Une fois votre Demande d'Intervention créée, elle apparaît sur votre tableau de bord.
             Si vous souhaitez la modifier, il vous suffit de cliquer dessus afin d'accéder à sa page de détails.
 
@@ -38,11 +38,11 @@ import ZoomImage from "../common/ZoomImage.vue";
 const props = defineProps({
     role: {
         type: String,
-        default: "Opérateur"
+        default: "Opérateur prod"
     }
 });
 
-const roles = ["Opérateur", "Technicien", "Responsable GMAO"];
+const roles = ["Opérateur prod", "Technicien prod", "Technicien maintenance", "Responsable GMAO"];
 
 const roleIsAbove = (minRole) => {
   return roles.indexOf(props.role) >= roles.indexOf(minRole);
@@ -52,13 +52,13 @@ const getDIImg = (name) => {
     try { return require(`@/assets/images/notices/DI/${name}`) } catch { return null }
 }
 
-const detailDiEditImg = props.role === 'Opérateur'
+const detailDiEditImg = props.role === 'Opérateur prod'
     ? getDIImg('detail-di-edit.png')
     : props.role === 'Responsable GMAO'
         ? getDIImg('detail-di-responsable-edit.png') || getDIImg('detail-di-technicien-edit.png')
         : getDIImg('detail-di-technicien-edit.png')
 
-const modifDiImg = props.role === 'Opérateur'
+const modifDiImg = props.role === 'Opérateur prod'
     ? getDIImg('modif-di.png')
     : props.role === 'Responsable GMAO'
         ? getDIImg('modif-di-responsable.png') || getDIImg('modif-di-technicien.png')

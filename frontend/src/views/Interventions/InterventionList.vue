@@ -3,7 +3,7 @@
 		title="Liste des Bons de Travail"
 		variant="auto"
 		show-statut-filter
-		:show-create-button="isResponsableGMAO"
+		:show-create-button="canCreateBT"
 		create-button-text="Nouveau bon de travail"
 		no-data-text="Aucun bon de travail enregistré"
 		@row-click="handleRowClick"
@@ -20,8 +20,7 @@ import InterventionListComponent from '../../components/InterventionListComponen
 const router = useRouter();
 const store = useStore();
 
-const userRole = computed(() => store.getters.userRole);
-const isResponsableGMAO = computed(() => userRole.value === 'Responsable GMAO');
+const canCreateBT = computed(() => store.getters.hasPermission('bt:create'));
 
 const handleRowClick = (item) => {
   router.push({ name: 'InterventionDetail', params: { id: item.id } });

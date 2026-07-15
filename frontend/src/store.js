@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import http from "@/composables/http";
 
 export default createStore({
 
@@ -50,10 +51,24 @@ export default createStore({
             if (user && token) {
                 try {
                     const parsedTimestamp = Number.parseInt(timestamp || "", 10);
+                    const parsedUser = JSON.parse(user);
                     commit("restoreAuth", {
-                        user: JSON.parse(user),
+                        user: parsedUser,
                         timestamp: Number.isFinite(parsedTimestamp) ? parsedTimestamp : null,
                     });
+
+                    // Le rôle/les permissions affichés au login peuvent avoir été modifiés
+                    // entre-temps par un responsable : on rafraîchit depuis le serveur plutôt
+                    // que de garder indéfiniment la version mise en cache dans le navigateur.
+                    if (parsedUser?.id) {
+                        http.get(`utilisateurs/${parsedUser.id}/`)
+                            .then((response) => {
+                                commit("setUser", response.data);
+                            })
+                            .catch(() => {
+                                // Pas de connexion / erreur réseau : on garde la version en cache.
+                            });
+                    }
                 } catch (e) {
                     console.error(
                         "Erreur lors du chargement de l'utilisateur:",

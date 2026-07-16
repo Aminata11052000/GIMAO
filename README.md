@@ -46,7 +46,7 @@ Un seul compte est créé automatiquement, avec le rôle Responsable GMAO :
 - Identifiant : `responsable`
 - Aucun mot de passe par défaut : il est défini à la première connexion.
 
-Aucune donnée n'est préchargée. Un jeu de données de démonstration peut être chargé depuis l'application (bouton dédié sur le tableau de bord, réservé au Responsable GMAO) — voir [Commandes de gestion](#commandes-de-gestion).
+Aucune donnée n'est préchargée. Un jeu de données de démonstration peut être chargé depuis l'application (bouton dédié sur le tableau de bord, réservé au Responsable GMAO), voir [Commandes de gestion](#commandes-de-gestion).
 
 ### 3. Mettre à jour l'application
 

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIMAO : application GMAO open-source (Django, Vue.js, Docker)</title>
+  <meta name="description" content="GIMAO est une application web de GMAO (gestion de maintenance assistee par ordinateur) : suivi des equipements, demandes d'intervention, bons de travail, maintenance preventive, stocks et gestion des roles. Open-source, deployable avec Docker.">
+  <meta property="og:title" content="GIMAO : application GMAO open-source">
+  <meta property="og:description" content="Suivi des equipements, demandes d'intervention, bons de travail, maintenance preventive, stocks et gestion des roles. Django REST Framework, Vue 3, Vuetify, Docker.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aminata11052000.github.io/GIMAO/">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: #1f2430;
+      background: #f6f8fc;
+      line-height: 1.6;
+    }
+    header {
+      background: #05004E;
+      color: #ffffff;
+      padding: 56px 20px 48px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.2rem; margin-bottom: 12px; }
+    header p.tagline { font-size: 1.15rem; opacity: 0.9; max-width: 720px; margin: 0 auto 24px; }
+    .btn {
+      display: inline-block;
+      padding: 12px 26px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 6px;
+    }
+    .btn-primary { background: #5d5fef; color: #ffffff; }
+    .btn-secondary { background: transparent; color: #ffffff; border: 2px solid #ffffff; }
+    main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+    section { margin-bottom: 48px; }
+    h2 {
+      color: #05004E;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+      border-bottom: 3px solid #5d5fef;
+      display: inline-block;
+      padding-bottom: 4px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(5, 0, 78, 0.08);
+    }
+    .card h3 { color: #5d5fef; font-size: 1.05rem; margin-bottom: 8px; }
+    .card p { font-size: 0.95rem; }
+    .screenshot {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(5, 0, 78, 0.15);
+      display: block;
+    }
+    table { width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 10px; overflow: hidden; }
+    th, td { padding: 12px 16px; text-align: left; font-size: 0.95rem; }
+    th { background: #5d5fef; color: #ffffff; }
+    tr:nth-child(even) td { background: #f6f8fc; }
+    ol.steps { padding-left: 22px; }
+    ol.steps li { margin-bottom: 10px; }
+    code {
+      background: #eceefc;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.9em;
+      color: #05004E;
+    }
+    footer {
+      background: #05004E;
+      color: #ffffff;
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 0.9rem;
+    }
+    footer a { color: #a5b4fc; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>GIMAO</h1>
+  <p class="tagline">Application web open-source de GMAO (gestion de maintenance assistee par ordinateur) : equipements, interventions, maintenance preventive, stocks et roles utilisateurs.</p>
+  <a class="btn btn-primary" href="https://github.com/Aminata11052000/GIMAO">Voir le code sur GitHub</a>
+  <a class="btn btn-secondary" href="https://github.com/Aminata11052000/GIMAO#installation-rapide">Guide d'installation</a>
+</header>
+
+<main>
+
+  <section>
+    <h2>Apercu</h2>
+    <img class="screenshot" src="assets/dashboard.png" alt="Tableau de bord de GIMAO montrant les statistiques de maintenance, les demandes d'intervention et les bons de travail">
+  </section>
+
+  <section>
+    <h2>Fonctionnalites</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Demandes d'intervention</h3>
+        <p>Les operateurs signalent les pannes avec description et photo. Le responsable accepte, refuse ou transforme la demande en bon de travail.</p>
+      </div>
+      <div class="card">
+        <h3>Bons de travail</h3>
+        <p>Assignation aux techniciens, suivi des statuts (en attente, en cours, termine, cloture), compte-rendu, consommables et documents joints.</p>
+      </div>
+      <div class="card">
+        <h3>Maintenance preventive</h3>
+        <p>Plans de maintenance avec compteurs numeriques ou calendaires. Les bons de travail preventifs sont generes automatiquement a echeance.</p>
+      </div>
+      <div class="card">
+        <h3>Equipements</h3>
+        <p>Catalogue complet avec localisation, fabricant, modele, statuts, indicateurs MTBF et MTTR, historique des etats et documents.</p>
+      </div>
+      <div class="card">
+        <h3>Stocks</h3>
+        <p>Consommables par magasin, achats, transferts, alertes de seuil et validation des demandes de pieces sur les interventions.</p>
+      </div>
+      <div class="card">
+        <h3>Roles et permissions</h3>
+        <p>Cinq roles par defaut (Responsable GMAO, Technicien prod, Technicien maintenance, Magasinier, Operateur prod) avec permissions personnalisables par utilisateur.</p>
+      </div>
+      <div class="card">
+        <h3>Import Excel</h3>
+        <p>Chargement en masse des equipements et des donnees de reference depuis un modele Excel fourni, avec rapport detaille et protection contre les doublons.</p>
+      </div>
+      <div class="card">
+        <h3>Exports</h3>
+        <p>Export Excel des equipements, interventions, stocks et utilisateurs. Documentation interactive de l'API via Swagger.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Architecture technique</h2>
+    <table>
+      <tr><th>Couche</th><th>Technologie</th></tr>
+      <tr><td>Backend</td><td>Python, Django, Django REST Framework</td></tr>
+      <tr><td>Frontend</td><td>Vue 3, Vuetify 3</td></tr>
+      <tr><td>Base de donnees</td><td>MariaDB</td></tr>
+      <tr><td>Serveur web</td><td>Nginx</td></tr>
+      <tr><td>Deploiement</td><td>Docker, Docker Compose (images multi-architecture)</td></tr>
+      <tr><td>Tests</td><td>pytest, Vitest, integration continue GitHub Actions</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Installation en bref</h2>
+    <ol class="steps">
+      <li>Installer <a href="https://www.docker.com/products/docker-desktop">Docker Desktop</a> et le lancer.</li>
+      <li>Recuperer le projet depuis <a href="https://github.com/Aminata11052000/GIMAO">le depot GitHub</a>.</li>
+      <li>Sous Windows, double-cliquer sur <code>install.bat</code> a la racine du projet.</li>
+      <li>L'application s'ouvre sur <code>http://localhost</code> avec un compte Responsable GMAO pret a l'emploi.</li>
+    </ol>
+    <p>La procedure complete, la configuration manuelle et les commandes de gestion sont detaillees dans le <a href="https://github.com/Aminata11052000/GIMAO#sommaire">README du depot</a>.</p>
+  </section>
+
+  <section>
+    <h2>Licence</h2>
+    <p>GIMAO est distribue sous licence <a href="https://github.com/Aminata11052000/GIMAO/blob/main/LICENSE">GNU AGPL v3</a> : le code source est libre, et toute version modifiee mise a disposition d'utilisateurs doit egalement publier ses sources.</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>GIMAO, application GMAO open-source. <a href="https://github.com/Aminata11052000/GIMAO">Code source sur GitHub</a></p>
+</footer>
+
+</body>
+</html>

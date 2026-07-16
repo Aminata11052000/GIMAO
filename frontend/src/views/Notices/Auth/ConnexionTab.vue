@@ -104,7 +104,7 @@ const logoutImg = computed(() => {
     }
     return props.hasMenu
         ? getAuthImg('logout-technicien.png')
-        : getAuthImg('logout-opérateur.png')
+        : getAuthImg('logout-operateur.png')
 })
 </script>
 

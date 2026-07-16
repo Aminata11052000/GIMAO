@@ -50,7 +50,7 @@
       Le contenu affiché dépend des droits attribués à votre compte.
     </div>
 
-    <ZoomImage :src="require('@/assets/images/notices/Dashboard/opérateur.png')" alt="Tableau de bord" v-if="role === 'Opérateur prod'"/>
+    <ZoomImage :src="require('@/assets/images/notices/Dashboard/operateur.png')" alt="Tableau de bord" v-if="role === 'Opérateur prod'"/>
     <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien-prod.png')" alt="Tableau de bord" v-if="role === 'Technicien prod'"/>
     <ZoomImage :src="require('@/assets/images/notices/Dashboard/technicien-maintenance.png')" alt="Tableau de bord" v-if="role === 'Technicien maintenance'"/>
     <ZoomImage :src="require('@/assets/images/notices/Dashboard/responsable.png')" alt="Tableau de bord" v-if="role === 'Responsable GMAO'"/>
